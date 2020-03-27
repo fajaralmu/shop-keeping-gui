@@ -23,6 +23,7 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- project repo: https://github.com/fajaralmu/universal-good-shop1 -->
 		<dependency>
 			<groupId>com.fajar</groupId>
 			<artifactId>universal-good-shop</artifactId>
