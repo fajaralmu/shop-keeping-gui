@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.component;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -36,10 +37,11 @@ public class ComponentBuilder {
 
 			if (null != C) {
 
-				//C.setBounds(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H * CurrentRow, W, H);
+				// C.setBounds(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H *
+				// CurrentRow, W, H);
 
 				C.setLocation(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H * CurrentRow);
-				C.setSize(W,H);
+				C.setSize(W, H);
 				if (C.getClass().equals(BlankComponent.class)) {
 					BlankComponent blankC = (BlankComponent) C;
 
@@ -75,6 +77,8 @@ public class ComponentBuilder {
 					}
 				}
 
+			}else {
+				 C = new JLabel();
 			}
 			CurrentCol++;
 
@@ -93,8 +97,8 @@ public class ComponentBuilder {
 		int finalW = panelW != 0 ? panelW : Col * W + Col * Margin;
 		int finalH = panelH != 0 ? panelH : (CurrentRow + 1) * H + (CurrentRow + 1) * Margin;
 		Panel.setBounds(X, Y, finalW, finalH);
-		Panel.setLayout(null );
-		Panel.setBounds(X,Y, finalW,finalH);
+		Panel.setLayout(null);
+		Panel.setBounds(X, Y, finalW, finalH);
 		Panel.setSize(finalW, finalH);
 		if (autoScroll) {
 			Panel.setAutoscrolls(false);
@@ -106,9 +110,12 @@ public class ComponentBuilder {
 	}
 
 	public static void printComponentLayout(Component component) {
-		System.out.println(component.getClass().getName() + "built--" + 
-	
-				StringUtil.buildString("x:",component.getX(),
-				" y:",component.getY(),"width:", component.getWidth(),"height:", component.getHeight()));
+		if (null == component) {
+			return;
+		}
+		System.out.println(component.getClass().getName() + "built--" +
+
+				StringUtil.buildString("x:", component.getX(), " y:", component.getY(), "width:", component.getWidth(),
+						"height:", component.getHeight()));
 	}
 }

@@ -1,0 +1,57 @@
+package com.fajar.shopkeeping.handler;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import com.fajar.shopkeeping.pages.BasePage;
+
+public class MainHandler {
+
+	protected BasePage page;
+	protected static final AppHandler APP_HANDLER = AppHandler.getInstance();
+
+	public MainHandler() {
+		init();
+	}
+
+	protected void init() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public ActionListener navigate(final int pageCode) {
+		return new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) { 
+				APP_HANDLER.navigate(pageCode);
+			}
+		};
+	}
+
+	public void dismissPage() {
+		if (null == page) {
+			System.out.println("page is null");
+			return;
+		}  
+		page.dismiss();
+	}
+
+	public void start() {
+		page.show();
+	}
+
+	/**
+	 * set this class as the handler of the page
+	 */
+	public void setPageHandler() {
+
+		if (page == null) {
+
+			System.out.println(this.getClass().getCanonicalName() + "Page is null");
+			return;
+		}
+
+		page.setAppHandler(this);
+	}
+
+}
