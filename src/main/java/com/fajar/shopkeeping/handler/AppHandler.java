@@ -3,14 +3,13 @@ package com.fajar.shopkeeping.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.webservice.AccountService;
 
 public class AppHandler {
 
 	private static AppHandler handler;
-	private AccountService accountService  = AccountService.getInstance();
+	private AccountService accountService = AccountService.getInstance();
 	private static String applicationId = "";
 	private static String loginKey = "";
 
@@ -34,20 +33,20 @@ public class AppHandler {
 	private AppHandler() {
 		init();
 	}
-	
+
 	public static String getApplicationID() {
 		return applicationId;
 	}
 
 	public static void setLoginKey(String loginKey2) {
-		System.out.println("[Logn Key] = "+loginKey2);
+		System.out.println("[Logn Key] = " + loginKey2);
 		loginKey = loginKey2;
 	}
-	
+
 	public static String getLoginKey() {
 		return loginKey;
 	}
-	
+
 	private void init() {
 		handlers.put(PAGE_LAUNCHER, new LauncherHandler());
 		handlers.put(PAGE_LOGIN, new LoginHandler());
@@ -55,6 +54,10 @@ public class AppHandler {
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}
 
+	/**
+	 * goto other page
+	 * @param handlerCode
+	 */
 	public void navigate(int handlerCode) {
 
 		System.out.println("navigating to: " + handlerCode);
@@ -64,7 +67,7 @@ public class AppHandler {
 		}
 		activeHandler = handlers.get(handlerCode);
 
-		startActiveHandler(); 
+		startActiveHandler();
 	}
 
 	public void beginApp() {
@@ -72,25 +75,25 @@ public class AppHandler {
 
 		try {
 			getAppId();
-		}catch (Exception e) { 
+		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error Occured: "+e.getMessage());
+			Dialogs.showErrorDialog("Error Occured: " + e.getMessage());
 			return;
 		}
-		
+
 		startActiveHandler();
 	}
-	
+
 	private String getAppId() throws Exception {
 		String appId = accountService.getAppId();
-		System.out.println("APP ID: "+appId);
-		
-		if(null == appId) {
+		System.out.println("APP ID: " + appId);
+
+		if (null == appId) {
 			throw new Exception("App id not generated");
 		}
-		
+
 		applicationId = appId;
-		
+
 		return appId;
 	}
 

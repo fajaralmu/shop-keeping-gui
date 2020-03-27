@@ -8,6 +8,7 @@ import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.User;
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.handler.AppHandler;
 
 import static com.fajar.shopkeeping.constant.WebServiceConstants.*;
@@ -50,36 +51,49 @@ public class AccountService {
 			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP, new ShopApiRequest(),
 					ShopApiResponse.class);
 			return response.getBody();
-		} catch (Exception e) { 
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public void doLogin(String username, String password) {
-		// TODO Auto-generated method stub
-		ShopApiRequest loginRequest = new ShopApiRequest();
-		User user = User.builder().username(username).password(password).build();
-		loginRequest.setUser(user);
+	public void doLogin(final String username, final String password) {
 
-		try {
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGIN,
-					RestComponent.addAuthRequest(loginRequest), ShopApiResponse.class);
-			
-			if(response.getBody().getCode().equals("00") ==false) {
-				throw new InvalidActivityException("Invalid Response");
+		Loadings.start();
+
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				ShopApiRequest loginRequest = new ShopApiRequest();
+				User user = User.builder().username(username).password(password).build();
+				loginRequest.setUser(user);
+
+				try {
+					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGIN,
+							RestComponent.addAuthRequest(loginRequest), ShopApiResponse.class);
+
+					if (response.getBody().getCode().equals("00") == false) {
+						throw new InvalidActivityException("Invalid Response");
+					}
+
+					HttpHeaders responseHeaders = response.getHeaders();
+					List<String> loginKey = responseHeaders.get("loginKey");
+					AppHandler.setLoginKey(loginKey.get(0));
+
+					Loadings.end();
+					Dialogs.showInfoDialog("Login Success!");
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Login Error: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
 			}
-			
-			HttpHeaders responseHeaders = response.getHeaders();
-			List<String> loginKey = responseHeaders.get("loginKey");
-			AppHandler.setLoginKey(loginKey.get(0));
-			 
-			Dialogs.showInfoDialog("Login Success!");
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			Dialogs.showErrorDialog("Login Error: " + e.getMessage());
-		}
+
+		});
+		thread.start();
 
 	}
 

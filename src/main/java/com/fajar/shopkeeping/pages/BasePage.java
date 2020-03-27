@@ -25,6 +25,7 @@ public class BasePage {
 	private final int WIDTH;
 	private final int HEIGHT;
 	private final String title;
+	private boolean authRequired;
 	
 	@Setter(value = AccessLevel.NONE)
 	protected MainHandler appHandler;
