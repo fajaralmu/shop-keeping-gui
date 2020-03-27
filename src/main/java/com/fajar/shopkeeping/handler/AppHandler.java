@@ -3,9 +3,15 @@ package com.fajar.shopkeeping.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
+import com.fajar.shopkeeping.webservice.AccountService;
+
 public class AppHandler {
 
 	private static AppHandler handler;
+	private AccountService accountService  = AccountService.getInstance();
+	private static String applicationId = "";
 
 	public static final int PAGE_LOGIN = 1;
 	public static final int PAGE_HOME = 2;
@@ -26,6 +32,10 @@ public class AppHandler {
 
 	private AppHandler() {
 		init();
+	}
+	
+	public static String getApplicationID() {
+		return applicationId;
 	}
 
 	private void init() {
@@ -50,7 +60,28 @@ public class AppHandler {
 	public void beginApp() {
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 
+		try {
+			getAppId();
+		}catch (Exception e) { 
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error Occured: "+e.getMessage());
+			return;
+		}
+		
 		startActiveHandler();
+	}
+	
+	private String getAppId() throws Exception {
+		String appId = accountService.getAppId();
+		System.out.println("APP ID: "+appId);
+		
+		if(null == appId) {
+			throw new Exception("App id not generated");
+		}
+		
+		applicationId = appId;
+		
+		return appId;
 	}
 
 	public void startActiveHandler() {

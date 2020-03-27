@@ -8,15 +8,13 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.component.BlankComponent;
-import com.fajar.shopkeeping.handler.AppHandler;
 import com.fajar.shopkeeping.handler.LoginHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.ReservedFor;
 
 public class LoginPage extends BasePage {
 
-	private JButton loginButton;
-	private JButton hideBtn;
+	private JButton loginButton; 
 	private JTextField usernameField;
 	private JTextField passwordField;
  
@@ -27,10 +25,9 @@ public class LoginPage extends BasePage {
 
 	@Override
 	public void initComponent() {
-		loginButton = new JButton("Login");
-		hideBtn = new JButton("back");
-		usernameField = new JTextField();
-		passwordField = new JTextField();
+		loginButton = new JButton("Login"); 
+		usernameField = new JTextField("admin123");
+		passwordField = new JTextField("123");
 		
 		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.GRAY, 30, 30, 0, 0, true);
 
@@ -39,7 +36,7 @@ public class LoginPage extends BasePage {
 				title("Please Login"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20),
 				label("Username"), usernameField, 
 				label("Password"), passwordField,
-				loginButton, hideBtn);
+				loginButton);
 
 		parentPanel.add(mainPanel);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -50,8 +47,7 @@ public class LoginPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		
-		loginButton.addActionListener(((LoginHandler) appHandler).doLogin(usernameField, passwordField));
-		hideBtn.addActionListener(appHandler.navigate(AppHandler.PAGE_LAUNCHER));
+		loginButton.addActionListener(((LoginHandler) appHandler).doLogin(usernameField, passwordField)); 
 	}
 
 }

@@ -15,8 +15,7 @@ import com.fajar.shopkeeping.model.ReservedFor;
 
 public class LauncherPage extends BasePage {
 
-	private JButton navigateLoginButton;
-	JButton hideBtn;
+	private JButton navigateLoginButton; 
  
 
 	public LauncherPage() {
@@ -25,8 +24,7 @@ public class LauncherPage extends BasePage {
 
 	@Override
 	public void initComponent() {
-		navigateLoginButton = new JButton("Login");
-		hideBtn = new JButton("x");
+		navigateLoginButton = new JButton("Login"); 
 		
 		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.GRAY, 30, 30, 0, 0, true);
 
@@ -34,7 +32,7 @@ public class LauncherPage extends BasePage {
 
 				title("Shop Keeping App!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20),
 				label("Welcome to mart app..."), null, 
-				navigateLoginButton, hideBtn);
+				navigateLoginButton);
 
 		parentPanel.add(mainPanel);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -46,13 +44,7 @@ public class LauncherPage extends BasePage {
 		super.initEvent();
 		
 		navigateLoginButton.addActionListener(((LauncherHandler) appHandler).showLoginPage());
-		hideBtn.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {
-				dismiss();
-				
-			}
-		});
+		 
 	}
 
 }
