@@ -12,6 +12,7 @@ public class AppHandler {
 	private static AppHandler handler;
 	private AccountService accountService  = AccountService.getInstance();
 	private static String applicationId = "";
+	private static String loginKey = "";
 
 	public static final int PAGE_LOGIN = 1;
 	public static final int PAGE_HOME = 2;
@@ -38,6 +39,15 @@ public class AppHandler {
 		return applicationId;
 	}
 
+	public static void setLoginKey(String loginKey2) {
+		System.out.println("[Logn Key] = "+loginKey2);
+		loginKey = loginKey2;
+	}
+	
+	public static String getLoginKey() {
+		return loginKey;
+	}
+	
 	private void init() {
 		handlers.put(PAGE_LAUNCHER, new LauncherHandler());
 		handlers.put(PAGE_LOGIN, new LoginHandler());
