@@ -3,6 +3,8 @@ package com.fajar.shopkeeping.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fajar.dto.ShopApiResponse;
+import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.webservice.AccountService;
 
@@ -56,6 +58,7 @@ public class AppHandler {
 
 	/**
 	 * goto other page
+	 * 
 	 * @param handlerCode
 	 */
 	public void navigate(int handlerCode) {
@@ -81,20 +84,27 @@ public class AppHandler {
 			return;
 		}
 
-		startActiveHandler();
+		
 	}
 
-	private String getAppId() throws Exception {
-		String appId = accountService.getAppId();
-		System.out.println("APP ID: " + appId);
+	private void getAppId() throws Exception {
+		accountService.getAppId(new MyCallback() {
 
-		if (null == appId) {
-			throw new Exception("App id not generated");
-		}
+			public void handle(Object... params) throws Exception {
+				// TODO Auto-generated method stub
+				try {
+					ShopApiResponse response = (ShopApiResponse) params[0];
+					applicationId = response.getMessage();
+					System.out.println("APP ID: " + applicationId);
+					startActiveHandler();
+				} catch (Exception e) {
+					// TODO: handle exception
+					throw new Exception("App id not generated");
+					 
+				}
+			}
+		});
 
-		applicationId = appId;
-
-		return appId;
 	}
 
 	public void startActiveHandler() {

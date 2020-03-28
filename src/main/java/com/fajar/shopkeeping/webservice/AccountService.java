@@ -1,5 +1,12 @@
 package com.fajar.shopkeeping.webservice;
 
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGIN;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_REQIEST_APP;
+
+import java.util.List;
+
+import javax.activity.InvalidActivityException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -7,16 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.User;
+import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.handler.AppHandler;
-
-import static com.fajar.shopkeeping.constant.WebServiceConstants.*;
-
-import java.util.List;
-
-import javax.activity.InvalidActivityException;
-import javax.swing.JOptionPane;
 
 public class AccountService {
 
@@ -35,26 +36,32 @@ public class AccountService {
 
 	}
 
-	public String getAppId() {
-		ShopApiResponse appIdResponse = requestAppId();
-		if (appIdResponse == null) {
-			return null;
-		}
+	public void getAppId(MyCallback callback) {
 
-		System.out.println("app id response: " + appIdResponse);
+		requestAppId(callback);
 
-		return appIdResponse.getMessage();
 	}
 
-	private ShopApiResponse requestAppId() {
-		try {
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP, new ShopApiRequest(),
-					ShopApiResponse.class);
-			return response.getBody();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	private void requestAppId(final MyCallback callback) {
+		Loadings.start();
+
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
+							new ShopApiRequest(), ShopApiResponse.class);
+					callback.handle(response.getBody());
+				} catch (Exception e) {
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Error requesting app id: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+			}
+		});
+		thread.start();
 	}
 
 	public void doLogin(final String username, final String password) {
@@ -65,11 +72,11 @@ public class AccountService {
 
 			public void run() {
 
-				ShopApiRequest loginRequest = new ShopApiRequest();
-				User user = User.builder().username(username).password(password).build();
-				loginRequest.setUser(user);
-
 				try {
+					User user = User.builder().username(username).password(password).build();
+
+					final ShopApiRequest loginRequest = ShopApiRequest.builder().user(user).build();
+
 					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGIN,
 							RestComponent.addAuthRequest(loginRequest), ShopApiResponse.class);
 
@@ -79,16 +86,15 @@ public class AccountService {
 
 					HttpHeaders responseHeaders = response.getHeaders();
 					List<String> loginKey = responseHeaders.get("loginKey");
+
 					AppHandler.setLoginKey(loginKey.get(0));
 
-					Loadings.end();
 					Dialogs.showInfoDialog("Login Success!");
 				} catch (Exception e) {
-					// TODO: handle exception
+
 					e.printStackTrace();
 					Dialogs.showErrorDialog("Login Error: " + e.getMessage());
 				} finally {
-					Loadings.end();
 				}
 			}
 

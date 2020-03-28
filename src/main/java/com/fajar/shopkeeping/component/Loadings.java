@@ -13,6 +13,10 @@ public class Loadings {
 		return jframe;
 	}
 
+	public static boolean isVisible() {
+		return loadingFrame.isVisible();
+	}
+	
 	public static void start() {
 		loadingFrame.setVisible(true);
 	}
