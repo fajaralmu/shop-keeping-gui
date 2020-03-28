@@ -7,16 +7,16 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.webservice.AccountService;
+import com.fajar.shopkeeping.webservice.AppSession;
 
 public class AppHandler {
 
 	private static AppHandler handler;
 	private AccountService accountService = AccountService.getInstance();
-	private static String applicationId = "";
-	private static String loginKey = "";
+
 
 	public static final int PAGE_LOGIN = 1;
-	public static final int PAGE_HOME = 2;
+	public static final int PAGE_DASHBOARD = 2;
 	public static final int PAGE_LAUNCHER = 3;
 
 	private static MainHandler activeHandler;
@@ -36,22 +36,12 @@ public class AppHandler {
 		init();
 	}
 
-	public static String getApplicationID() {
-		return applicationId;
-	}
-
-	public static void setLoginKey(String loginKey2) {
-		System.out.println("[Logn Key] = " + loginKey2);
-		loginKey = loginKey2;
-	}
-
-	public static String getLoginKey() {
-		return loginKey;
-	}
+	
 
 	private void init() {
 		handlers.put(PAGE_LAUNCHER, new LauncherHandler());
 		handlers.put(PAGE_LOGIN, new LoginHandler());
+		handlers.put(PAGE_DASHBOARD, new DashboardHandler());
 
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}
@@ -94,8 +84,9 @@ public class AppHandler {
 				// TODO Auto-generated method stub
 				try {
 					ShopApiResponse response = (ShopApiResponse) params[0];
-					applicationId = response.getMessage();
-					System.out.println("APP ID: " + applicationId);
+					String applicationId = response.getMessage();
+				
+					AppSession.setApplicationID(applicationId);
 					startActiveHandler();
 				} catch (Exception e) {
 					// TODO: handle exception

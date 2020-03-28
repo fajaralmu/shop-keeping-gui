@@ -4,11 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.fajar.shopkeeping.pages.BasePage;
+import com.fajar.shopkeeping.webservice.AccountService;
 
 public class MainHandler {
 
 	protected BasePage page;
 	protected static final AppHandler APP_HANDLER = AppHandler.getInstance();
+	protected AccountService accountService = AccountService.getInstance();
 
 	public MainHandler() {
 		init();

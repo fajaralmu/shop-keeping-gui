@@ -31,18 +31,23 @@ public class RestComponent {
 		return restTemplate;
 	}
 	
-	public static HttpHeaders buildAuthHeader( ){
+	public static HttpHeaders buildAuthHeader(boolean withLoginKey ){
  
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("requestId", AppHandler.getApplicationID());
+		headers.set("requestId", AppSession.getApplicationID());
 		headers.set("content-type", "application/json");
+		headers.set("loginKey", AppSession.getLoginKey());
  
 		return headers ;
 	}
 	
-	public static HttpEntity<ShopApiRequest> addAuthRequest(ShopApiRequest shopApiRequest) {
-		return new HttpEntity<ShopApiRequest>(shopApiRequest, buildAuthHeader());
+	public static HttpEntity<ShopApiRequest> buildEmptyAuthRequest(boolean withLoginKey){
+		return new HttpEntity<ShopApiRequest>(new ShopApiRequest(), buildAuthHeader(withLoginKey));
+	}
+	
+	public static HttpEntity<ShopApiRequest> buildAuthRequest(ShopApiRequest shopApiRequest, boolean withLoginKey) {
+		return new HttpEntity<ShopApiRequest>(shopApiRequest, buildAuthHeader(withLoginKey));
 	}
 
 }
