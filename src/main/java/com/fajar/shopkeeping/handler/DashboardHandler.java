@@ -2,10 +2,10 @@ package com.fajar.shopkeeping.handler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.DashboardPage;
-import com.fajar.shopkeeping.webservice.AccountService;
 
 public class DashboardHandler extends MainHandler { 
 
@@ -38,6 +38,16 @@ public class DashboardHandler extends MainHandler {
 				});
 			}
 		};
+	}
+	
+	public void getTodayMonthlyCashflow(MyCallback callback) {
+		
+		Calendar calendar = Calendar.getInstance();
+		int month = calendar.get(Calendar.MONTH) + 1; //January is 1
+		int year = calendar.get(Calendar.YEAR);
+		
+		reportService.getMonthlyCashflowDetail(month, year, callback);
+		
 	}
  
 }

@@ -5,12 +5,14 @@ import java.awt.event.ActionListener;
 
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.webservice.AccountService;
+import com.fajar.shopkeeping.webservice.ReportService;
 
 public class MainHandler {
 
 	protected BasePage page;
 	protected static final AppHandler APP_HANDLER = AppHandler.getInstance();
-	protected AccountService accountService = AccountService.getInstance();
+	protected final AccountService accountService = AccountService.getInstance();
+	protected final ReportService reportService = ReportService.getInstance();
 
 	public MainHandler() {
 		init();
@@ -20,11 +22,11 @@ public class MainHandler {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public ActionListener navigate(final int pageCode) {
 		return new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) { 
+
+			public void actionPerformed(ActionEvent e) {
 				APP_HANDLER.navigate(pageCode);
 			}
 		};
@@ -34,7 +36,7 @@ public class MainHandler {
 		if (null == page) {
 			System.out.println("page is null");
 			return;
-		}  
+		}
 		page.dismiss();
 	}
 
@@ -54,6 +56,7 @@ public class MainHandler {
 		}
 
 		page.setAppHandler(this);
+		page.onShow();
 	}
 
 }

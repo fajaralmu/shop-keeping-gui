@@ -27,9 +27,7 @@ public class LoginHandler extends MainHandler {
 				doLogin(username, password);
 				System.out.println("LOGIN: " + username + " & " + password);
 
-			}
-
-			
+			} 
 		};
 	}
 

@@ -85,6 +85,14 @@ public class BasePage {
 		return ComponentBuilder.buildPanel(panelRequest, components);
 	}
 
+	public void refresh() {
+		
+	}
+	
+	public void onShow() {
+		
+	}
+	
 	/**
 	 * ================================== COMPONENT INSTANCES
 	 * ==================================
