@@ -133,6 +133,7 @@ public class ComponentBuilder {
 
 		MyCustomPanel customPanel = new MyCustomPanel(colSizes);
 		customPanel.setMargin(Margin);
+		customPanel.setCenterAlignment(panelRequest.centerAligment);
 		
 		int CurrentCol = 0;
 		int currentRow = 0;

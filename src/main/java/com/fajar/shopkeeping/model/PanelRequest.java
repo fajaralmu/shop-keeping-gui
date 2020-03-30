@@ -2,6 +2,10 @@ package com.fajar.shopkeeping.model;
 
 import java.awt.Color;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data 
 public class PanelRequest {
 	public final int Col;
 	public final int W;
@@ -14,6 +18,7 @@ public class PanelRequest {
 	public final int panelY;
 	public final int panelW;
 	public final int panelH;
+	public boolean centerAligment;
 	
 	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW,
 			int panelH, boolean autoScrool) {

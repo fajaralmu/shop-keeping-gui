@@ -25,12 +25,17 @@ public class LauncherPage extends BasePage {
 	public void initComponent() {
 		navigateLoginButton = button("Login"); 
 		
-		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.ORANGE, 30, 30, 0, 0, true);
-
+		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		panelRequest.centerAligment = true;
+		
 		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Shop Keeping App!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20),
-				label("Welcome to mart app..."), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20), 
+				title("BUMDES", 50),
+				title("\"MAJU MAPAN\"", 50),
+				title("DESA TRIKARSO", 50),
+				title("SRUWENG", 50),
+				title("KEBUMEN", 50),
+				label("Silakan Login Untuk Melanjutkan"), 
 				navigateLoginButton); 
 
 		parentPanel.add(mainPanel);

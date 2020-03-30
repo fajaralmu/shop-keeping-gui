@@ -1,19 +1,23 @@
 package com.fajar.shopkeeping.pages;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 
+import jxl.format.Border;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -101,29 +105,33 @@ public class BasePage {
 	 * ==================================
 	 */
 
-	protected Component title(String title) {
-		int width = title.length() * 20;
+	protected Component title(String title, int fontSize) {
+		int width = title.length() * (fontSize + 10);
 		
-		JLabel label = new JLabel(title);
-		Font font = new Font("Arial", Font.BOLD, 20);
+		JLabel label = new JLabel(title, SwingConstants.CENTER);
+		Font font = new Font("Arial", Font.BOLD, fontSize);
 		label.setFont(font);
-		label.setSize(width, 50); 
+		label.setSize(width, new BigDecimal(fontSize * 1.5).intValue()); 
 		return label;
+	}
+	
+	protected Component title(String title) {
+		return title(title, 20);
 	}
 	
 	protected JButton button(String text) {
 		int width = text.length() * 10 + 50;
 		
 		JButton jButton = new JButton(text);
-		jButton.setSize(width, 20);
+		jButton.setSize(width, 20); 
+		jButton.setBackground(Color.yellow);
 		return jButton ;
 	}
 
 	protected Component label(String title) {
 		int width = title.length() * 10;
 		
-		JLabel label = new JLabel(title);
-		
+		JLabel label = new JLabel(title, SwingConstants.CENTER); 
 		label.setSize(width, 20);
 		return label;
 	}
