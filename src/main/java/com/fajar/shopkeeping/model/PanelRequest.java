@@ -5,10 +5,10 @@ import java.awt.Color;
 import lombok.Data;
   
 public class PanelRequest {
-	public final int Col;
-	public final int W;
-	public final int H;
-	public final int Margin;
+	public final int column;
+	public final int width;
+	public final int height;
+	public final int margin;
 	public final Color color;
 	public final boolean autoScroll;
 
@@ -21,10 +21,10 @@ public class PanelRequest {
 	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW,
 			int panelH, boolean autoScrool) {
 		super();
-		Col = col;
-		W = w;
-		H = h;
-		Margin = margin;
+		column = col;
+		width = w;
+		height = h;
+		this.margin = margin;
 		this.color = color;
 		this.panelX = panelX;
 		this.panelY = panelY;

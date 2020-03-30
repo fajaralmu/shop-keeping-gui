@@ -15,10 +15,10 @@ public class ComponentBuilder {
 
 	public static JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 
-		int Col = panelRequest.Col;
-		int W = panelRequest.W;
-		int H = panelRequest.H;
-		int Margin = panelRequest.Margin;
+		int Col = panelRequest.column;
+		int W = panelRequest.width;
+		int H = panelRequest.height;
+		int Margin = panelRequest.margin;
 		Color color = panelRequest.color;
 
 		int panelX = panelRequest.panelX;
@@ -114,10 +114,10 @@ public class ComponentBuilder {
 	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Component... components) {
 		System.out.println("======v2=======");
 
-		int Col = panelRequest.Col;
-		int W = panelRequest.W;
-		int H = panelRequest.H;
-		int Margin = panelRequest.Margin;
+		int column = panelRequest.column;
+		int width = panelRequest.width;
+		int height = panelRequest.height;
+		int margin = panelRequest.margin;
 		Color color = panelRequest.color;
 
 		int panelX = panelRequest.panelX;
@@ -126,16 +126,19 @@ public class ComponentBuilder {
 		int panelH = panelRequest.panelH;
 		boolean autoScroll = panelRequest.autoScroll;
 
-		int[] colSizes = new int[Col];
-		for (int i = 1; i <= Col; i++) {
-			colSizes[i-1] = W;
+		/**
+		 * set column sizes
+		 */
+		int[] colSizes = new int[column];
+		for (int i = 1; i <= column; i++) {
+			colSizes[i-1] = width;
 		}
 
 		MyCustomPanel customPanel = new MyCustomPanel(colSizes);
-		customPanel.setMargin(Margin);
+		customPanel.setMargin(margin);
 		customPanel.setCenterAlignment(panelRequest.isCenterAligment());
 		
-		int CurrentCol = 0;
+		int currentColumn = 0;
 		int currentRow = 0;
 		int Size = components.length;
 
@@ -143,19 +146,14 @@ public class ComponentBuilder {
 
 		for (int i = 0; i < Size; i++) {
 
-			Component C = components[i];
+			Component currentComponent = components[i] != null ? components[i]: new JLabel();
+			
+			currentColumn++;
 
-			if (null != C) {
+			tempComponents.add(currentComponent);
 
-			} else {
-				C = new JLabel();
-			}
-			CurrentCol++;
-
-			tempComponents.add(C);
-
-			if (CurrentCol == Col) {
-				CurrentCol = 0;
+			if (currentColumn == column) {
+				currentColumn = 0;
 				for (Component component : tempComponents) {
 					customPanel.addComponent(component, currentRow);
 				}
@@ -164,11 +162,11 @@ public class ComponentBuilder {
 				tempComponents.clear();
 
 			}
-			printComponentLayout(C); 
+			printComponentLayout(currentComponent); 
 		}
 		
 		/**
-		 * remaining components
+		 * adding remaining components
 		 */
 		for (Component component : tempComponents) {
 			customPanel.addComponent(component, currentRow);
@@ -177,22 +175,22 @@ public class ComponentBuilder {
 		customPanel.update();
 		customPanel.setBackground(color);
 		
-		int X = panelX == 0 ? Margin : panelX;
-		int Y = panelY == 0 ? Margin : panelY;
+		final int xPos = panelX == 0 ? margin : panelX;
+		final int yPos = panelY == 0 ? margin : panelY;
 		
-		int finalW = customPanel.getWidth();
-		int finalH = customPanel.getHeight();
+		final int finalWidth = customPanel.getWidth();
+		final int finalHeight = customPanel.getHeight();
 		
-		customPanel.setBounds(X, Y, finalW, finalH);
+		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
 		customPanel.setLayout(null);
-		customPanel.setBounds(X, Y, finalW, finalH);
-		customPanel.setSize(finalW, finalH);
+		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
+		customPanel.setSize(finalWidth, finalHeight);
 		
 		if (autoScroll) {
 			customPanel.setAutoscrolls(false);
 			customPanel.setAutoscrolls(true);
 		}
-		System.out.println("Generated Panel V2 x:" + X + ", y:" + Y + ", width:" + finalW + ", height:" + finalH);
+		System.out.println("Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
 
 		return customPanel;
 	}
