@@ -91,6 +91,10 @@ public class BasePage {
 	protected JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 		return ComponentBuilder.buildPanel(panelRequest, components);
 	}
+	
+	protected JPanel buildPanelV2(PanelRequest panelRequest, Component... components) {
+		return ComponentBuilder.buildPanelV2(panelRequest, components);
+	}
 
 	public void refresh() {
 
@@ -124,7 +128,7 @@ public class BasePage {
 		
 		JButton jButton = new JButton(text);
 		jButton.setSize(width, 20); 
-		jButton.setBackground(Color.yellow);
+		jButton.setBackground(Color.green);
 		return jButton ;
 	}
 
