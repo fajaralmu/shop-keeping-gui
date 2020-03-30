@@ -47,112 +47,113 @@ public class MyCustomPanel extends JPanel {
 		componentsMap.get(row).getComponents().add(component);
 	}
 
-	public void update() { 
-		 
+	public void update() {
+
 		setHeightsForEachRows();
 		calculateComponentsPosition();
-		drawComponents();
+		drawComponents(); 
 	}
-	
+
 	public void setCenterAlignment(boolean centerAligment) {
-		this.centerAligment = centerAligment; 
+		this.centerAligment = centerAligment;
 	}
 
 	private void drawComponents() {
 		this.removeAll();
-		
-		final Set<Integer> rows = componentsMap.keySet(); 
-		
+
+		final Set<Integer> rows = componentsMap.keySet();
+
 		for (Integer key : rows) {
 			PanelRow panelRow = componentsMap.get(key);
 			loop: for (Component component : panelRow.getComponents()) {
-				 
-				if(component == null) {
-					
+
+				if (component == null) {
+
 					continue loop;
 				}
-				add(component);
+				add(component); 
 			}
-		} 
+		}
 	}
 
 	private void calculateComponentsPosition() {
-		
-		int currentHeight = 0; 
-		final Set<Integer> rows = componentsMap.keySet(); 
-		
+
+		int currentHeight = 0;
+		final Set<Integer> rows = componentsMap.keySet();
+
 		for (Integer key : rows) {
-			
+
 			PanelRow panelRow = componentsMap.get(key);
-			int rowHeight = panelRow.getHeight(); 
-			List<Component> components = panelRow.getComponents(); 
-			
+			int rowHeight = panelRow.getHeight();
+			List<Component> components = panelRow.getComponents();
+
 			loop: for (int i = 0; i < components.size(); i++) {
-				
-				Component component = components.get(i); 
-				if(component == null) {
+
+				Component component = components.get(i);
+				if (component == null) {
 					continue loop;
 				}
-				
-				int y = currentHeight;
+
+				int y = currentHeight + margin;
 				int x = 0;
-				
+
 				try {
-					int columnSize = colSizes[i ];
-					x = i == 0 ? 0 : columnSize ;
+					int columnSize = colSizes[i];
+					x = i == 0 ? 0 : i*(columnSize + margin * 2);
 					x = x + margin;
-					
-					if(this.centerAligment) {
+					 
+					if (this.centerAligment) {
 						int gap = columnSize - component.getWidth();
-						x = new BigDecimal(gap/2).intValue();
+						x = new BigDecimal(gap / 2).intValue();
 					}
-					
-				} catch (Exception e) { 
+					 
+				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
-				} 
-				
-				//update location 
-				componentsMap.get(key).getComponents().get(i).setLocation(x, y); 
-				
+				}
+
+				// update location
+				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
+
 			}
-			
-			currentHeight = currentHeight + margin + rowHeight;  
+
+			currentHeight = currentHeight + margin + rowHeight;
 		}
-		height = currentHeight;
-		width = calculateWidth(); 
+		height = currentHeight + margin;
+		width = calculateWidth();
 		
 	}
 
 	/**
 	 * getColumnSize
+	 * 
 	 * @param columnIndex begin at 0
 	 * @return
 	 */
 	private int getColumnSize(int columnIndex) {
 		return colSizes[columnIndex];
 	}
-	
+
 	private void setHeightsForEachRows() {
-		final Set<Integer> rows = componentsMap.keySet(); 
+		final Set<Integer> rows = componentsMap.keySet();
 		/**
 		 * setting the height
 		 */
 		for (Integer key : rows) {
 			PanelRow panelRow = componentsMap.get(key);
 			List<Component> components = panelRow.getComponents();
-			int maxHeight = getMaxHeight(components); 
-			
+			int maxHeight = getMaxHeight(components);
+
 			componentsMap.get(key).setHeight(maxHeight);
 		}
-		
+
 	}
 
 	private int calculateWidth() {
-		int width = 0;
+		int width = margin;
 
 		for (int colSize : colSizes) {
-			width += colSize;
+			width += colSize + margin * 2;
 		}
 
 		return width;
@@ -178,7 +179,7 @@ public class MyCustomPanel extends JPanel {
 
 	@Override
 	public void removeAll() {
-		super.removeAll(); 
+		super.removeAll();
 	}
 
 }

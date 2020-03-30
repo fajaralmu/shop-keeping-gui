@@ -15,10 +15,10 @@ public class ComponentBuilder {
 
 	public static JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 
-		int Col = panelRequest.column;
-		int W = panelRequest.width;
-		int H = panelRequest.height;
-		int Margin = panelRequest.margin;
+		int column = panelRequest.column;
+		int width = panelRequest.width;
+		int height = panelRequest.height;
+		int margin = panelRequest.margin;
 		Color color = panelRequest.color;
 
 		int panelX = panelRequest.panelX;
@@ -27,49 +27,49 @@ public class ComponentBuilder {
 		int panelH = panelRequest.panelH;
 		boolean autoScroll = panelRequest.autoScroll;
 
-		JPanel Panel = new JPanel();
-		int CurrentCol = 0;
-		int CurrentRow = 0;
-		int Size = components.length;
-		Component[] ControlsClone = components;
+		JPanel panel = new JPanel();
+		int currentColumn = 0;
+		int currentRow = 0;
+		int size = components.length; 
 
-		for (int i = 0; i < Size; i++) {
+		for (int i = 0; i < size; i++) {
 
-			Component C = ControlsClone[i];
+			Component component = components[i];
 
-			if (null != C) {
+			if (null != component) {
 
 				// C.setBounds(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H *
 				// CurrentRow, W, H);
 
-				C.setLocation(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H * CurrentRow);
-				C.setSize(W, H);
-				if (C.getClass().equals(BlankComponent.class)) {
-					BlankComponent blankC = (BlankComponent) C;
+				component.setLocation(currentColumn * margin + (width * currentColumn), currentRow * margin + height * currentRow);
+				component.setSize(width, height);
+				
+				if (component.getClass().equals(BlankComponent.class)) {
+					BlankComponent blankComponent = (BlankComponent) component;
 
-					switch (blankC.reserved) {
+					switch (blankComponent.reserved) {
 
 					case BEFORE_HOR:
 
 						Component beforeContHor = components[i - 1];
 
 						beforeContHor.setBounds(beforeContHor.getX(), beforeContHor.getY(),
-								beforeContHor.getWidth() + blankC.getWidth(), beforeContHor.getHeight());
+								beforeContHor.getWidth() + blankComponent.getWidth(), beforeContHor.getHeight());
 
-						Panel.remove(beforeContHor);
+						panel.remove(beforeContHor);
 						components[i] = beforeContHor;
-						C = beforeContHor;
+						component = beforeContHor;
 						break;
 
 					case BEFORE_VER:
-						Component beforeContVer = components[i - Col];
+						Component beforeContVer = components[i - column];
 
 						beforeContVer.setBounds(beforeContVer.getX(), beforeContVer.getY(), beforeContVer.getWidth(),
-								beforeContVer.getHeight() + blankC.getHeight());
+								beforeContVer.getHeight() + blankComponent.getHeight());
 
-						Panel.remove(beforeContVer);
+						panel.remove(beforeContVer);
 						components[i] = beforeContVer;
-						C = beforeContVer;
+						component = beforeContVer;
 						break;
 
 					case AFTER_HOR:
@@ -80,35 +80,38 @@ public class ComponentBuilder {
 				}
 
 			} else {
-				C = new JLabel();
+				component = new JLabel();
 			}
-			CurrentCol++;
+			currentColumn++;
 
-			if (CurrentCol == Col) {
-				CurrentCol = 0;
-				CurrentRow++;
+			if (currentColumn == column) {
+				currentColumn = 0;
+				currentRow++;
 
 			}
 			//printComponentLayout(C);
-			Panel.add(C);
+			panel.add(component);
 		}
 
-		Panel.setBackground(color);
-		int X = panelX == 0 ? Margin : panelX;
-		int Y = panelY == 0 ? Margin : panelY;
-		int finalW = panelW != 0 ? panelW : Col * W + Col * Margin;
-		int finalH = panelH != 0 ? panelH : (CurrentRow + 1) * H + (CurrentRow + 1) * Margin;
-		Panel.setBounds(X, Y, finalW, finalH);
-		Panel.setLayout(null);
-		Panel.setBounds(X, Y, finalW, finalH);
-		Panel.setSize(finalW, finalH);
+		
+		final int X = panelX == 0 ? margin : panelX;
+		final int Y = panelY == 0 ? margin : panelY;
+		final int finalW = panelW != 0 ? panelW : column * width + column * margin;
+		final int finalH = panelH != 0 ? panelH : (currentRow + 1) * height + (currentRow + 1) * margin;
+		
+		panel.setBackground(color);
+		panel.setBounds(X, Y, finalW, finalH);
+		panel.setLayout(null);
+		panel.setBounds(X, Y, finalW, finalH);
+		panel.setSize(finalW, finalH);
+		
 		if (autoScroll) {
-			Panel.setAutoscrolls(false);
-			Panel.setAutoscrolls(true);
+			panel.setAutoscrolls(false);
+			panel.setAutoscrolls(true);
 		}
 		System.out.println("Generated Panel x:" + X + ", y:" + Y + ", width:" + finalW + ", height:" + finalH);
 
-		return Panel;
+		return panel;
 	}
 
 	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Component... components) {
@@ -173,7 +176,10 @@ public class ComponentBuilder {
 		}
 		
 		customPanel.update();
-		customPanel.setBackground(color);
+		
+		/**
+		 * setting panel physical appearance
+		 */
 		
 		final int xPos = panelX == 0 ? margin : panelX;
 		final int yPos = panelY == 0 ? margin : panelY;
@@ -185,6 +191,7 @@ public class ComponentBuilder {
 		customPanel.setLayout(null);
 		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
 		customPanel.setSize(finalWidth, finalHeight);
+		customPanel.setBackground(color);
 		
 		if (autoScroll) {
 			customPanel.setAutoscrolls(false);

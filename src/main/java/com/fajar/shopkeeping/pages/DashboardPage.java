@@ -11,11 +11,8 @@ import javax.swing.WindowConstants;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.BlankComponent;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.model.ReservedFor;
-import com.fajar.shopkeeping.util.Casting;
 import com.fajar.shopkeeping.webservice.AppSession;
 
 public class DashboardPage extends BasePage {
@@ -25,7 +22,7 @@ public class DashboardPage extends BasePage {
 	JPanel panelCashflowInfo;
 
 	public DashboardPage() {
-		super("Dashboard", 700, 600);
+		super("Dashboard", 800, 700);
 
 	}
 
@@ -42,29 +39,35 @@ public class DashboardPage extends BasePage {
 		});
 	}
 
+	private JPanel cashflowItemPanel(long count, long amount, String title) {
+
+		PanelRequest panelRequest = new PanelRequest(1, 100, 50, 5, Color.yellow, 0, 0, 0, 0, false);
+		panelRequest.setCenterAligment(true);
+		JPanel panel = buildPanelV2(panelRequest, label(title), label("Quantity"), label(count), label("Amount"), label(amount)
+
+		);
+		return panel;
+	}
+
 	private void handleResponseMonthlyCashflow(ShopApiResponse response) {
-		panelCashflowInfo.removeAll();
 
 		int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
+		CashFlow costflow = response.getMonthlyDetailCost().get(today);
 
-		System.out.println("Cash Flow: " + cashflow);
-		panelCashflowInfo.removeAll();
+		JPanel panelCashflow = cashflowItemPanel(cashflow.getCount(), cashflow.getAmount(), "Income");
+		JPanel panelCostflow = cashflowItemPanel(costflow.getCount(), costflow.getAmount(), "Cost"); 
 
-		String info = "Sold quantity: " + cashflow.getCount() + " Amount: " + cashflow.getAmount();
-		JLabel label = new JLabel(info);
-		label.setBounds(0, 0, 200, 100);
-		label.setBackground(Color.BLUE);
+		PanelRequest panelRequest = new PanelRequest(2, 200, 10, 10, Color.blue, 0, 10, 0, 0, false);
+//		panelRequest.setCenterAligment(true);
+		System.out.println("===========");
+		panelCashflowInfo = buildPanelV2(panelRequest, panelCashflow, panelCostflow );
+		System.out.println("===========");
+		initComponent();	
+		initEvent();
 
-		System.out.println("info: " + info);
-		changeSizeHeight(mainPanel, 500);
-		changeSize(panelCashflowInfo, 500, 500);
-		panelCashflowInfo.setBackground(Color.LIGHT_GRAY);
-		panelCashflowInfo.add(label);
-		panelCashflowInfo.revalidate();
-		panelCashflowInfo.repaint();
-
-		System.out.println("panelCashflowInfo child: " + panelCashflowInfo.getComponentCount());
+		parentPanel.revalidate();
+		parentPanel.repaint();
 	}
 
 	@Override
@@ -72,24 +75,33 @@ public class DashboardPage extends BasePage {
 
 		parentPanel.removeAll();
 
-		PanelRequest mainPanelRequest = new PanelRequest(2, 150, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		PanelRequest mainPanelRequest = mainPanelRequest();
 
-		labelUserInfo = new JLabel();
-		buttonLogout = new JButton("logout");
-		panelCashflowInfo = buildPanel(panelCashflowRequest(), label("Please wait..."));
+		buttonLogout = button("logout");
 
-		mainPanel = buildPanel(mainPanelRequest,
+		if (labelUserInfo == null) {
+			labelUserInfo = title("Welcome to Dasboard!");
+		}
+		if (panelCashflowInfo == null) {
+			panelCashflowInfo = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+		}
 
-				title("Welcome to Dasboard!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20), labelUserInfo,
-				buttonLogout, panelCashflowInfo);
+		mainPanel = buildPanelV2(mainPanelRequest, title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
+				panelCashflowInfo);
 
 		parentPanel.add(mainPanel);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		exitOnClose();
 
 	}
 
+	private PanelRequest mainPanelRequest() {
+		PanelRequest panelRequest = new PanelRequest(1, 700, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		panelRequest.setCenterAligment(true);
+		return panelRequest;
+	}
+
 	private PanelRequest panelCashflowRequest() {
-		PanelRequest panelCashflowRequest = new PanelRequest(1, 150, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		PanelRequest panelCashflowRequest = new PanelRequest(2, 250, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
 		return panelCashflowRequest;
 	}
 
@@ -103,7 +115,7 @@ public class DashboardPage extends BasePage {
 	@Override
 	public void show() {
 		super.show();
-		labelUserInfo.setText("User: " + AppSession.getUser().getDisplayName());
+		labelUserInfo.setText("Welcome, " + AppSession.getUser().getDisplayName());
 	}
 
 }

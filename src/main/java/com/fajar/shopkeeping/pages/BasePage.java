@@ -9,8 +9,10 @@ import java.math.BigDecimal;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.MyCustomFrame;
@@ -32,7 +34,9 @@ public class BasePage {
 	private final int WIDTH;
 	private final int HEIGHT;
 	private final String title;
+	
 	private boolean authRequired;
+	protected boolean beginPage;
 
 	@Setter(value = AccessLevel.NONE)
 	protected MainHandler appHandler;
@@ -46,6 +50,12 @@ public class BasePage {
 		initMainComponent();
 		initComponent();
 
+	}
+	
+	protected void exitOnClose() {
+		if(null != frame) {
+			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		}
 	}
 
 	protected void initEvent() { 
@@ -109,7 +119,7 @@ public class BasePage {
 	 * ==================================
 	 */
 
-	protected Component title(String title, int fontSize) {
+	protected JLabel title(String title, int fontSize) {
 		int width = title.length() * (fontSize + 10);
 		
 		JLabel label = new JLabel(title, SwingConstants.CENTER);
@@ -119,7 +129,7 @@ public class BasePage {
 		return label;
 	}
 	
-	protected Component title(String title) {
+	protected JLabel title(String title) {
 		return title(title, 20);
 	}
 	
@@ -132,11 +142,18 @@ public class BasePage {
 		return jButton ;
 	}
 
-	protected Component label(String title) {
-		int width = title.length() * 10;
+	protected JLabel label(Object title) {
+		int width = title.toString().length() * 10;
 		
-		JLabel label = new JLabel(title, SwingConstants.CENTER); 
+		JLabel label = new JLabel(title.toString(), SwingConstants.CENTER); 
 		label.setSize(width, 20);
+		return label;
+	}
+	
+	protected JPasswordField passwordField(String string) { 
+		
+		JPasswordField label = new JPasswordField(string); 
+		label.setSize(100, 20);
 		return label;
 	}
 

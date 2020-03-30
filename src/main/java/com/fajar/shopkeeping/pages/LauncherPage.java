@@ -39,7 +39,7 @@ public class LauncherPage extends BasePage {
 				navigateLoginButton); 
 
 		parentPanel.add(mainPanel);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		exitOnClose();
 
 	}
 

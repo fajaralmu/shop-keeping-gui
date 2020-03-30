@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -15,7 +16,7 @@ public class LoginPage extends BasePage {
 
 	private JButton loginButton;
 	private JTextField usernameField;
-	private JTextField passwordField;
+	private JPasswordField passwordField;
 
 	public LoginPage() {
 		super("Login", 400, 300);
@@ -25,23 +26,23 @@ public class LoginPage extends BasePage {
 	public void initComponent() {
 		loginButton = button("Login");
 		usernameField = textField("admin123");
-		passwordField = textField("123");
+		passwordField = passwordField("123");
 
 		PanelRequest panelRequest = new PanelRequest(1, 300, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
 		panelRequest.setCenterAligment(true);
 
-		JPanel loginFormPanel = getFormPanel();
+		JPanel loginFormPanel = getLoginFormPanel();
 
 		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
 				title("Please Login"), loginFormPanel);
 
 		parentPanel.add(mainPanel);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		exitOnClose();
 
 	}
 
-	private JPanel getFormPanel() {
+	private JPanel getLoginFormPanel() {
 		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.WHITE, 10, 10, 0, 0, true);
 	 
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest, 
