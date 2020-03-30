@@ -1,12 +1,17 @@
 package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.util.Calendar;
+import java.util.Map;
+import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.custom.CashFlow;
@@ -19,7 +24,8 @@ public class DashboardPage extends BasePage {
 
 	JLabel labelUserInfo;
 	JButton buttonLogout;
-	JPanel panelCashflowInfo;
+	JPanel panelTodayCashflow;
+	JPanel panelMonthlySummary;
 
 	public DashboardPage() {
 		super("Dashboard", 800, 700);
@@ -39,35 +45,119 @@ public class DashboardPage extends BasePage {
 		});
 	}
 
+	/**
+	 * generate cashflow info in the card
+	 * 
+	 * @param count
+	 * @param amount
+	 * @param title
+	 * @return
+	 */
 	private JPanel cashflowItemPanel(long count, long amount, String title) {
 
-		PanelRequest panelRequest = new PanelRequest(1, 100, 50, 5, Color.yellow, 0, 0, 0, 0, false);
+		PanelRequest panelRequest = new PanelRequest(1, 150, 50, 5, Color.yellow, 0, 0, 0, 0, false);
 		panelRequest.setCenterAligment(true);
-		JPanel panel = buildPanelV2(panelRequest, label(title), label("Quantity"), label(count), label("Amount"), label(amount)
 
-		);
+		Component titleLabel = title(title);
+
+		JPanel panel = buildPanelV2(panelRequest, titleLabel, label("Jumlah"), label(count), label("Nominal"),
+				label(amount));
+
+		Border border = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+
+		panel.setBorder(border);
 		return panel;
 	}
 
+	/**
+	 * update UI when get cash flow data
+	 * 
+	 * @param response
+	 */
 	private void handleResponseMonthlyCashflow(ShopApiResponse response) {
+
+		panelTodayCashflow = buildTodayCashflow(response);
+		panelMonthlySummary = buildMonthlySummaryCashflow(response);
+
+		initComponent();
+		initEvent();
+
+	}
+
+	/**
+	 * build table of cash flow list in this month
+	 * @param response
+	 * @return
+	 */
+	private JPanel buildMonthlySummaryCashflow(ShopApiResponse response) {
+
+		Set<Integer> keys = response.getMonthlyDetailCost().keySet();
+		Map<Integer, CashFlow> cashflowMap = response.getMonthlyDetailIncome();
+		Map<Integer, CashFlow> costflowMap = response.getMonthlyDetailCost();
+		Component[] components = new Component[keys.size() + 1  ]; 
+		
+		components[0] = cashflowSummaryHeader();
+		int index = 1;
+
+		for (Integer integer : keys) {
+
+			JPanel panelRow = buildCashflowSummaryRow(integer, cashflowMap.get(integer), costflowMap.get(integer));
+			components[index] = panelRow;
+			index++;
+		}
+
+		PanelRequest panelRequest = new PanelRequest(1, 400, 10, 1, Color.gray, 0, 0, 0, 260, true);
+		JPanel panel = buildPanelV2(panelRequest, components);
+		return panel;
+	}
+
+	/**
+	 * construct table header
+	 * @return
+	 */
+	private Component cashflowSummaryHeader() {
+		PanelRequest panelRequestHeader = new PanelRequest(4, 100, 10, 1, Color.orange, 0, 0, 0, 0, false, true);;
+		JPanel panelHeader = buildPanelV2(panelRequestHeader , label("Tanggal"),  label("Jenis Aliran Kas"), label("Jumlah"), label("Nominal"));
+		return panelHeader;
+	}
+
+	/**
+	 * build data for each row
+	 * @param number
+	 * @param income
+	 * @param cost
+	 * @return
+	 */
+	private JPanel buildCashflowSummaryRow(int number, CashFlow income, CashFlow cost) {
+
+		Color color = number % 2 == 0 ? Color.green : Color.yellow;
+		
+		PanelRequest panelRequest = new PanelRequest(4, 100, 10, 1, color, 0, 0, 0, 0, false, true);
+		
+		JPanel panel = buildPanelV2(panelRequest, label(number), label("Pemasukan"), label(income.getAmount()),
+				label(income.getCount()), label(""), label("Pengeluaran"), label(cost.getAmount()),
+				label(cost.getCount()));
+		return panel;
+	}
+
+	/**
+	 * build cashFlow info card for today's income & spent cost
+	 * 
+	 * @param response
+	 * @return
+	 */
+	private JPanel buildTodayCashflow(ShopApiResponse response) {
 
 		int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
 		CashFlow costflow = response.getMonthlyDetailCost().get(today);
 
-		JPanel panelCashflow = cashflowItemPanel(cashflow.getCount(), cashflow.getAmount(), "Income");
-		JPanel panelCostflow = cashflowItemPanel(costflow.getCount(), costflow.getAmount(), "Cost"); 
+		JPanel panelCashflow = cashflowItemPanel(cashflow.getCount(), cashflow.getAmount(), "Pengeluaran");
+		JPanel panelCostflow = cashflowItemPanel(costflow.getCount(), costflow.getAmount(), "Pemasukan");
 
-		PanelRequest panelRequest = new PanelRequest(2, 200, 10, 10, Color.blue, 0, 10, 0, 0, false);
-//		panelRequest.setCenterAligment(true);
-		System.out.println("===========");
-		panelCashflowInfo = buildPanelV2(panelRequest, panelCashflow, panelCostflow );
-		System.out.println("===========");
-		initComponent();	
-		initEvent();
+		PanelRequest panelRequest = new PanelRequest(2, 200, 10, 10, Color.WHITE, 0, 10, 0, 0, false, true);
 
-		parentPanel.revalidate();
-		parentPanel.repaint();
+		return buildPanelV2(panelRequest, panelCashflow, panelCostflow);
 	}
 
 	@Override
@@ -82,20 +172,25 @@ public class DashboardPage extends BasePage {
 		if (labelUserInfo == null) {
 			labelUserInfo = title("Welcome to Dasboard!");
 		}
-		if (panelCashflowInfo == null) {
-			panelCashflowInfo = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+		if (panelTodayCashflow == null) {
+			panelTodayCashflow = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+		}
+		if (panelMonthlySummary == null) {
+			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
 		}
 
 		mainPanel = buildPanelV2(mainPanelRequest, title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
-				panelCashflowInfo);
+				label("laporan hari ini"), panelTodayCashflow, label("laporan bulan ini"), panelMonthlySummary);
 
 		parentPanel.add(mainPanel);
+		parentPanel.revalidate();
+		parentPanel.repaint();
 		exitOnClose();
 
 	}
 
 	private PanelRequest mainPanelRequest() {
-		PanelRequest panelRequest = new PanelRequest(1, 700, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		PanelRequest panelRequest = new PanelRequest(1, 700, 20, 10, Color.WHITE, 10, 10, 0, 0, true);
 		panelRequest.setCenterAligment(true);
 		return panelRequest;
 	}

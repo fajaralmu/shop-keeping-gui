@@ -32,6 +32,22 @@ public class PanelRequest {
 		this.panelH = panelH;
 		this.autoScroll = autoScrool;
 	}
+	
+	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW,
+			int panelH, boolean autoScrool, boolean centerAligment) {
+		super();
+		column = col;
+		width = w;
+		height = h;
+		this.margin = margin;
+		this.color = color;
+		this.panelX = panelX;
+		this.panelY = panelY;
+		this.panelW = panelW;
+		this.panelH = panelH;
+		this.autoScroll = autoScrool;
+		this.centerAligment = centerAligment;
+	}
 
 	public boolean isCenterAligment() {
 		return centerAligment;

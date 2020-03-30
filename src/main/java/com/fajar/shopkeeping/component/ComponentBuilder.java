@@ -2,11 +2,13 @@ package com.fajar.shopkeeping.component;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.StringUtil;
@@ -30,7 +32,7 @@ public class ComponentBuilder {
 		JPanel panel = new JPanel();
 		int currentColumn = 0;
 		int currentRow = 0;
-		int size = components.length; 
+		int size = components.length;
 
 		for (int i = 0; i < size; i++) {
 
@@ -41,9 +43,10 @@ public class ComponentBuilder {
 				// C.setBounds(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H *
 				// CurrentRow, W, H);
 
-				component.setLocation(currentColumn * margin + (width * currentColumn), currentRow * margin + height * currentRow);
+				component.setLocation(currentColumn * margin + (width * currentColumn),
+						currentRow * margin + height * currentRow);
 				component.setSize(width, height);
-				
+
 				if (component.getClass().equals(BlankComponent.class)) {
 					BlankComponent blankComponent = (BlankComponent) component;
 
@@ -89,22 +92,21 @@ public class ComponentBuilder {
 				currentRow++;
 
 			}
-			//printComponentLayout(C);
+			// printComponentLayout(C);
 			panel.add(component);
 		}
 
-		
 		final int X = panelX == 0 ? margin : panelX;
 		final int Y = panelY == 0 ? margin : panelY;
 		final int finalW = panelW != 0 ? panelW : column * width + column * margin;
 		final int finalH = panelH != 0 ? panelH : (currentRow + 1) * height + (currentRow + 1) * margin;
-		
+
 		panel.setBackground(color);
 		panel.setBounds(X, Y, finalW, finalH);
 		panel.setLayout(null);
 		panel.setBounds(X, Y, finalW, finalH);
 		panel.setSize(finalW, finalH);
-		
+
 		if (autoScroll) {
 			panel.setAutoscrolls(false);
 			panel.setAutoscrolls(true);
@@ -134,13 +136,13 @@ public class ComponentBuilder {
 		 */
 		int[] colSizes = new int[column];
 		for (int i = 1; i <= column; i++) {
-			colSizes[i-1] = width;
+			colSizes[i - 1] = width;
 		}
 
 		MyCustomPanel customPanel = new MyCustomPanel(colSizes);
 		customPanel.setMargin(margin);
 		customPanel.setCenterAlignment(panelRequest.isCenterAligment());
-		
+
 		int currentColumn = 0;
 		int currentRow = 0;
 		int Size = components.length;
@@ -149,8 +151,8 @@ public class ComponentBuilder {
 
 		for (int i = 0; i < Size; i++) {
 
-			Component currentComponent = components[i] != null ? components[i]: new JLabel();
-			
+			Component currentComponent = components[i] != null ? components[i] : new JLabel();
+
 			currentColumn++;
 
 			tempComponents.add(currentComponent);
@@ -165,39 +167,50 @@ public class ComponentBuilder {
 				tempComponents.clear();
 
 			}
-			printComponentLayout(currentComponent); 
+			printComponentLayout(currentComponent);
 		}
-		
+
 		/**
 		 * adding remaining components
 		 */
 		for (Component component : tempComponents) {
 			customPanel.addComponent(component, currentRow);
 		}
-		
+
 		customPanel.update();
-		
+
 		/**
 		 * setting panel physical appearance
 		 */
-		
+
 		final int xPos = panelX == 0 ? margin : panelX;
 		final int yPos = panelY == 0 ? margin : panelY;
-		
-		final int finalWidth = customPanel.getWidth();
-		final int finalHeight = customPanel.getHeight();
-		
+
+		final int finalWidth = customPanel.getCustomWidth();
+		final int finalHeight = customPanel.getCustomHeight();
+
 		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
 		customPanel.setLayout(null);
 		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
 		customPanel.setSize(finalWidth, finalHeight);
 		customPanel.setBackground(color);
-		
-		if (autoScroll) {
-			customPanel.setAutoscrolls(false);
-			customPanel.setAutoscrolls(true);
+
+		if (autoScroll && panelH > 0) { 
+			
+			customPanel.setPreferredSize(new Dimension(customPanel.getWidth(), customPanel.getHeight()));
+			
+			JScrollPane scrollPane = new JScrollPane(customPanel);
+			scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
+			
+			MyCustomPanel panel = new MyCustomPanel();
+			panel.setBounds(0, 0, finalWidth, panelH); 
+			panel.add(scrollPane); 
+			printComponentLayout(panel);
+			return panel;
+			
 		}
-		System.out.println("Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
+		System.out.println(
+				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
 
 		return customPanel;
 	}

@@ -6,7 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.LoginHandler;
@@ -43,7 +42,7 @@ public class LoginPage extends BasePage {
 	}
 
 	private JPanel getLoginFormPanel() {
-		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.WHITE, 10, 10, 0, 0, true);
+		PanelRequest panelRequest = new PanelRequest(2, 100, 20, 15, Color.WHITE, 10, 10, 0, 0, true);
 	 
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest, 
 				label("Username"), usernameField, 

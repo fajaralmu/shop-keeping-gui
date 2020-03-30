@@ -2,7 +2,6 @@ package com.fajar.shopkeeping.component;
 
 import java.awt.Component;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,8 @@ public class MyCustomPanel extends JPanel {
 	@Setter(value = AccessLevel.NONE)
 	final int[] colSizes;
 
-	int height;
-	int width;
+	int customHeight;
+	int customWidth;
 	boolean centerAligment;
 
 	public MyCustomPanel(int... colSizes) {
@@ -51,7 +50,7 @@ public class MyCustomPanel extends JPanel {
 
 		setHeightsForEachRows();
 		calculateComponentsPosition();
-		drawComponents(); 
+		drawComponents();
 	}
 
 	public void setCenterAlignment(boolean centerAligment) {
@@ -71,7 +70,7 @@ public class MyCustomPanel extends JPanel {
 
 					continue loop;
 				}
-				add(component); 
+				add(component);
 			}
 		}
 	}
@@ -99,14 +98,14 @@ public class MyCustomPanel extends JPanel {
 
 				try {
 					int columnSize = colSizes[i];
-					x = i == 0 ? 0 : i*(columnSize + margin * 2);
+					x = i == 0 ? 0 : i * (columnSize + margin * 2);
 					x = x + margin;
-					 
+
 					if (this.centerAligment) {
 						int gap = columnSize - component.getWidth();
-						x = new BigDecimal(gap / 2).intValue();
+						x = (i * columnSize) + new BigDecimal(gap / 2).intValue();
 					}
-					 
+
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
@@ -119,9 +118,9 @@ public class MyCustomPanel extends JPanel {
 
 			currentHeight = currentHeight + margin + rowHeight;
 		}
-		height = currentHeight + margin;
-		width = calculateWidth();
-		
+		customHeight = currentHeight + margin;
+		customWidth = calculateWidth();
+
 	}
 
 	/**
@@ -150,10 +149,15 @@ public class MyCustomPanel extends JPanel {
 	}
 
 	private int calculateWidth() {
-		int width = margin;
+		System.out.println("centerAligment: " + centerAligment);
+
+		int width = centerAligment ? 0 : margin;
 
 		for (int colSize : colSizes) {
-			width += colSize + margin * 2;
+			width += colSize;
+			if (!centerAligment) {
+				width += margin * 2;
+			}
 		}
 
 		return width;
