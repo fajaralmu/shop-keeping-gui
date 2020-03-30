@@ -26,7 +26,7 @@ public class LauncherPage extends BasePage {
 		navigateLoginButton = button("Login"); 
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
-		panelRequest.centerAligment = true;
+		panelRequest.setCenterAligment(true);
 		
 		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
