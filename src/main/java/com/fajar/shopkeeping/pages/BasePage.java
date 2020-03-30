@@ -27,6 +27,9 @@ import lombok.Setter;
 
 @Data
 public class BasePage {
+	
+	public static final int BASE_HEIGHT = 700;
+	public static final int BASE_WIDTH = 800;
 
 	protected final MyCustomFrame frame;
 	protected MyCustomFrame parentFrame;
@@ -139,7 +142,7 @@ public class BasePage {
 		
 		JButton jButton = new JButton(text);
 		jButton.setSize(width, 20); 
-		jButton.setBackground(Color.green);
+		jButton.setBackground(Color.LIGHT_GRAY);
 		return jButton ;
 	}
 

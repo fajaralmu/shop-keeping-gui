@@ -15,7 +15,7 @@ public class LauncherPage extends BasePage {
  
 
 	public LauncherPage() {
-		super("Launcher", 800, 700);
+		super("Launcher", BASE_WIDTH, BASE_HEIGHT);
 	} 
 
 	@Override

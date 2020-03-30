@@ -122,16 +122,7 @@ public class MyCustomPanel extends JPanel {
 		customWidth = calculateWidth();
 
 	}
-
-	/**
-	 * getColumnSize
-	 * 
-	 * @param columnIndex begin at 0
-	 * @return
-	 */
-	private int getColumnSize(int columnIndex) {
-		return colSizes[columnIndex];
-	}
+ 
 
 	private void setHeightsForEachRows() {
 		final Set<Integer> rows = componentsMap.keySet();

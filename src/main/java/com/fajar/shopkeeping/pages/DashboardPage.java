@@ -22,13 +22,13 @@ import com.fajar.shopkeeping.webservice.AppSession;
 
 public class DashboardPage extends BasePage {
 
-	JLabel labelUserInfo;
-	JButton buttonLogout;
-	JPanel panelTodayCashflow;
-	JPanel panelMonthlySummary;
+	private JLabel labelUserInfo;
+	private JButton buttonLogout;
+	private JPanel panelTodayCashflow;
+	private JPanel panelMonthlySummary;
 
 	public DashboardPage() {
-		super("Dashboard", 800, 700);
+		super("Dashboard", BASE_WIDTH, BASE_HEIGHT);
 
 	}
 
@@ -106,7 +106,7 @@ public class DashboardPage extends BasePage {
 			index++;
 		}
 
-		PanelRequest panelRequest = new PanelRequest(1, 400, 10, 1, Color.gray, 0, 0, 0, 260, true);
+		PanelRequest panelRequest = new PanelRequest(1, 400, 10, 1, Color.LIGHT_GRAY, 0, 0, 0, 260, true);
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
 	}
@@ -130,7 +130,7 @@ public class DashboardPage extends BasePage {
 	 */
 	private JPanel buildCashflowSummaryRow(int number, CashFlow income, CashFlow cost) {
 
-		Color color = number % 2 == 0 ? Color.green : Color.yellow;
+		Color color = number % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE;
 		
 		PanelRequest panelRequest = new PanelRequest(4, 100, 10, 1, color, 0, 0, 0, 0, false, true);
 		
@@ -180,7 +180,7 @@ public class DashboardPage extends BasePage {
 		}
 
 		mainPanel = buildPanelV2(mainPanelRequest, title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
-				label("laporan hari ini"), panelTodayCashflow, label("laporan bulan ini"), panelMonthlySummary);
+				label("ALIRAN KAS HARI INI"), panelTodayCashflow, label("ALIRAN KAS BULAN INI"), panelMonthlySummary);
 
 		parentPanel.add(mainPanel);
 		parentPanel.revalidate();
