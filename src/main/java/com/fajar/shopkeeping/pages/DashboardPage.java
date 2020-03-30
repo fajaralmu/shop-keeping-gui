@@ -43,15 +43,28 @@ public class DashboardPage extends BasePage {
 	}
 
 	private void handleResponseMonthlyCashflow(ShopApiResponse response) {
-		// panelCashflowInfo.removeAll();
+		panelCashflowInfo.removeAll();
 
 		int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
 
 		System.out.println("Cash Flow: " + cashflow);
-		JLabel label = (JLabel) panelCashflowInfo.getComponent(0);
-		label.setText("Sold quantity: " + cashflow.getCount() + " Amount: " + cashflow.getAmount());
-		System.out.println(panelCashflowInfo.getComponentCount());
+		panelCashflowInfo.removeAll();
+
+		String info = "Sold quantity: " + cashflow.getCount() + " Amount: " + cashflow.getAmount();
+		JLabel label = new JLabel(info);
+		label.setBounds(0, 0, 200, 100);
+		label.setBackground(Color.BLUE);
+
+		System.out.println("info: " + info);
+		changeSizeHeight(mainPanel, 500);
+		changeSize(panelCashflowInfo, 500, 500);
+		panelCashflowInfo.setBackground(Color.LIGHT_GRAY);
+		panelCashflowInfo.add(label);
+		panelCashflowInfo.revalidate();
+		panelCashflowInfo.repaint();
+
+		System.out.println("panelCashflowInfo child: " + panelCashflowInfo.getComponentCount());
 	}
 
 	@Override
@@ -65,10 +78,10 @@ public class DashboardPage extends BasePage {
 		buttonLogout = new JButton("logout");
 		panelCashflowInfo = buildPanel(panelCashflowRequest(), label("Please wait..."));
 
-		JPanel mainPanel = buildPanel(mainPanelRequest,
+		mainPanel = buildPanel(mainPanelRequest,
 
-				title("Welcome to Dasboard!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20), labelUserInfo, null,
-				panelCashflowInfo, buttonLogout);
+				title("Welcome to Dasboard!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20), labelUserInfo,
+				buttonLogout, panelCashflowInfo);
 
 		parentPanel.add(mainPanel);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

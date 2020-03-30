@@ -1,14 +1,13 @@
 package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.component.BlankComponent;
+import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.LauncherHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.ReservedFor;
@@ -19,20 +18,20 @@ public class LauncherPage extends BasePage {
  
 
 	public LauncherPage() {
-		super("Launcher", 400, 400);
+		super("Launcher", 800, 700);
 	} 
 
 	@Override
 	public void initComponent() {
-		navigateLoginButton = new JButton("Login"); 
+		navigateLoginButton = button("Login"); 
 		
-		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.GRAY, 30, 30, 0, 0, true);
+		PanelRequest panelRequest = new PanelRequest(2, 150, 20, 15, Color.ORANGE, 30, 30, 0, 0, true);
 
-		JPanel mainPanel = buildPanel(panelRequest,
+		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
 				title("Shop Keeping App!"), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20),
-				label("Welcome to mart app..."), null, 
-				navigateLoginButton);
+				label("Welcome to mart app..."), new BlankComponent(ReservedFor.BEFORE_HOR, 150, 20), 
+				navigateLoginButton); 
 
 		parentPanel.add(mainPanel);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
