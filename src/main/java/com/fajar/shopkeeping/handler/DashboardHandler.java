@@ -4,9 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 
+import javax.swing.JComboBox;
+
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.pages.DailyCashflowPage;
 import com.fajar.shopkeeping.pages.DashboardPage;
@@ -76,16 +79,40 @@ public class DashboardHandler extends MainHandler {
 	}
 
 	private void handleResponseDailyCashflow(ShopApiResponse shopApiResponse) {
-		
-		Filter filter = shopApiResponse.getFilter(); 
-		
-		AppContext.setContext(DailyCashflowPage.CTX_DETAIL_CASHFLOW, new SharedContext(filter.getDay(), filter.getMonth(), filter.getYear()));
-		
-		DailyCashflowPage dailyCashflowPage = new DailyCashflowPage(filter.getDay(), filter.getMonth(), filter.getYear());
+
+		Filter filter = shopApiResponse.getFilter();
+
+		AppContext.setContext(DailyCashflowPage.CTX_DETAIL_CASHFLOW,
+				new SharedContext(filter.getDay(), filter.getMonth(), filter.getYear()));
+
+		DailyCashflowPage dailyCashflowPage = new DailyCashflowPage(filter.getDay(), filter.getMonth(),
+				filter.getYear());
 		dailyCashflowPage.setAppHandler(this);
 		dailyCashflowPage.setDailyCashflowResponse(shopApiResponse);
 		dailyCashflowPage.update();
 		dailyCashflowPage.show();
+	}
+
+	public ActionListener getMonthlyCashflow(final JComboBox comboBoxMonth, final JComboBox comboBoxYear,
+			final MyCallback callback) {
+
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Object month = comboBoxMonth.getSelectedItem();
+				Object year = comboBoxYear.getSelectedItem();
+				reportService.getMonthlyCashflowDetail(toInt(month), toInt(year), callback);
+			}
+		};
+	}
+
+	private int toInt(Object o) {
+		try {
+			return Integer.parseInt(o.toString());
+		} catch (Exception e) { 
+			return 0;
+		}
 	}
 
 }

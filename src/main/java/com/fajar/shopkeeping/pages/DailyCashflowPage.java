@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.Product;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -86,7 +87,9 @@ public class DailyCashflowPage extends BasePage {
 		for (String key : keys) {
 			
 			CashFlow cashflow = dailyCashflowMap.get(key); 
-			components[index] = rowPanel(4, 100, index, cashflow.getProduct().getName(), cashflow.getCount(), cashflow.getAmount());
+			Product product = cashflow.getProduct();
+			String productName = product.getName().length() > 20 ? product.getName().substring(0, 20) :  product.getName();
+			components[index] = rowPanel(4, 100, index, productName, cashflow.getCount(), cashflow.getAmount());
 			
 			index++;
 		}
@@ -100,7 +103,7 @@ public class DailyCashflowPage extends BasePage {
 
 	private Component dailyCashflowHeader() {
 		 
-		return rowPanelHeader(4, 100, "No", "Product", "Sold", "Price");
+		return rowPanelHeader(4, 100, "No", "Product", "Penjualan", "Nilai");
 	}
 
 	@Override

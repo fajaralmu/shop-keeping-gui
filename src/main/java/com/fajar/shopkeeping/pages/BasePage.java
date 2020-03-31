@@ -218,37 +218,10 @@ public class BasePage {
 
 	protected JLabel label(Object title) {
 		
-		if(isNumber(title)) {
-			title = StringUtil.beautifyNominal(Integer.parseInt(title.toString()));
-		}
-		
-		int width = title.toString().length() * 10;
-		
-		JLabel label = new JLabel(title.toString(), SwingConstants.CENTER); 
-		label.setSize(width, 20);
-		return label;
+		return ComponentBuilder.label(title);
 	}
 	
-	public static boolean isNumber(Object o) {
-		if( null == o) {
-			return false;
-		}
-		
-		Class objectType = o.getClass();
-		
-		if(objectType.equals(int.class)||objectType.equals(Integer.class)) {
-			return true;
-		}
-		if(objectType.equals(double.class)||objectType.equals(Double.class)) {
-			return true;
-		}
-		if(objectType.equals(long.class)||objectType.equals(Long.class)) {
-			return true;
-		}
-		
-		
-		return false;
-	}
+	
 	
 	protected JPasswordField passwordField(String string) { 
 		

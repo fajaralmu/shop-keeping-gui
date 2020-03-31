@@ -6,9 +6,13 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.StringUtil;
@@ -116,7 +120,7 @@ public class ComponentBuilder {
 		return panel;
 	}
 
-	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Component... components) {
+	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
 		System.out.println("======v2=======");
 
 		int column = panelRequest.column;
@@ -151,7 +155,13 @@ public class ComponentBuilder {
 
 		for (int i = 0; i < Size; i++) {
 
-			Component currentComponent = components[i] != null ? components[i] : new JLabel();
+			Component currentComponent = null;
+
+			try {
+				currentComponent = (Component) components[i];
+			} catch (Exception e) {
+				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
+			}
 
 			currentColumn++;
 
@@ -195,19 +205,19 @@ public class ComponentBuilder {
 		customPanel.setSize(finalWidth, finalHeight);
 		customPanel.setBackground(color);
 
-		if (autoScroll && panelH > 0) { 
-			
+		if (autoScroll && panelH > 0) {
+
 			customPanel.setPreferredSize(new Dimension(customPanel.getWidth(), customPanel.getHeight()));
-			
+
 			JScrollPane scrollPane = new JScrollPane(customPanel);
 			scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
-			
+
 			MyCustomPanel panel = new MyCustomPanel();
-			panel.setBounds(0, 0, finalWidth, panelH); 
-			panel.add(scrollPane); 
+			panel.setBounds(0, 0, finalWidth, panelH);
+			panel.add(scrollPane);
 			printComponentLayout(panel);
 			return panel;
-			
+
 		}
 		System.out.println(
 				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
@@ -223,5 +233,67 @@ public class ComponentBuilder {
 
 				StringUtil.buildString("x:", component.getX(), " y:", component.getY(), "width:", component.getWidth(),
 						"height:", component.getHeight()));
+	}
+
+	public static JComboBox buildComboBox(Object defaultValue, Object... values) {
+
+		ComboBoxModel model = new DefaultComboBoxModel<>();
+		JComboBox comboBox = new JComboBox();
+
+		int maxSize = 0;
+
+		for (Object object : values) {
+
+			
+			comboBox.addItem(object);
+			
+			JLabel label = label(object);
+			if (label.getWidth() > maxSize) {
+				maxSize = label.getWidth();
+			}
+		}
+
+		comboBox.setSize(maxSize + 20, 20);
+		if(null != defaultValue) {
+			comboBox.setSelectedItem(defaultValue);
+		}
+		return comboBox;
+	}
+
+	public static JLabel label(Object title) {
+
+		if (isNumber(title)) {
+			try {
+				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+			}catch (Exception e) {
+				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+			}
+		}
+		 
+		int width = title.toString().length() * 10;
+
+		JLabel label = new JLabel(title.toString(), SwingConstants.CENTER);
+		label.setSize(width, 20);
+		return label;
+	}
+
+	public static boolean isNumber(Object o) {
+		if (null == o) {
+			return false;
+		}
+
+		Class objectType = o.getClass();
+
+		if (objectType.equals(int.class) || objectType.equals(Integer.class)) {
+			return true;
+		}
+		if (objectType.equals(double.class) || objectType.equals(Double.class)) {
+			return true;
+		}
+		if (objectType.equals(long.class) || objectType.equals(Long.class)) {
+			return true;
+		}
+
+		return false;
 	}
 }

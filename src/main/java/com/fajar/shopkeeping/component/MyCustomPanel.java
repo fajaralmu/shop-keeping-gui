@@ -158,6 +158,9 @@ public class MyCustomPanel extends JPanel {
 		int maxHeight = Integer.MIN_VALUE;
 
 		for (Component component : components) {
+			if(null == component) {
+				continue;
+			}
 			int componentHeight = component.getHeight();
 			if (componentHeight > maxHeight) {
 				maxHeight = componentHeight;

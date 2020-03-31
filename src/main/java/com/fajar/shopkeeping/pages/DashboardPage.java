@@ -2,12 +2,15 @@ package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
@@ -17,17 +20,26 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.service.AppSession;
+import com.fajar.shopkeeping.util.DateUtil;
 
 public class DashboardPage extends BasePage {
 
 	private JLabel labelUserInfo;
 	private JButton buttonLogout;
+	private JButton buttonLoadMonthlyCashflow;
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
 	private ShopApiResponse responseTodayCashflow;
+	private JComboBox comboBoxMonth;
+	private JComboBox comboBoxYear;
+	private JPanel panelPeriodFilter;
+	private int minTransactionYear;
+	private int selectedMonth = DateUtil.getCurrentMonth();
+	private int selectedYear = DateUtil.getCurrentYear();
 
 	public DashboardPage() {
 		super("Dashboard", BASE_WIDTH, BASE_HEIGHT);
@@ -37,15 +49,20 @@ public class DashboardPage extends BasePage {
 	@Override
 	public void onShow() {
 		if (responseTodayCashflow == null) {
-			getHandler().getTodayMonthlyCashflow(new MyCallback() {
-
-				@Override
-				public void handle(Object... params) throws Exception {
-					ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
-					handleResponseMonthlyCashflow(jsonResponse);
-				}
-			});
+			getHandler().getTodayMonthlyCashflow(callbackUpdateMonthlyCashflow());
 		}
+	}
+
+	private MyCallback callbackUpdateMonthlyCashflow() {
+		 
+		return new MyCallback() {
+
+			@Override
+			public void handle(Object... params) throws Exception {
+				ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
+				handleResponseMonthlyCashflow(jsonResponse);
+			}
+		};
 	}
 
 	/**
@@ -61,9 +78,7 @@ public class DashboardPage extends BasePage {
 		PanelRequest panelRequest = new PanelRequest(1, 150, 50, 5, Color.yellow, 0, 0, 0, 0, false);
 		panelRequest.setCenterAligment(true);
 
-		Component titleLabel = title(title);
-
-		JPanel panel = buildPanelV2(panelRequest, titleLabel, label("Jumlah"), label(count), label("Nominal"),
+		JPanel panel = buildPanelV2(panelRequest, title(title), label("Jumlah"), label(count), label("Nominal"),
 				label(amount));
 
 		Border border = BorderFactory.createBevelBorder(BevelBorder.RAISED);
@@ -82,6 +97,7 @@ public class DashboardPage extends BasePage {
 		responseTodayCashflow = response;
 		panelTodayCashflow = buildTodayCashflow(response);
 		panelMonthlySummary = buildMonthlySummaryTable(response);
+		minTransactionYear = response.getTransactionYears()[0];
 
 		preInitComponent();
 		initEvent();
@@ -152,7 +168,6 @@ public class DashboardPage extends BasePage {
 	private JPanel cashflowSummaryHeader() {
 		return rowPanelHeader(5, 100, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
 	}
- 
 
 	/**
 	 * create table summary
@@ -167,21 +182,21 @@ public class DashboardPage extends BasePage {
 	/**
 	 * build data for each row
 	 * 
-	 * @param day or number
+	 * @param day    or number
 	 * @param income
 	 * @param cost
 	 * @return
 	 */
 	private JPanel buildCashflowSummaryTableRow(int day, CashFlow income, CashFlow cost) {
 
-		Color color = day % 2 == 0 ? Color.WHITE : Color.WHITE; 
-		Filter filter = responseTodayCashflow.getFilter(); 
+		Color color = day % 2 == 0 ? Color.WHITE : Color.WHITE;
+		Filter filter = responseTodayCashflow.getFilter();
 
 		JButton buttonDetail = button("Detail");
 		buttonDetail.addActionListener(getHandler().getDailyCashflow(day, filter.getMonth(), filter.getYear()));
 
-		JPanel panel = rowPanel(5, 100, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail, "",
-				"Pengeluaran", cost.getAmount(), cost.getCount());
+		JPanel panel = rowPanel(5, 100, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail,
+				"", "Pembelian", cost.getAmount(), cost.getCount());
 		return panel;
 	}
 
@@ -192,13 +207,17 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private JPanel buildTodayCashflow(ShopApiResponse response) {
+		
+		if(selectedMonth != DateUtil.getCurrentMonth() || selectedYear != DateUtil.getCurrentYear()) {
+			return panelTodayCashflow;
+		}
 
 		int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
 		CashFlow costflow = response.getMonthlyDetailCost().get(today);
 
-		JPanel panelCashflow = todayCashflowCard(cashflow.getCount(), cashflow.getAmount(), "Pengeluaran");
-		JPanel panelCostflow = todayCashflowCard(costflow.getCount(), costflow.getAmount(), "Pemasukan");
+		JPanel panelCashflow = todayCashflowCard(cashflow.getCount(), cashflow.getAmount(), "Pemasukan");
+		JPanel panelCostflow = todayCashflowCard(costflow.getCount(), costflow.getAmount(), "Pembelian");
 
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 10, Color.WHITE);
 		panelRequest.setCenterAligment(true);
@@ -207,7 +226,7 @@ public class DashboardPage extends BasePage {
 	}
 
 	@Override
-	public void initComponent() { 
+	public void initComponent() {
 
 		PanelRequest mainPanelRequest = mainPanelRequest();
 
@@ -223,13 +242,45 @@ public class DashboardPage extends BasePage {
 			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
 		}
 
+		panelPeriodFilter = buildPanelPeriodFilter();
+
 		mainPanel = buildPanelV2(mainPanelRequest, title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
-				label("ALIRAN KAS HARI INI"), panelTodayCashflow, label("ALIRAN KAS BULAN INI"), panelMonthlySummary);
+				label("ALIRAN KAS HARI INI"), panelTodayCashflow, panelPeriodFilter, 
+				panelMonthlySummary);
 
 		parentPanel.add(mainPanel);
-		 
+
 		exitOnClose();
 
+	}
+
+	/**
+	 * build panel for select period
+	 * @return
+	 */
+	private JPanel buildPanelPeriodFilter() {
+
+		comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
+		comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
+		buttonLoadMonthlyCashflow = button("Search"); 
+		
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(5, 80, 3, Color.WHITE);
+		
+		JPanel panel = buildPanelV2(panelRequest ,
+				label("Month"), comboBoxMonth,
+				label("Year"), comboBoxYear,
+				 buttonLoadMonthlyCashflow);
+		 
+		return panel;
+	}
+
+	private Object[] buildArray(int i, int i2) {
+
+		Object[] array = new Object[i2 - i + 1];
+		for (int j = i; j <= i2 ; j++) {
+			array[j-i] = j; 
+		}
+		return array;
 	}
 
 	private PanelRequest mainPanelRequest() {
@@ -247,7 +298,23 @@ public class DashboardPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		buttonLogout.addActionListener(getHandler().logout());
-
+		buttonLoadMonthlyCashflow.addActionListener(getHandler().getMonthlyCashflow(comboBoxMonth, comboBoxYear, callbackUpdateMonthlyCashflow()));
+		comboBoxMonth.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				selectedMonth =(int) comboBoxMonth.getSelectedItem();
+				System.out.println("Selected month: "+selectedMonth);
+			}
+		});
+		comboBoxYear.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectedYear =(int) comboBoxYear.getSelectedItem();
+				System.out.println("Selected year: "+selectedYear);
+			}
+		});
 	}
 
 	private DashboardHandler getHandler() {
@@ -258,6 +325,10 @@ public class DashboardPage extends BasePage {
 	public void show() {
 		super.show();
 		labelUserInfo.setText("Welcome, " + AppSession.getUser().getDisplayName());
+	}
+	
+	private static void setComboBoxOnClickListener() {
+		
 	}
 
 }
