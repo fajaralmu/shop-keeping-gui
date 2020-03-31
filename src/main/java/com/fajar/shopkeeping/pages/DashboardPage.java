@@ -83,7 +83,7 @@ public class DashboardPage extends BasePage {
 		panelTodayCashflow = buildTodayCashflow(response);
 		panelMonthlySummary = buildMonthlySummaryTable(response);
 
-		initComponent();
+		preInitComponent();
 		initEvent();
 
 	}
@@ -207,9 +207,7 @@ public class DashboardPage extends BasePage {
 	}
 
 	@Override
-	public void initComponent() {
-
-		parentPanel.removeAll();
+	public void initComponent() { 
 
 		PanelRequest mainPanelRequest = mainPanelRequest();
 
@@ -229,8 +227,7 @@ public class DashboardPage extends BasePage {
 				label("ALIRAN KAS HARI INI"), panelTodayCashflow, label("ALIRAN KAS BULAN INI"), panelMonthlySummary);
 
 		parentPanel.add(mainPanel);
-		parentPanel.revalidate();
-		parentPanel.repaint();
+		 
 		exitOnClose();
 
 	}

@@ -11,7 +11,7 @@ public class PanelRequest {
 	public final int height;
 	public final int margin;
 	public Color color;
-	public final boolean autoScroll;
+	public boolean autoScroll;
 
 	public final int panelX;
 	public final int panelY;

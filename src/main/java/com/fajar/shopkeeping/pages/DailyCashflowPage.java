@@ -1,10 +1,14 @@
 package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
@@ -17,8 +21,9 @@ import lombok.Data;
 public class DailyCashflowPage extends BasePage {
 
 	public static final String CTX_DETAIL_CASHFLOW = "detailCashflow";
-	
+
 	private ShopApiResponse dailyCashflowResponse;
+	private JPanel dailyCashflowPanel;
 
 	public DailyCashflowPage() {
 		super("Daily Cashflow", BASE_WIDTH, BASE_HEIGHT);
@@ -30,8 +35,8 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	@Override
-	public void initComponent() {
-
+	public void initComponent() { 
+		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
 
 		SharedContext context = AppContext.getContext(CTX_DETAIL_CASHFLOW);
@@ -39,14 +44,63 @@ public class DailyCashflowPage extends BasePage {
 		int month = context.getMonth();
 		int year = context.getYear();
 
-		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		if (dailyCashflowPanel == null) { 
+			dailyCashflowPanel = buildPanelV2(panelRequest, label("Please wait..."));
+			
+		}else {
+//			dailyCashflowPanel = null;
+		}
+		
+		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Detail " + day + " " + StringUtil.months[month - 1] + " " + year, 30)
+				title("Detail " + day + " " + StringUtil.months[month - 1] + " " + year, 30),
+				dailyCashflowPanel
 
-		);
-
+		);  
+		 
 		parentPanel.add(mainPanel);
+		 
+		System.out.println("____________ INIT COMPONENT______________");
+	}
 
+	public void update() {
+		
+		dailyCashflowPanel = buildDetailTable();
+		System.out.println("dailyCashflowPanel: "+dailyCashflowPanel.getComponentCount());
+		preInitComponent();
+	}
+
+	private JPanel buildDetailTable() {
+
+		if (null == dailyCashflowResponse) {
+			return new JPanel();
+		}
+
+		Map<String, CashFlow> dailyCashflowMap = dailyCashflowResponse.getDailyCashflow();
+		Set<String> keys = dailyCashflowMap.keySet();
+		Component[] components = new Component[keys.size() + 1];
+		components[0] = dailyCashflowHeader();
+		
+		int index = 1;
+
+		for (String key : keys) {
+			
+			CashFlow cashflow = dailyCashflowMap.get(key); 
+			components[index] = rowPanel(4, 100, index, cashflow.getProduct().getName(), cashflow.getCount(), cashflow.getAmount());
+			
+			index++;
+		}
+		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, 410, 1, Color.LIGHT_GRAY, 260); 
+		
+		JPanel panel = buildPanelV2(panelRequest, components);
+		
+		return panel;
+
+	}
+
+	private Component dailyCashflowHeader() {
+		 
+		return rowPanelHeader(4, 100, "No", "Product", "Sold", "Price");
 	}
 
 	@Override

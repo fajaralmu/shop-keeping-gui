@@ -50,8 +50,15 @@ public class BasePage {
 		this.title = title;
 
 		initMainComponent();
-		initComponent();
+		preInitComponent();
 
+	}
+	
+	protected void preInitComponent() {
+		parentPanel.removeAll();
+		initComponent();
+		parentPanel.revalidate();
+		parentPanel.repaint();
 	}
 	
 	protected void exitOnClose() {

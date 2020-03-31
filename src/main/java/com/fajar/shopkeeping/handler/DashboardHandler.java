@@ -84,7 +84,7 @@ public class DashboardHandler extends MainHandler {
 		DailyCashflowPage dailyCashflowPage = new DailyCashflowPage(filter.getDay(), filter.getMonth(), filter.getYear());
 		dailyCashflowPage.setAppHandler(this);
 		dailyCashflowPage.setDailyCashflowResponse(shopApiResponse);
-		
+		dailyCashflowPage.update();
 		dailyCashflowPage.show();
 	}
 
