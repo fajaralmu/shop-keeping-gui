@@ -26,6 +26,7 @@ public class DashboardPage extends BasePage {
 	private JButton buttonLogout;
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
+	private ShopApiResponse responseTodayCashflow;
 
 	public DashboardPage() {
 		super("Dashboard", BASE_WIDTH, BASE_HEIGHT);
@@ -34,15 +35,17 @@ public class DashboardPage extends BasePage {
 
 	@Override
 	public void onShow() {
-		((DashboardHandler) appHandler).getTodayMonthlyCashflow(new MyCallback() {
-
-			@Override
-			public void handle(Object... params) throws Exception {
-				System.out.println(" onShow JSON RESPONSE: " + params[0]);
-				ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
-				handleResponseMonthlyCashflow(jsonResponse);
-			}
-		});
+		if(responseTodayCashflow == null) {
+			((DashboardHandler) appHandler).getTodayMonthlyCashflow(new MyCallback() {
+	
+				@Override
+				public void handle(Object... params) throws Exception {
+					System.out.println(" onShow JSON RESPONSE: " + params[0]);
+					ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
+					handleResponseMonthlyCashflow(jsonResponse);
+				}
+			});
+		}
 	}
 
 	/**
@@ -76,6 +79,7 @@ public class DashboardPage extends BasePage {
 	 */
 	private void handleResponseMonthlyCashflow(ShopApiResponse response) {
 
+		responseTodayCashflow = response;
 		panelTodayCashflow = buildTodayCashflow(response);
 		panelMonthlySummary = buildMonthlySummaryCashflow(response);
 
@@ -94,21 +98,48 @@ public class DashboardPage extends BasePage {
 		Set<Integer> keys = response.getMonthlyDetailCost().keySet();
 		Map<Integer, CashFlow> cashflowMap = response.getMonthlyDetailIncome();
 		Map<Integer, CashFlow> costflowMap = response.getMonthlyDetailCost();
-		Component[] components = new Component[keys.size() + 1  ]; 
-		
+		Component[] components = new Component[keys.size() + 2  ]; 
+		CashFlow totalCashflow = new CashFlow();
+		CashFlow totalCostflow = new CashFlow();
+		//header
 		components[0] = cashflowSummaryHeader();
 		int index = 1;
 
 		for (Integer integer : keys) {
 
-			JPanel panelRow = buildCashflowSummaryRow(integer, cashflowMap.get(integer), costflowMap.get(integer));
+			CashFlow cashflow = cashflowMap.get(integer);
+			CashFlow costflow = costflowMap.get(integer);
+			
+			JPanel panelRow = buildCashflowSummaryRow(integer, cashflow , costflow );
+			
 			components[index] = panelRow;
+			
+			updateCountAndAmount(totalCostflow, costflow);
+			updateCountAndAmount(totalCashflow, cashflow);
+			
 			index++;
 		}
-
-		PanelRequest panelRequest = new PanelRequest(1, 400, 10, 1, Color.LIGHT_GRAY, 0, 0, 0, 260, true);
+		
+		//footer
+		components[components.length - 1] = cashflowSummaryFooter(totalCashflow, totalCostflow);
+		
+		PanelRequest panelRequest = new PanelRequest(1, 500, 10, 1, Color.LIGHT_GRAY, 0, 0, 0, 260, true);
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
+	}
+	
+	/**
+	 * increment count and amount
+	 * @param totalCashflow
+	 * @param flow
+	 */
+	private static void updateCountAndAmount(CashFlow totalCashflow, CashFlow flow) {
+		if(null == totalCashflow) {
+			totalCashflow = new CashFlow();
+		}
+		totalCashflow.setAmount(flow.getAmount() + totalCashflow.getAmount());
+		totalCashflow.setCount(flow.getCount() + totalCashflow.getCount());
+		 
 	}
 
 	/**
@@ -116,9 +147,22 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private Component cashflowSummaryHeader() {
-		PanelRequest panelRequestHeader = new PanelRequest(4, 100, 10, 1, Color.orange, 0, 0, 0, 0, false, true);;
-		JPanel panelHeader = buildPanelV2(panelRequestHeader , label("Tanggal"),  label("Jenis Aliran Kas"), label("Jumlah"), label("Nominal"));
+		PanelRequest panelRequestHeader = new PanelRequest(5, 100, 10, 1, Color.orange, 0, 0, 0, 0, false, true);;
+		JPanel panelHeader = buildPanelV2(panelRequestHeader , label("Tanggal"),  label("Jenis Aliran Kas"), label("Jumlah"), label("Nominal"), label("Opsi"));
 		return panelHeader;
+	}
+	
+	/**
+	 * create table summary
+	 * @return
+	 */
+	private Component cashflowSummaryFooter(CashFlow totalCashFlow, CashFlow totalCostFlow) {
+		PanelRequest panelRequestHeader = new PanelRequest(5, 100, 10, 1, Color.orange, 0, 0, 0, 0, false, true);
+		
+		JPanel panelFooter = buildPanelV2(panelRequestHeader, label("TOTAL"), label("Pemasukan"), label(totalCashFlow.getAmount()),
+				label(totalCashFlow.getCount()), label(""), label(""), label("Pengeluaran"), label(totalCostFlow.getAmount()),
+				label(totalCostFlow.getCount()));
+		return panelFooter;
 	}
 
 	/**
@@ -130,12 +174,12 @@ public class DashboardPage extends BasePage {
 	 */
 	private JPanel buildCashflowSummaryRow(int number, CashFlow income, CashFlow cost) {
 
-		Color color = number % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE;
+		Color color = number % 2 == 0 ? Color.WHITE : Color.WHITE;
 		
-		PanelRequest panelRequest = new PanelRequest(4, 100, 10, 1, color, 0, 0, 0, 0, false, true);
+		PanelRequest panelRequest = new PanelRequest(5, 100, 10, 1, color, 0, 0, 0, 0, false, true);
 		
 		JPanel panel = buildPanelV2(panelRequest, label(number), label("Pemasukan"), label(income.getAmount()),
-				label(income.getCount()), label(""), label("Pengeluaran"), label(cost.getAmount()),
+				label(income.getCount()), button("Detail"), label(""),  label("Pengeluaran"), label(cost.getAmount()),
 				label(cost.getCount()));
 		return panel;
 	}
