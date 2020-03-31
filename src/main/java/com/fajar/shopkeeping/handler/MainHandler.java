@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.fajar.shopkeeping.pages.BasePage;
-import com.fajar.shopkeeping.webservice.AccountService;
-import com.fajar.shopkeeping.webservice.ReportService;
+import com.fajar.shopkeeping.service.AccountService;
+import com.fajar.shopkeeping.service.ReportService;
 
 public class MainHandler {
 

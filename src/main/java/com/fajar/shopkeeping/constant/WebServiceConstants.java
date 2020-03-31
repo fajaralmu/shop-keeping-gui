@@ -9,4 +9,5 @@ public class WebServiceConstants {
 	
 	//REPORT
 	public static final String URL_MONTHLY_CASHFOW = WS_HOST + "api/transaction/monthlycashflow";
+	public static final String URL_DAILY_CASHFOW = WS_HOST + "api/transaction/dailycashflow";
 }

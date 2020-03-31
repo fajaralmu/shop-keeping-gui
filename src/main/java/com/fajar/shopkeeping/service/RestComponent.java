@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.webservice;
+package com.fajar.shopkeeping.service;
 
 import java.util.ArrayList;
 import java.util.Collections;

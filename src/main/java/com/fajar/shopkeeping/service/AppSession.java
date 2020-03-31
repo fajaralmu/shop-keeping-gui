@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.webservice;
+package com.fajar.shopkeeping.service;
 
 import com.fajar.entity.User;
 

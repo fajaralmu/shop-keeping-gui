@@ -6,8 +6,8 @@ import java.util.Map;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.webservice.AccountService;
-import com.fajar.shopkeeping.webservice.AppSession;
+import com.fajar.shopkeeping.service.AccountService;
+import com.fajar.shopkeeping.service.AppSession;
 
 public class AppHandler {
 

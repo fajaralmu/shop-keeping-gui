@@ -3,13 +3,14 @@ package com.fajar.shopkeeping.model;
 import java.awt.Color;
 
 import lombok.Data;
-  
+
+@Data
 public class PanelRequest {
 	public final int column;
 	public final int width;
 	public final int height;
 	public final int margin;
-	public final Color color;
+	public Color color;
 	public final boolean autoScroll;
 
 	public final int panelX;
@@ -17,9 +18,27 @@ public class PanelRequest {
 	public final int panelW;
 	public final int panelH;
 	private boolean centerAligment;
+
+	public static PanelRequest autoPanelNonScrollXYSpecified(int col, int colWidth, int margin, Color color, int panelX,
+			int panelY) {
+		return new PanelRequest(col, colWidth, 0, margin, color, panelX, panelY, 0, 0, false);
+	}
 	
-	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW,
-			int panelH, boolean autoScrool) {
+	public static PanelRequest autoPanelNonScroll(int col, int colWidth, int margin, Color color ) {
+		return new PanelRequest(col, colWidth, 0, margin, color, 0, 0, 0, 0, false);
+	}
+
+	public static PanelRequest autoPanelScroll(int col, int colWidth, int margin, Color color, int panelH) {
+		return new PanelRequest(col, colWidth, 0, margin, color, 0, 0, 0, panelH, true);
+	}
+	
+	public static PanelRequest autoPanelScrollXYSpecified(int col, int colWidth, int margin, Color color, int panelX, int panelY, int panelH) {
+		return new PanelRequest(col, colWidth, 0, margin, color, panelX, panelY, 0, panelH, true);
+	}
+	
+
+	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW, int panelH,
+			boolean autoScrool) {
 		super();
 		column = col;
 		width = w;
@@ -32,9 +51,9 @@ public class PanelRequest {
 		this.panelH = panelH;
 		this.autoScroll = autoScrool;
 	}
-	
-	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW,
-			int panelH, boolean autoScrool, boolean centerAligment) {
+
+	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW, int panelH,
+			boolean autoScrool, boolean centerAligment) {
 		super();
 		column = col;
 		width = w;
@@ -56,7 +75,5 @@ public class PanelRequest {
 	public void setCenterAligment(boolean centerAligment) {
 		this.centerAligment = centerAligment;
 	}
-	
-	
 
 }

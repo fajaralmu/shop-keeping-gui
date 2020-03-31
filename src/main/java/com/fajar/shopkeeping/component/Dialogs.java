@@ -9,14 +9,28 @@ public class Dialogs {
 		}
 	}
 
-	public static void showInfoDialog(String message) {
+	public static void showInfoDialog(Object... messages) {
 		endLoading();
-		JOptionPane.showMessageDialog(null, message);
+		StringBuilder sb = new StringBuilder();
+		for (Object string : messages) {
+			if(null == string) {
+				string = "";
+			}
+			sb.append(string.toString());
+		}
+		JOptionPane.showMessageDialog(null, sb.toString());
 	}
 
-	public static void showErrorDialog(String message) {
+	public static void showErrorDialog(Object... messages) {
 		endLoading();
-		JOptionPane.showMessageDialog(null, message);
+		StringBuilder sb = new StringBuilder();
+		for (Object string : messages) {
+			if(null == string) {
+				string = "";
+			}
+			sb.append(string.toString());
+		}
+		JOptionPane.showMessageDialog(null, sb.toString());
 	}
 
 }
