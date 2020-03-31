@@ -241,11 +241,13 @@ public class DashboardPage extends BasePage {
 		if (panelMonthlySummary == null) {
 			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
 		}
-
+		
 		panelPeriodFilter = buildPanelPeriodFilter();
-
-		mainPanel = buildPanelV2(mainPanelRequest, title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
-				label("ALIRAN KAS HARI INI"), panelTodayCashflow, panelPeriodFilter, 
+		
+		mainPanel = buildPanelV2(mainPanelRequest, 
+				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
+				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
+				panelTodayCashflow, panelPeriodFilter, 
 				panelMonthlySummary);
 
 		parentPanel.add(mainPanel);
@@ -253,6 +255,8 @@ public class DashboardPage extends BasePage {
 		exitOnClose();
 
 	}
+	
+	
 
 	/**
 	 * build panel for select period
