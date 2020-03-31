@@ -5,6 +5,21 @@ import java.util.Random;
 public class StringUtil {
 
 	static final Random rand = new Random();
+	
+	public static final String[] months = new String[] {
+		"January",
+		"February",
+		"March",
+		"April",
+		"May",
+		"June",
+		"July",
+		"August",
+		"September",
+		"October",
+		"November",
+		"December"
+	};
 
 	public static String generateRandomNumber(int length) {
 

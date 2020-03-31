@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.pages;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -20,7 +19,6 @@ import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.StringUtil;
 
-import jxl.format.Border;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -118,6 +116,71 @@ public class BasePage {
 
 	}
 
+	
+	
+	
+	protected PanelRequest rowPanelRequest(int col, int colSize) {
+		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(col, colSize, 1, Color.orange);
+		panelRequestHeader.setCenterAligment(true);
+		return panelRequestHeader;
+	}
+	
+	/**
+	 * panel (as table) header & footer
+	 * @param col
+	 * @param colSizes
+	 * @param titles
+	 * @return
+	 */
+	protected JPanel rowPanelHeader(int col, int colSizes, Object...titles) {
+
+		PanelRequest panelRequestHeader = rowPanelRequest(col, colSizes );
+
+		Component[] components = new Component[titles.length];
+		
+		for (int i = 0; i < titles.length; i++) {
+			components[i]  = label(titles[i]);
+		}
+		
+		JPanel panelHeader = buildPanelV2(panelRequestHeader, components);
+		return panelHeader;
+	}
+	
+	/**
+	 * panel (as table) row
+	 * @param col
+	 * @param colSizes
+	 * @param titles
+	 * @return
+	 */
+	protected JPanel rowPanel(int col, int colSizes, Color color, Object...titles) {
+
+		PanelRequest panelRequest = rowPanelRequest(col, colSizes );
+		panelRequest.setColor(color);
+		
+		Component[] components = new Component[titles.length];
+		
+		for (int i = 0; i < titles.length; i++) {
+			if(titles[i] == null) {
+				titles[i] = "";
+			}
+			//check if a component
+			try {
+				components[i]  = (Component) titles[i];
+			}catch (Exception e) {
+				components[i]  = label(titles[i]);
+			}
+			
+		}
+		
+		JPanel panel = buildPanelV2(panelRequest, components);
+		return panel;
+	}
+	
+	protected JPanel rowPanel(int col, int colSizes,   Object...titles) {
+		return rowPanel(col, colSizes, Color.white, titles);
+	}
+	
 	/**
 	 * ================================== COMPONENT INSTANCES
 	 * ==================================

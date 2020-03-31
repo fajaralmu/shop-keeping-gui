@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
+import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -36,11 +37,10 @@ public class DashboardPage extends BasePage {
 	@Override
 	public void onShow() {
 		if (responseTodayCashflow == null) {
-			((DashboardHandler) appHandler).getTodayMonthlyCashflow(new MyCallback() {
+			getHandler().getTodayMonthlyCashflow(new MyCallback() {
 
 				@Override
 				public void handle(Object... params) throws Exception {
-					System.out.println(" onShow JSON RESPONSE: " + params[0]);
 					ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
 					handleResponseMonthlyCashflow(jsonResponse);
 				}
@@ -49,14 +49,14 @@ public class DashboardPage extends BasePage {
 	}
 
 	/**
-	 * generate cashflow info in the card
+	 * generate cash flow info in the card
 	 * 
 	 * @param count
 	 * @param amount
 	 * @param title
 	 * @return
 	 */
-	private JPanel cashflowItemPanel(long count, long amount, String title) {
+	private JPanel todayCashflowCard(long count, long amount, String title) {
 
 		PanelRequest panelRequest = new PanelRequest(1, 150, 50, 5, Color.yellow, 0, 0, 0, 0, false);
 		panelRequest.setCenterAligment(true);
@@ -81,7 +81,7 @@ public class DashboardPage extends BasePage {
 
 		responseTodayCashflow = response;
 		panelTodayCashflow = buildTodayCashflow(response);
-		panelMonthlySummary = buildMonthlySummaryCashflow(response);
+		panelMonthlySummary = buildMonthlySummaryTable(response);
 
 		initComponent();
 		initEvent();
@@ -94,7 +94,7 @@ public class DashboardPage extends BasePage {
 	 * @param response
 	 * @return
 	 */
-	private JPanel buildMonthlySummaryCashflow(ShopApiResponse response) {
+	private JPanel buildMonthlySummaryTable(ShopApiResponse response) {
 
 		Set<Integer> keys = response.getMonthlyDetailCost().keySet();
 		Map<Integer, CashFlow> cashflowMap = response.getMonthlyDetailIncome();
@@ -106,12 +106,12 @@ public class DashboardPage extends BasePage {
 		components[0] = cashflowSummaryHeader();
 		int index = 1;
 
-		for (Integer integer : keys) {
+		for (Integer key : keys) {
 
-			CashFlow cashflow = cashflowMap.get(integer);
-			CashFlow costflow = costflowMap.get(integer);
+			CashFlow cashflow = cashflowMap.get(key);
+			CashFlow costflow = costflowMap.get(key);
 
-			JPanel panelRow = buildCashflowSummaryRow(integer, cashflow, costflow);
+			JPanel panelRow = buildCashflowSummaryTableRow(key, cashflow, costflow);
 
 			components[index] = panelRow;
 
@@ -149,20 +149,10 @@ public class DashboardPage extends BasePage {
 	 * 
 	 * @return
 	 */
-	private Component cashflowSummaryHeader() {
-
-		PanelRequest panelRequestHeader = rowPanelRequest();
-
-		JPanel panelHeader = buildPanelV2(panelRequestHeader, label("Tanggal"), label("Jenis Aliran Kas"),
-				label("Jumlah"), label("Nominal"), label("Opsi"));
-		return panelHeader;
+	private JPanel cashflowSummaryHeader() {
+		return rowPanelHeader(5, 100, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
 	}
-
-	private PanelRequest rowPanelRequest() {
-		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(5, 100, 1, Color.orange);
-		panelRequestHeader.setCenterAligment(true);
-		return panelRequestHeader;
-	}
+ 
 
 	/**
 	 * create table summary
@@ -170,40 +160,28 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private Component cashflowSummaryFooter(CashFlow totalCashFlow, CashFlow totalCostFlow) {
-
-		PanelRequest panelRequestHeader = rowPanelRequest();
-
-		JPanel panelFooter = buildPanelV2(panelRequestHeader, label("TOTAL"), label("Pemasukan"),
-				label(totalCashFlow.getAmount()), label(totalCashFlow.getCount()), label(""), label(""),
-				label("Pengeluaran"), label(totalCostFlow.getAmount()), label(totalCostFlow.getCount()));
-		return panelFooter;
+		return rowPanelHeader(5, 100, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
+				"Pengeluaran", totalCostFlow.getAmount(), totalCostFlow.getCount());
 	}
 
 	/**
 	 * build data for each row
 	 * 
-	 * @param number
+	 * @param day or number
 	 * @param income
 	 * @param cost
 	 * @return
 	 */
-	private JPanel buildCashflowSummaryRow(int number, CashFlow income, CashFlow cost) {
+	private JPanel buildCashflowSummaryTableRow(int day, CashFlow income, CashFlow cost) {
 
-		Color color = number % 2 == 0 ? Color.WHITE : Color.WHITE;
+		Color color = day % 2 == 0 ? Color.WHITE : Color.WHITE; 
+		Filter filter = responseTodayCashflow.getFilter(); 
 
-		PanelRequest panelRequestRow = rowPanelRequest();
-		panelRequestRow.setColor(color);
-
-		int day = number;
-		int month = responseTodayCashflow.getFilter().getMonth();
-		int year = responseTodayCashflow.getFilter().getYear();
-		
 		JButton buttonDetail = button("Detail");
-		buttonDetail.addActionListener(((DashboardHandler) appHandler).getDailyCashflow(day, month, year));
-		
-		JPanel panel = buildPanelV2(panelRequestRow, label(number), label("Pemasukan"), label(income.getAmount()),
-				label(income.getCount()), buttonDetail , label(""), label("Pengeluaran"), label(cost.getAmount()),
-				label(cost.getCount()));
+		buttonDetail.addActionListener(getHandler().getDailyCashflow(day, filter.getMonth(), filter.getYear()));
+
+		JPanel panel = rowPanel(5, 100, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail, "",
+				"Pengeluaran", cost.getAmount(), cost.getCount());
 		return panel;
 	}
 
@@ -219,10 +197,10 @@ public class DashboardPage extends BasePage {
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
 		CashFlow costflow = response.getMonthlyDetailCost().get(today);
 
-		JPanel panelCashflow = cashflowItemPanel(cashflow.getCount(), cashflow.getAmount(), "Pengeluaran");
-		JPanel panelCostflow = cashflowItemPanel(costflow.getCount(), costflow.getAmount(), "Pemasukan");
+		JPanel panelCashflow = todayCashflowCard(cashflow.getCount(), cashflow.getAmount(), "Pengeluaran");
+		JPanel panelCostflow = todayCashflowCard(costflow.getCount(), costflow.getAmount(), "Pemasukan");
 
-		PanelRequest panelRequest =   PanelRequest.autoPanelNonScroll(2, 200, 10,  Color.WHITE);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 10, Color.WHITE);
 		panelRequest.setCenterAligment(true);
 
 		return buildPanelV2(panelRequest, panelCashflow, panelCostflow);
@@ -271,8 +249,12 @@ public class DashboardPage extends BasePage {
 	@Override
 	protected void initEvent() {
 		super.initEvent();
-		buttonLogout.addActionListener(((DashboardHandler) appHandler).logout());
+		buttonLogout.addActionListener(getHandler().logout());
 
+	}
+
+	private DashboardHandler getHandler() {
+		return ((DashboardHandler) appHandler);
 	}
 
 	@Override
