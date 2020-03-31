@@ -18,6 +18,7 @@ public class AppHandler {
 	public static final int PAGE_LOGIN = 1;
 	public static final int PAGE_DASHBOARD = 2;
 	public static final int PAGE_LAUNCHER = 3;
+	public static final int PAGE_PERIODIC_REPORT = 4;
 
 	private static MainHandler activeHandler;
 
@@ -42,6 +43,7 @@ public class AppHandler {
 		handlers.put(PAGE_LAUNCHER, new LauncherHandler());
 		handlers.put(PAGE_LOGIN, new LoginHandler());
 		handlers.put(PAGE_DASHBOARD, new DashboardHandler());
+		handlers.put(PAGE_PERIODIC_REPORT, new PeriodicReportHandler());
 
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}

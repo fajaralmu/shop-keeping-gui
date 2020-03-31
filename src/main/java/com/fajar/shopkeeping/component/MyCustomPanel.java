@@ -116,7 +116,7 @@ public class MyCustomPanel extends JPanel {
 
 			}
 
-			currentHeight = currentHeight + margin + rowHeight;
+			currentHeight = currentHeight + margin + rowHeight; 
 		}
 		customHeight = currentHeight + margin;
 		customWidth = calculateWidth();

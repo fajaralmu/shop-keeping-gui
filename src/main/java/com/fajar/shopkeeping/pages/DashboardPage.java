@@ -23,23 +23,34 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.model.SharedContext;
+import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.DateUtil;
 
 public class DashboardPage extends BasePage {
 
+	
 	private JLabel labelUserInfo;
+	
 	private JButton buttonLogout;
+	private JButton buttonGotoPeriodicReport;
 	private JButton buttonLoadMonthlyCashflow;
+	
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
-	private ShopApiResponse responseTodayCashflow;
+	private JPanel panelPeriodFilter;
+	
 	private JComboBox comboBoxMonth;
 	private JComboBox comboBoxYear;
-	private JPanel panelPeriodFilter;
+	
+	
 	private int minTransactionYear;
 	private int selectedMonth = DateUtil.getCurrentMonth();
 	private int selectedYear = DateUtil.getCurrentYear();
+	
+
+	private ShopApiResponse responseTodayCashflow;
 
 	public DashboardPage() {
 		super("Dashboard", BASE_WIDTH, BASE_HEIGHT);
@@ -51,6 +62,37 @@ public class DashboardPage extends BasePage {
 		if (responseTodayCashflow == null) {
 			getHandler().getTodayMonthlyCashflow(callbackUpdateMonthlyCashflow());
 		}
+	}
+	
+	@Override
+	public void initComponent() {
+
+		PanelRequest mainPanelRequest = mainPanelRequest();
+
+		buttonLogout = button("logout");
+
+		if (labelUserInfo == null) {
+			labelUserInfo = title("Welcome to Dasboard!");
+		}
+		if (panelTodayCashflow == null) {
+			panelTodayCashflow = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+		}
+		if (panelMonthlySummary == null) {
+			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+		}
+		
+		panelPeriodFilter = buildPanelPeriodFilter();
+		
+		mainPanel = buildPanelV2(mainPanelRequest, 
+				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
+				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
+				panelTodayCashflow, panelPeriodFilter, 
+				panelMonthlySummary);
+
+		parentPanel.add(mainPanel);
+
+		exitOnClose();
+
 	}
 
 	private MyCallback callbackUpdateMonthlyCashflow() {
@@ -98,7 +140,8 @@ public class DashboardPage extends BasePage {
 		panelTodayCashflow = buildTodayCashflow(response);
 		panelMonthlySummary = buildMonthlySummaryTable(response);
 		minTransactionYear = response.getTransactionYears()[0];
-
+		AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
+		
 		preInitComponent();
 		initEvent();
 
@@ -225,36 +268,7 @@ public class DashboardPage extends BasePage {
 		return buildPanelV2(panelRequest, panelCashflow, panelCostflow);
 	}
 
-	@Override
-	public void initComponent() {
-
-		PanelRequest mainPanelRequest = mainPanelRequest();
-
-		buttonLogout = button("logout");
-
-		if (labelUserInfo == null) {
-			labelUserInfo = title("Welcome to Dasboard!");
-		}
-		if (panelTodayCashflow == null) {
-			panelTodayCashflow = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
-		}
-		if (panelMonthlySummary == null) {
-			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
-		}
-		
-		panelPeriodFilter = buildPanelPeriodFilter();
-		
-		mainPanel = buildPanelV2(mainPanelRequest, 
-				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
-				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
-				panelTodayCashflow, panelPeriodFilter, 
-				panelMonthlySummary);
-
-		parentPanel.add(mainPanel);
-
-		exitOnClose();
-
-	}
+	
 	
 	
 
@@ -267,25 +281,23 @@ public class DashboardPage extends BasePage {
 		comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
 		comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
 		buttonLoadMonthlyCashflow = button("Search"); 
+		buttonGotoPeriodicReport = button("Report Page");
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(5, 80, 3, Color.WHITE);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(4, 60, 3, Color.WHITE);
 		
 		JPanel panel = buildPanelV2(panelRequest ,
-				label("Month"), comboBoxMonth,
-				label("Year"), comboBoxYear,
-				 buttonLoadMonthlyCashflow);
+					label("Month"), comboBoxMonth,
+					label("Year"), comboBoxYear,
+				 
+					buttonLoadMonthlyCashflow,
+					BLANK_LABEL,
+					buttonGotoPeriodicReport,
+					BLANK_LABEL);
 		 
 		return panel;
 	}
 
-	private Object[] buildArray(int i, int i2) {
-
-		Object[] array = new Object[i2 - i + 1];
-		for (int j = i; j <= i2 ; j++) {
-			array[j-i] = j; 
-		}
-		return array;
-	}
+	
 
 	private PanelRequest mainPanelRequest() {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 700, 10, Color.WHITE);
@@ -303,12 +315,13 @@ public class DashboardPage extends BasePage {
 		super.initEvent();
 		buttonLogout.addActionListener(getHandler().logout());
 		buttonLoadMonthlyCashflow.addActionListener(getHandler().getMonthlyCashflow(comboBoxMonth, comboBoxYear, callbackUpdateMonthlyCashflow()));
+		buttonGotoPeriodicReport.addActionListener(getHandler().gotoPeriodicReportPage());
 		comboBoxMonth.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) { 
 				selectedMonth =(int) comboBoxMonth.getSelectedItem();
-				System.out.println("Selected month: "+selectedMonth);
+				log("Selected month: "+selectedMonth);
 			}
 		});
 		comboBoxYear.addActionListener(new ActionListener() {
@@ -316,7 +329,7 @@ public class DashboardPage extends BasePage {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				selectedYear =(int) comboBoxYear.getSelectedItem();
-				System.out.println("Selected year: "+selectedYear);
+				log("Selected year: "+selectedYear);
 			}
 		});
 	}
@@ -330,9 +343,6 @@ public class DashboardPage extends BasePage {
 		super.show();
 		labelUserInfo.setText("Welcome, " + AppSession.getUser().getDisplayName());
 	}
-	
-	private static void setComboBoxOnClickListener() {
-		
-	}
+	 
 
 }

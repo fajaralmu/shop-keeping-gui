@@ -23,7 +23,7 @@ public class MainHandler {
 
 	}
 
-	public ActionListener navigate(final int pageCode) {
+	public ActionListener navigationListener(final int pageCode) {
 		return new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

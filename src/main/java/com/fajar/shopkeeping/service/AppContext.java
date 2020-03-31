@@ -10,6 +10,9 @@ public class AppContext {
 	private static final Map<String, SharedContext> appContextMap = new HashMap<>();
 
 	public static SharedContext getContext(String key) {
+		if( appContextMap.get(key) == null) {
+			setContext(key, new SharedContext());
+		}
 		return appContextMap.get(key);
 	}
 

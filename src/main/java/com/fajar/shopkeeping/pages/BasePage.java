@@ -3,9 +3,13 @@ package com.fajar.shopkeeping.pages;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -15,9 +19,11 @@ import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.MyCustomFrame;
+import com.fajar.shopkeeping.component.MyCustomPanel;
+import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shopkeeping.util.Log;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -27,12 +33,17 @@ import lombok.Setter;
 public class BasePage {
 	
 	public static final int BASE_HEIGHT = 700;
-	public static final int BASE_WIDTH = 800;
+	public static final int BASE_WIDTH = 800; 
+
+	public static final JLabel BLANK_LABEL = label("");
+
+	public static final String REPORT_STUFF = "report-stuff";
 
 	protected final MyCustomFrame frame;
 	protected MyCustomFrame parentFrame;
-	protected final JPanel parentPanel = new JPanel();
+	protected JPanel parentPanel = new JPanel();
 	protected JPanel mainPanel;
+	
 	private final int WIDTH;
 	private final int HEIGHT;
 	private final String title;
@@ -136,17 +147,22 @@ public class BasePage {
 	 * panel (as table) header & footer
 	 * @param col
 	 * @param colSizes
-	 * @param titles
+	 * @param objects (Component or other will converted to label)
 	 * @return
 	 */
-	protected JPanel rowPanelHeader(int col, int colSizes, Object...titles) {
+	protected JPanel rowPanelHeader(int col, int colSizes, Object...objects) {
 
 		PanelRequest panelRequestHeader = rowPanelRequest(col, colSizes );
 
-		Component[] components = new Component[titles.length];
+		Component[] components = new Component[objects.length];
 		
-		for (int i = 0; i < titles.length; i++) {
-			components[i]  = label(titles[i]);
+		for (int i = 0; i < objects.length; i++) {
+			try {
+				components[i] = (Component) objects[i];
+			}catch (Exception e) {
+				components[i]  = label(objects[i]);
+			}
+			
 		}
 		
 		JPanel panelHeader = buildPanelV2(panelRequestHeader, components);
@@ -157,25 +173,25 @@ public class BasePage {
 	 * panel (as table) row
 	 * @param col
 	 * @param colSizes
-	 * @param titles
+	 * @param objects (Component or other will converted to label)
 	 * @return
 	 */
-	protected JPanel rowPanel(int col, int colSizes, Color color, Object...titles) {
+	protected JPanel rowPanel(int col, int colSizes, Color color, Object...objects) {
 
 		PanelRequest panelRequest = rowPanelRequest(col, colSizes );
 		panelRequest.setColor(color);
 		
-		Component[] components = new Component[titles.length];
+		Component[] components = new Component[objects.length];
 		
-		for (int i = 0; i < titles.length; i++) {
-			if(titles[i] == null) {
-				titles[i] = "";
+		for (int i = 0; i < objects.length; i++) {
+			if(objects[i] == null) {
+				objects[i] = "";
 			}
 			//check if a component
 			try {
-				components[i]  = (Component) titles[i];
+				components[i]  = (Component) objects[i];
 			}catch (Exception e) {
-				components[i]  = label(titles[i]);
+				components[i]  = label(objects[i]);
 			}
 			
 		}
@@ -184,8 +200,15 @@ public class BasePage {
 		return panel;
 	}
 	
-	protected JPanel rowPanel(int col, int colSizes,   Object...titles) {
-		return rowPanel(col, colSizes, Color.white, titles);
+	/**
+	 * 
+	 * @param col
+	 * @param colSizes
+	 * @param objects objects (Component or other will converted to label)
+	 * @return
+	 */
+	protected JPanel rowPanel(int col, int colSizes,   Object...objects) {
+		return rowPanel(col, colSizes, Color.white, objects);
 	}
 	
 	/**
@@ -208,7 +231,7 @@ public class BasePage {
 	}
 	
 	protected JButton button(String text) {
-		int width = text.length() * 10 + 50;
+		int width = text.length() * 10 + 20;
 		
 		JButton jButton = new JButton(text);
 		jButton.setSize(width, 20); 
@@ -216,7 +239,7 @@ public class BasePage {
 		return jButton ;
 	}
 
-	protected JLabel label(Object title) {
+	protected static JLabel label(Object title) {
 		
 		return ComponentBuilder.label(title);
 	}
@@ -246,5 +269,53 @@ public class BasePage {
 
 		component.setBounds(component.getX(), component.getY(), component.getWidth(), height);
 	}
+	
+	protected Object[] buildArray(int i, int i2) {
 
+		Object[] array = new Object[i2 - i + 1];
+		for (int j = i; j <= i2 ; j++) {
+			array[j-i] = j; 
+		}
+		return array;
+	}
+	
+	protected static void log(Object ...objects) {
+		Log.log(objects);
+	}
+
+	protected ActionListener comboBoxListener(final JComboBox comboBox, String fieldName) {
+		try {
+			final Field field = this.getClass().getDeclaredField(fieldName);
+			final Object origin = this;
+			field.setAccessible(true);
+			return new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Object value = comboBox.getSelectedItem();
+					try {
+						field.set(origin, value );
+						log(field.getName(), ":" , value);
+					} catch (IllegalArgumentException | IllegalAccessException e1) {
+						log("Error stting valu for field: ",field.getName()," and value :",value);
+						e1.printStackTrace();
+					} 
+					
+				}
+			};
+		} catch (NoSuchFieldException | SecurityException e1) {
+			return new BlankActionListener();
+		}
+		
+	}
+	
+	public static void printSize(Component component) {
+		log("Component size: ",component.getClass()," w: ",component.getWidth()," h: ",component.getHeight());
+		try {
+			JPanel panel = (MyCustomPanel) component;
+			log("Panel child component: ", panel.getComponentCount());
+		} catch (ClassCastException e) {
+			// TODO: handle exception
+		}
+	}
 }

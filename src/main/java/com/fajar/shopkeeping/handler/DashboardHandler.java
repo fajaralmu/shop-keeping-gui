@@ -115,4 +115,8 @@ public class DashboardHandler extends MainHandler {
 		}
 	}
 
+	public ActionListener gotoPeriodicReportPage() {
+		return navigationListener(AppHandler.PAGE_PERIODIC_REPORT);
+	}
+
 }

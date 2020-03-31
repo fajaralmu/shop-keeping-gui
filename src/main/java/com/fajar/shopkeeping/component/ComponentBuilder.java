@@ -15,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.pages.BasePage;
+import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 
 public class ComponentBuilder {
@@ -156,10 +158,14 @@ public class ComponentBuilder {
 		for (int i = 0; i < Size; i++) {
 
 			Component currentComponent = null;
-
+			
+			if(components[i] == null) {
+				components[i] = new JLabel();
+			}
+			
 			try {
 				currentComponent = (Component) components[i];
-			} catch (Exception e) {
+			} catch ( Exception  e) {
 				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
 			}
 
@@ -207,8 +213,10 @@ public class ComponentBuilder {
 
 		if (autoScroll && panelH > 0) {
 
-			customPanel.setPreferredSize(new Dimension(customPanel.getWidth(), customPanel.getHeight()));
+			customPanel.setPreferredSize(new Dimension(customPanel.getCustomWidth(), customPanel.getCustomHeight()));
 
+			BasePage.printSize(customPanel);
+			
 			JScrollPane scrollPane = new JScrollPane(customPanel);
 			scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
 
@@ -229,7 +237,7 @@ public class ComponentBuilder {
 		if (null == component) {
 			return;
 		}
-		System.out.println(component.getClass().getName() + "built--" +
+		Log.log(component.getClass().getName() + " built--" +
 
 				StringUtil.buildString("x:", component.getX(), " y:", component.getY(), "width:", component.getWidth(),
 						"height:", component.getHeight()));

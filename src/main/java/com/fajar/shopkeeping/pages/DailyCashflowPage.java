@@ -14,7 +14,7 @@ import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
-import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shopkeeping.util.DateUtil;
 
 import lombok.Data;
 
@@ -22,6 +22,12 @@ import lombok.Data;
 public class DailyCashflowPage extends BasePage {
 
 	public static final String CTX_DETAIL_CASHFLOW = "detailCashflow";
+
+	private static final int COLUMN_WIDTH = 160;
+
+	private static final int COLUMN = 4;
+
+	private static final int TABLE_WIDTH = COLUMN_WIDTH * COLUMN;
 
 	private ShopApiResponse dailyCashflowResponse;
 	private JPanel dailyCashflowPanel;
@@ -54,7 +60,7 @@ public class DailyCashflowPage extends BasePage {
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Detail " + day + " " + StringUtil.months[month - 1] + " " + year, 30),
+				title("Detail Penjualan " + DateUtil.dateString(day, month, year), 30),
 				dailyCashflowPanel
 
 		);  
@@ -66,8 +72,7 @@ public class DailyCashflowPage extends BasePage {
 
 	public void update() {
 		
-		dailyCashflowPanel = buildDetailTable();
-		System.out.println("dailyCashflowPanel: "+dailyCashflowPanel.getComponentCount());
+		dailyCashflowPanel = buildDetailTable(); 
 		preInitComponent();
 	}
 
@@ -79,21 +84,28 @@ public class DailyCashflowPage extends BasePage {
 
 		Map<String, CashFlow> dailyCashflowMap = dailyCashflowResponse.getDailyCashflow();
 		Set<String> keys = dailyCashflowMap.keySet();
-		Component[] components = new Component[keys.size() + 1];
+		Component[] components = new Component[keys.size() + 2];
 		components[0] = dailyCashflowHeader();
 		
 		int index = 1;
+		long amount = 0;
+		long count = 0;
 
 		for (String key : keys) {
 			
-			CashFlow cashflow = dailyCashflowMap.get(key); 
-			Product product = cashflow.getProduct();
-			String productName = product.getName().length() > 20 ? product.getName().substring(0, 20) :  product.getName();
-			components[index] = rowPanel(4, 100, index, productName, cashflow.getCount(), cashflow.getAmount());
+			CashFlow cashflow 	= dailyCashflowMap.get(key); 
+			Product product 	= cashflow.getProduct();
+			String productName 	= product.getName().length() > 30 ? product.getName().substring(0, 30) :  product.getName();
+			components[index] 	= rowPanel(COLUMN, COLUMN_WIDTH, index, productName, cashflow.getCount(), cashflow.getAmount());
 			
+			count+=cashflow.getCount();
+			amount+=cashflow.getAmount();
 			index++;
 		}
-		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, 410, 1, Color.LIGHT_GRAY, 260); 
+		
+		components[components.length-1] = dailyCashflowFooter(count, amount);
+		
+		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 500); 
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		
@@ -101,9 +113,13 @@ public class DailyCashflowPage extends BasePage {
 
 	}
 
+	private Component dailyCashflowFooter(long count, long amount) { 
+		return rowPanelHeader(COLUMN, COLUMN_WIDTH, "TOTAL", null, count, amount);
+	}
+
 	private Component dailyCashflowHeader() {
 		 
-		return rowPanelHeader(4, 100, "No", "Product", "Penjualan", "Nilai");
+		return rowPanelHeader(COLUMN, COLUMN_WIDTH, "No", "Product", "Penjualan", "Nilai");
 	}
 
 	@Override

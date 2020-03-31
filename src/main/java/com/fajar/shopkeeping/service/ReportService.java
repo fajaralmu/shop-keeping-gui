@@ -1,6 +1,13 @@
 package com.fajar.shopkeeping.service;
 
-import static com.fajar.shopkeeping.constant.WebServiceConstants.*;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_DAILY_CASHFOW;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_MONTHLY_CASHFOW;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_PERIODIC_CASHFOW;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -8,9 +15,12 @@ import org.springframework.web.client.RestTemplate;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.BaseEntity;
+import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.util.MapUtil;
 
 public class ReportService {
 
@@ -29,8 +39,8 @@ public class ReportService {
 
 	private ReportService() {
 
-	} 
- 
+	}
+
 	/**
 	 * 
 	 * @param month
@@ -44,19 +54,15 @@ public class ReportService {
 
 			public void run() {
 
-				try { 
-					ShopApiRequest shopApiRequest = ShopApiRequest.builder().
-							filter(Filter.builder().
-									year(year).
-									month(month).
-									build()).
-							build();
-					
+				try {
+					ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+							.filter(Filter.builder().year(year).month(month).build()).build();
+
 					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_MONTHLY_CASHFOW,
 							RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
-					
+
 					ShopApiResponse jsonResponse = response.getBody();
-					
+
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,9 +74,10 @@ public class ReportService {
 		});
 		thread.start();
 	}
-	
+
 	/**
 	 * get daily product flow
+	 * 
 	 * @param day
 	 * @param month
 	 * @param year
@@ -83,20 +90,15 @@ public class ReportService {
 
 			public void run() {
 
-				try { 
-					ShopApiRequest shopApiRequest = ShopApiRequest.builder().
-							filter(Filter.builder().
-									day(day).
-									year(year).
-									month(month).
-									build()).
-							build();
-					
+				try {
+					ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+							.filter(Filter.builder().day(day).year(year).month(month).build()).build();
+
 					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
 							RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
-					
+
 					ShopApiResponse jsonResponse = response.getBody();
-					
+
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -109,6 +111,65 @@ public class ReportService {
 		thread.start();
 	}
 
-	 
+	/**
+	 * get cash flow from selected period to selected period
+	 * 
+	 * @param filter
+	 * @param callback
+	 */
+	public void getPeriodicCashflow(final Filter filter, final MyCallback callback) {
+		Loadings.start();
+
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+					ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build();
+
+					ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
+							RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
+
+					HashMap mapResponse = response.getBody();
+
+					ShopApiResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
+
+					callback.handle(jsonResponse);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Error getPeriodicCashflow: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+			}
+
+		});
+		thread.start();
+
+	}
+
+	/**
+	 * convert from hashmap to object
+	 * @param mapResponse
+	 * @return
+	 */
+	private ShopApiResponse parseCashflowPeriodicResponse(HashMap mapResponse) {
+		List supplies = (List) mapResponse.get("supplies");
+		List purchases = (List) mapResponse.get("purchases");
+		
+		List<BaseEntity> suppliesList = mapListToCashflowList(supplies);
+		List<BaseEntity> purchasesList = mapListToCashflowList(purchases); 
+		 
+		ShopApiResponse parsedResponse = ShopApiResponse.builder().supplies(suppliesList).purchases(purchasesList).build();
+		return parsedResponse;
+	}
+	
+	private List<BaseEntity> mapListToCashflowList(List mapList){
+		List<BaseEntity> resultList = new ArrayList<BaseEntity>();
+		for(Object item : mapList) {
+			resultList.add((CashFlow)MapUtil.mapToObject((Map)item, CashFlow.class));
+		}
+		return resultList;
+	}
 
 }

@@ -20,6 +20,7 @@ public class SharedContext implements Serializable {
 	private int year;
 	private int day;
 	
+	private int minTransactionYear;
 	private int code;
 	
 	public SharedContext(int d, int m, int y) {
