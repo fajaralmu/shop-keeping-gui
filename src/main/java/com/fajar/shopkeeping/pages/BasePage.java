@@ -96,7 +96,7 @@ public class BasePage {
 		parentPanel.setBackground(Color.WHITE);
 		parentPanel.setLayout(null);
 		parentPanel.setBounds(10, 10, WIDTH, HEIGHT);
-		parentPanel.setSize(WIDTH, HEIGHT);
+		parentPanel.setSize(WIDTH, HEIGHT); 
 		frame.setContentPane(parentPanel);
 
 	}
@@ -116,6 +116,10 @@ public class BasePage {
 		System.out.println(title + " visible: " + frame.isVisible());
 
 	}
+	
+	protected void doNotCloseOtherPage() {
+		setCloseOtherPage(false);
+	}
 
 	protected JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 		return ComponentBuilder.buildPanel(panelRequest, components);
@@ -126,14 +130,23 @@ public class BasePage {
 	}
 
 	public void refresh() {
-
+		Log.log("Refresh on super class does not affect anything");
 	}
 
 	public void onShow() {
 
 	}
 
-	
+	protected ActionListener buttonRefreshListener() {
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				refresh();
+			}
+			
+		};
+	}
 	
 	
 	protected PanelRequest rowPanelRequest(int col, int colSize) {

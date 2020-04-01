@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.fajar.dto.Filter;
@@ -23,6 +22,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.util.DateUtil;
+import com.fajar.shopkeeping.util.Log;
 
 public class PeriodicReportPage extends BasePage {
 	
@@ -36,6 +36,7 @@ public class PeriodicReportPage extends BasePage {
 	private JComboBox comboBoxYearTo;
 	
 	private JButton buttonSearch;
+	private JButton buttonRefresh;
 	
 	private JPanel panelFilterPeriod;
 	private JPanel panelCashflowListTable;
@@ -49,7 +50,7 @@ public class PeriodicReportPage extends BasePage {
 
 	public PeriodicReportPage() {
 		super("Periodic Report", BASE_WIDTH, BASE_HEIGHT);
-		setCloseOtherPage(false);
+		doNotCloseOtherPage();
 	}
 
 	@Override
@@ -64,7 +65,7 @@ public class PeriodicReportPage extends BasePage {
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("HALAMAN PERIODIC REPORT", 30),
+				title("PERIODIC REPORT", 30),
 				panelFilterPeriod,
 				null,
 				panelCashflowListTable);
@@ -92,13 +93,14 @@ public class PeriodicReportPage extends BasePage {
 				buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
 
 		buttonSearch = button("Search");
+		buttonRefresh = button("Refresh");
 
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(3, 70, 5, Color.WHITE);
 
 		JPanel panel = buildPanelV2(panelRequest, 
 					BLANK_LABEL,	label("From"),		label("To") , 
 					label("Month"), comboBoxMonthFrom, 	comboBoxMonthTo,
-					label("Year"), 	comboBoxYearFrom, 	comboBoxYearTo, buttonSearch);
+					label("Year"), 	comboBoxYearFrom, 	comboBoxYearTo, buttonSearch, buttonRefresh);
 
 		return panel;
 	}
@@ -117,10 +119,17 @@ public class PeriodicReportPage extends BasePage {
 		comboBoxMonthTo.addActionListener(comboBoxListener(comboBoxMonthTo, "selectedMonthTo"));
 		comboBoxYearTo.addActionListener(comboBoxListener(comboBoxYearTo, "selectedYearTo"));
 		buttonSearch.addActionListener(buttonSearchListener());
+		buttonRefresh.addActionListener(buttonRefreshListener());
 
 	}
+	  
 	
-	
+	@Override
+	public void refresh() {
+		handlePeriodicCashflow(periodicCashflowResponse);
+		Log.log("refresh done...");
+		super.refresh();
+	}
 
 	private ActionListener buttonSearchListener() { 
 		return new ActionListener() {
