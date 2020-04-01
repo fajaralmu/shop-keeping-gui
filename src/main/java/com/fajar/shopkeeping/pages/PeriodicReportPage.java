@@ -26,7 +26,7 @@ import com.fajar.shopkeeping.util.DateUtil;
 
 public class PeriodicReportPage extends BasePage {
 	
-	private static final int COLUMN_WIDTH = 100; 
+	private static final int COLUMN_WIDTH = 160; 
 	private static final int COLUMN = 4;
 	private static final int TABLE_WIDTH = (COLUMN_WIDTH) *  COLUMN  ;
 
@@ -65,7 +65,7 @@ public class PeriodicReportPage extends BasePage {
 
 				title("HALAMAN PERIODIC REPORT", 30),
 				panelFilterPeriod,
-				BLANK_LABEL,
+				null,
 				panelCashflowListTable);
 
 		parentPanel.add(mainPanel); 
@@ -161,10 +161,10 @@ public class PeriodicReportPage extends BasePage {
 		}
 		
 		periodicCashflowResponse = response;
+		
 		try {
-		panelCashflowListTable = buildPeriodicCashflowTable();
+			panelCashflowListTable = buildPeriodicCashflowTable();
 		}catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		
@@ -205,8 +205,8 @@ public class PeriodicReportPage extends BasePage {
 			components[i + 1] = rowPanel;
 		}
 		
-		log("ARRAYSIZE: "+arraySize);
-		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 300); 
+		log("ARRAYSIZE: "+ arraySize);
+		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 400); 
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;

@@ -217,13 +217,7 @@ public class BasePage {
 	 */
 
 	protected JLabel title(String title, int fontSize) {
-		int width = title.length() * (fontSize + 10);
-		
-		JLabel label = new JLabel(title, SwingConstants.CENTER);
-		Font font = new Font("Arial", Font.BOLD, fontSize);
-		label.setFont(font);
-		label.setSize(width, new BigDecimal(fontSize * 1.5).intValue()); 
-		return label;
+		return ComponentBuilder.title(title, fontSize);
 	}
 	
 	protected JLabel title(String title) {

@@ -3,6 +3,8 @@ package com.fajar.shopkeeping.component;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -303,5 +305,16 @@ public class ComponentBuilder {
 		}
 
 		return false;
+	}
+
+	public static JLabel title(String title, int fontSize) {
+		 
+		int width = title.length() * (fontSize + 10);
+		
+		JLabel label = new JLabel(title, SwingConstants.CENTER);
+		Font font = new Font("Arial", Font.BOLD, fontSize);
+		label.setFont(font);
+		label.setSize(width, new BigDecimal(fontSize * 1.5).intValue()); 
+		return label;
 	}
 }
