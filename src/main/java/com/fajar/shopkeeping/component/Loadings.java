@@ -18,6 +18,7 @@ public class Loadings {
 		jframe.setLocationRelativeTo(null);
 		jframe.setBackground(Color.LIGHT_GRAY);
 		jframe.setUndecorated(true);
+		jframe.setAlwaysOnTop(true);
 		
 		JLabel loadingContent = ComponentBuilder.title("Please Wait", 20); 
 		loadingContent.setForeground(Color.white);
