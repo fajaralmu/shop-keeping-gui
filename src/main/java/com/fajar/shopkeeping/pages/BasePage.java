@@ -2,11 +2,9 @@ package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -14,9 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
@@ -48,8 +46,9 @@ public class BasePage {
 	private final int HEIGHT;
 	private final String title;
 	
-	private boolean authRequired;
+	protected boolean authRequired;
 	protected boolean beginPage;
+	protected boolean closeOtherPage = true;
 
 	@Setter(value = AccessLevel.NONE)
 	protected MainHandler appHandler;
@@ -311,5 +310,20 @@ public class BasePage {
 		} catch (ClassCastException e) {
 			// TODO: handle exception
 		}
+	}
+	
+	/**
+	 * increment count and amount
+	 * 
+	 * @param totalCashflow
+	 * @param flow
+	 */
+	protected static void updateCountAndAmount(CashFlow totalCashflow, CashFlow flow) {
+		if (null == totalCashflow) {
+			totalCashflow = new CashFlow();
+		}
+		totalCashflow.setAmount(flow.getAmount() + totalCashflow.getAmount());
+		totalCashflow.setCount(flow.getCount() + totalCashflow.getCount());
+
 	}
 }

@@ -49,6 +49,7 @@ public class PeriodicReportPage extends BasePage {
 
 	public PeriodicReportPage() {
 		super("Periodic Report", BASE_WIDTH, BASE_HEIGHT);
+		setCloseOtherPage(false);
 	}
 
 	@Override
@@ -187,6 +188,9 @@ public class PeriodicReportPage extends BasePage {
 		Component[] components = new Component[arraySize + 2];
 		components[0] = periodicCashflowHeader();
 		
+		CashFlow totalCashflow = new CashFlow();
+		CashFlow totalCostflow = new CashFlow();
+		
 		for (int i = 0; i < arraySize; i++) {
 			
 			CashFlow cashflow = (CashFlow) productSold.get(i);
@@ -202,14 +206,26 @@ public class PeriodicReportPage extends BasePage {
 					periodLabel, 	"Pemasukan", 	cashflow.getCount(), 	cashflow.getAmount(),
 					null,	"Pengeluaran", 	costflow.getCount(), 	costflow.getAmount() );
 			
+			updateCountAndAmount(totalCashflow, cashflow);
+			updateCountAndAmount(totalCostflow, costflow);
+			
 			components[i + 1] = rowPanel;
 		}
+		
+		components[components.length-1] = cashflowPeriodicFooter(totalCashflow,totalCostflow);
 		
 		log("ARRAYSIZE: "+ arraySize);
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 400); 
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
+	}
+
+	private Component cashflowPeriodicFooter(CashFlow totalCashflow, CashFlow totalCostflow) { 
+		return rowPanelHeader( COLUMN, COLUMN_WIDTH,  
+				
+				"TOTAL", 	"Pemasukan", 	totalCashflow.getCount(), 	totalCashflow.getAmount(),
+				null,	"Pengeluaran", 	totalCostflow.getCount(), 	totalCostflow.getAmount() ) ;
 	}
 
 	private Component periodicCashflowHeader() {

@@ -188,20 +188,7 @@ public class DashboardPage extends BasePage {
 		return panel;
 	}
 
-	/**
-	 * increment count and amount
-	 * 
-	 * @param totalCashflow
-	 * @param flow
-	 */
-	private static void updateCountAndAmount(CashFlow totalCashflow, CashFlow flow) {
-		if (null == totalCashflow) {
-			totalCashflow = new CashFlow();
-		}
-		totalCashflow.setAmount(flow.getAmount() + totalCashflow.getAmount());
-		totalCashflow.setCount(flow.getCount() + totalCashflow.getCount());
-
-	}
+	
 
 	/**
 	 * construct table header

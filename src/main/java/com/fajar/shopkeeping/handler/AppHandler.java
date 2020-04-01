@@ -8,6 +8,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
+import com.fajar.shopkeeping.util.Log;
 
 public class AppHandler {
 
@@ -57,7 +58,16 @@ public class AppHandler {
 
 		System.out.println("navigating to: " + handlerCode);
 
-		if (null != activeHandler) {
+		MainHandler nextHandler = handlers.get(handlerCode);
+		
+		if(null == nextHandler) {
+			Log.log("Handler is NULL");
+			return;
+		}
+		
+		boolean closePrevHandler = nextHandler.page.isCloseOtherPage();
+		
+		if (null != activeHandler && closePrevHandler) {
 			activeHandler.dismissPage();
 		}
 		activeHandler = handlers.get(handlerCode);
