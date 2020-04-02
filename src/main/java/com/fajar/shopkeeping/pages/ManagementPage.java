@@ -2,6 +2,8 @@ package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,15 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
-import com.fajar.entity.CostFlow;
 import com.fajar.entity.Product;
 import com.fajar.entity.User;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
+import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.handler.ManagementHandler;
@@ -39,20 +43,21 @@ public class ManagementPage extends BasePage {
 	private JButton buttonSubmit;
 	private JButton buttonClear;
 
-	private Class entityClass = CostFlow.class;
+	private Class entityClass = Product.class;
 
 	private Map<String, List<Map>> fixedListContainer = new HashMap<>();
+	private Map<String, List<Map>> dynamicListContainer = new HashMap<>();
 
 	public ManagementPage() {
 		super("Management", BASE_WIDTH, BASE_HEIGHT);
 	}
 
 	@Override
-	public void show() { 
+	public void show() {
 		super.show();
 		loadForm();
 	}
-	
+
 	@Override
 	public void initComponent() {
 
@@ -112,6 +117,8 @@ public class ManagementPage extends BasePage {
 
 		List<Component> formComponents = new ArrayList<Component>();
 
+		dynamicListContainer.clear();
+		fixedListContainer.clear();
 		entityProperty = EntityUtil.createEntityProperty(entityClass, null);
 
 		List<EntityElement> entityElements = entityProperty.getElements();
@@ -129,6 +136,8 @@ public class ManagementPage extends BasePage {
 			}
 
 			Component inputComponent = textField("Not Configured");
+			inputComponent.setFocusable(true);
+			inputComponent.requestFocus();
 
 			if (elementType.equals(FormField.FIELD_TYPE_FIXED_LIST)) {
 
@@ -136,21 +145,33 @@ public class ManagementPage extends BasePage {
 				String optionItemName = element.getOptionItemName();
 				String jsonListString = element.getJsonList();
 				List<Map> objectList = getHandler().getAllEntity(fieldType);
-				fixedListContainer.put(elementId, objectList); 
-				
+				fixedListContainer.put(elementId, objectList);
+
 				Object[] comboBoxValues = extractListOfSpecifiedField(objectList, optionItemName);
 				inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
+
+			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
+				
+				String optionValueName = element.getOptionItemName();
+				String optionItemName = element.getOptionItemName();
+				inputComponent = ComponentBuilder.buildComboBox("", "type something..");
+				inputComponent.setSize(150, 20);
+				((JComboBox) inputComponent).setEditable(true);
+				((JComboBox) inputComponent).getEditor().getEditorComponent()
+						.addKeyListener(dynamicComboBoxListener((JComboBox) inputComponent, optionItemName, fieldType));
 
 			} else if (element.isIdentity()) {
 				inputComponent = textField("ID");
 				inputComponent.setEnabled(false);
+
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
+
 				inputComponent = textArea(elementId);
 			} else {
 				inputComponent = textField(elementId);
 			}
 
-			formComponents.add(ComponentBuilder.buildInlineComponent(100, lableName, inputComponent));
+			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
 
 		}
 		/*
@@ -227,6 +248,49 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 
+	private KeyListener dynamicComboBoxListener(final JComboBox dynamicComboBox, final String optionItemName, final Class<?> fieldType) {
+
+		return new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent event) {
+				
+				final String componentText = ((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).getText();
+				Log.log("search: ", componentText, "class:",fieldType, " key: ",optionItemName);
+				getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText, new MyCallback() {
+					
+					@Override
+					public void handle(Object... params) throws Exception { 
+						
+						HashMap shopApiResponse = (HashMap) params[0];
+						List  entities = (List) shopApiResponse.get("entities");
+						dynamicListContainer.put(optionItemName, entities);
+						
+						dynamicComboBox.removeAllItems();
+						
+						for (Object object : entities) {
+							Map mapItem = (Map) object;
+							dynamicComboBox.addItem(mapItem.get(optionItemName));
+						}
+						dynamicComboBox.setSelectedItem(componentText);
+						dynamicComboBox.showPopup();
+					}
+				});
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+			}
+		};
+	}
+
 	private Component[] toArrayOfComponent(List<Component> formComponents) {
 
 		Component[] components = new Component[formComponents.size()];
@@ -280,6 +344,5 @@ public class ManagementPage extends BasePage {
 	private ManagementHandler getHandler() {
 		return (ManagementHandler) appHandler;
 	}
-	
-	
+
 }

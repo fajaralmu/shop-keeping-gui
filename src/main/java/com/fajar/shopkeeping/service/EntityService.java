@@ -54,6 +54,50 @@ public class EntityService extends BaseService {
 		});
 		thread.start();
 	} 
+	
+	public void getEntityList(final Filter filter, final Class entityClass, final MyCallback callback) {
+		Loadings.start();
+
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+					HashMap response = callGetEntity(filter, entityClass);
+					callback.handle(response);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+			}
+
+		});
+		thread.start();
+	}
+	
+	public void getEntityListHashMap(final Filter filter, final Class entityClass, final MyCallback callback) {
+		Loadings.start();
+
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+					ShopApiResponse response = getEntityList(filter, entityClass);
+					callback.handle(response);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+			}
+
+		});
+		thread.start();
+	}
 
 	private ShopApiResponse getEntityList(Filter filter, Class entityClass) {
 

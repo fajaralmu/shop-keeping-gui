@@ -2,6 +2,7 @@ package com.fajar.shopkeeping.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class MapUtil {
 						/**
 						 * mapValue is map
 						 */
-						if (value.getClass().equals(Map.class)) {
+						if (value.getClass().equals(Map.class) || value.getClass().equals(LinkedHashMap.class)) {
 
 							value = mapToObject((Map) value, fieldType);
 						} else 
