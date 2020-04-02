@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
@@ -22,11 +21,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.MapUtil;
 
-public class ReportService {
-
-	protected static final String HEADER_LOGIN_KEY = "loginKey";
-
-	private RestTemplate restTemplate = RestComponent.getRestTemplate();
+public class ReportService extends BaseService{ 
 
 	private static ReportService app;
 
@@ -54,14 +49,8 @@ public class ReportService {
 
 			public void run() {
 
-				try {
-					ShopApiRequest shopApiRequest = ShopApiRequest.builder()
-							.filter(Filter.builder().year(year).month(month).build()).build();
-
-					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_MONTHLY_CASHFOW,
-							RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
-
-					ShopApiResponse jsonResponse = response.getBody();
+				try { 
+					ShopApiResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
 
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
@@ -70,7 +59,7 @@ public class ReportService {
 				} finally {
 					Loadings.end();
 				}
-			}
+			} 
 		});
 		thread.start();
 	}
@@ -90,14 +79,8 @@ public class ReportService {
 
 			public void run() {
 
-				try {
-					ShopApiRequest shopApiRequest = ShopApiRequest.builder()
-							.filter(Filter.builder().day(day).year(year).month(month).build()).build();
-
-					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
-							RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
-
-					ShopApiResponse jsonResponse = response.getBody();
+				try { 
+					ShopApiResponse jsonResponse = callDailyCashflow(day, month, year);
 
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
@@ -107,6 +90,7 @@ public class ReportService {
 					Loadings.end();
 				}
 			}
+
 		});
 		thread.start();
 	}
@@ -124,13 +108,9 @@ public class ReportService {
 
 			public void run() {
 
-				try {
-					ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build();
+				try { 
 
-					ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
-							RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
-
-					HashMap mapResponse = response.getBody();
+					HashMap mapResponse = callPeriodicCashflow(filter);
 
 					ShopApiResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
 
@@ -142,6 +122,7 @@ public class ReportService {
 					Loadings.end();
 				}
 			}
+
 
 		});
 		thread.start();
@@ -171,5 +152,64 @@ public class ReportService {
 		}
 		return resultList;
 	}
+	
+	
+	/***
+	 *  ========================================
+	 *                 WEBSERVICE CALLS
+	 *  ========================================
+	 *  
+	 */
+	
+	private ShopApiResponse callGetMothlyCashflowDetail(int month, int year) {
+		
+		try {
+			ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+					.filter(Filter.builder().year(year).month(month).build()).build();
+	
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_MONTHLY_CASHFOW,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			return response.getBody();
+			
+		}catch (Exception e) { 
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 
+	private HashMap callPeriodicCashflow(Filter filter) {
+		
+		try {
+			ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build();
+	
+			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
+					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
+	
+			return response.getBody();
+			 
+		}catch (Exception e) { 
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	
+
+	private ShopApiResponse callDailyCashflow(int day, int month, int year) {
+		try {
+			ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+					.filter(Filter.builder().day(day).year(year).month(month).build()).build();
+	
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+	
+			return response.getBody();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 }

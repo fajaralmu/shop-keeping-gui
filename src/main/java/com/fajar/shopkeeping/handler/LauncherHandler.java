@@ -1,10 +1,9 @@
 package com.fajar.shopkeeping.handler;
 
-import static com.fajar.shopkeeping.handler.AppHandler.PAGE_LOGIN;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LauncherPage;
 
 public class LauncherHandler extends MainHandler {
@@ -27,7 +26,7 @@ public class LauncherHandler extends MainHandler {
 
 			public void actionPerformed(ActionEvent e) {
 				
-				APP_HANDLER.navigate(PAGE_LOGIN);
+				APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
 			}
 		};
 	}

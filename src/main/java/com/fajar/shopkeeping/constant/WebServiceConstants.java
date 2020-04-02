@@ -11,4 +11,7 @@ public class WebServiceConstants {
 	public static final String URL_MONTHLY_CASHFOW = WS_HOST + "api/transaction/monthlycashflow";
 	public static final String URL_DAILY_CASHFOW = WS_HOST + "api/transaction/dailycashflow";
 	public static final String URL_PERIODIC_CASHFOW = WS_HOST + "api/transaction/cashflowdetail";
+	
+	//ENTITY
+	public static final String URL_ENTITY_GET = WS_HOST + "api/entity/get";
 }

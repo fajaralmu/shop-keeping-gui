@@ -9,6 +9,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * used when constructing dynamic JPanel
+ * @author Republic Of Gamers
+ *
+ */
 @Builder
 @Data
 @AllArgsConstructor

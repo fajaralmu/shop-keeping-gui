@@ -288,6 +288,11 @@ public class ComponentBuilder {
 		return label;
 	}
 
+	/**
+	 * is the given object integer, double, long ?
+	 * @param o
+	 * @return
+	 */
 	public static boolean isNumber(Object o) {
 		if (null == o) {
 			return false;

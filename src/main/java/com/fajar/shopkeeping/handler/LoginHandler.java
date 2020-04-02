@@ -1,13 +1,12 @@
 package com.fajar.shopkeeping.handler;
 
-import static com.fajar.shopkeeping.handler.AppHandler.PAGE_DASHBOARD;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JTextField;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LoginPage;
 
 public class LoginHandler extends MainHandler { 
@@ -32,14 +31,14 @@ public class LoginHandler extends MainHandler {
 	}
 
 	private void doLogin(String username, String password) {
-		// TODO Auto-generated method stub
+		
 		accountService.doLogin(username, password, new MyCallback() {
 			
 			public void handle(Object... params) throws Exception {
-				// TODO Auto-generated method stub
+				 
 				boolean success = (Boolean) params[0];
 				if(success) {
-					APP_HANDLER.navigate(PAGE_DASHBOARD);
+					APP_HANDLER.navigate(PageConstants.PAGE_DASHBOARD);
 				}
 			}
 		});

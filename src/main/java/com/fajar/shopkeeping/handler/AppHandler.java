@@ -9,6 +9,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
+import static com.fajar.shopkeeping.constant.PageConstants.*;
 
 public class AppHandler {
 
@@ -16,11 +17,7 @@ public class AppHandler {
 	private AccountService accountService = AccountService.getInstance();
 
 
-	public static final int PAGE_LOGIN = 1;
-	public static final int PAGE_DASHBOARD = 2;
-	public static final int PAGE_LAUNCHER = 3;
-	public static final int PAGE_PERIODIC_REPORT = 4;
-	public static final int PAGE_MANAGEMENT = 5;
+	
 
 	private static MainHandler activeHandler;
 

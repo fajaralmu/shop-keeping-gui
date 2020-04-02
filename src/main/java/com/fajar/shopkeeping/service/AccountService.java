@@ -1,6 +1,8 @@
 package com.fajar.shopkeeping.service;
 
-import static com.fajar.shopkeeping.constant.WebServiceConstants.*;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGIN;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGOUT;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_REQIEST_APP;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,6 @@ import javax.activity.InvalidActivityException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
@@ -18,14 +19,10 @@ import com.fajar.entity.User;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class AccountService {
-
-	protected static final String HEADER_LOGIN_KEY = "loginKey";
-
-	private RestTemplate restTemplate = RestComponent.getRestTemplate();
+public class AccountService extends BaseService{ 
 
 	private static AccountService app;
 
@@ -47,7 +44,7 @@ public class AccountService {
 	}
 
 	/**
-	 * 
+	 * requesting new app ID
 	 * @param callback params : JsonResponse
 	 */
 	private void requestAppId(final MyCallback callback) {
@@ -58,9 +55,8 @@ public class AccountService {
 			public void run() {
 
 				try {
-					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
-							new ShopApiRequest(), ShopApiResponse.class);
-					callback.handle(response.getBody());
+					ShopApiResponse response = callRequestAppId();
+					callback.handle(response );
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.showErrorDialog("Error requesting app id: " + e.getMessage());
@@ -68,6 +64,7 @@ public class AccountService {
 					Loadings.end();
 				}
 			}
+
 		});
 		thread.start();
 	}
@@ -89,12 +86,9 @@ public class AccountService {
 				boolean success = false;
 
 				try {
-					User user = User.builder().username(username).password(password).build();
+					 
 
-					final ShopApiRequest loginRequest = ShopApiRequest.builder().user(user).build();
-
-					ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_LOGIN,
-							RestComponent.buildAuthRequest(loginRequest, false), HashMap.class);
+					ResponseEntity<HashMap> response = callLogin(username, password);
 
 					if (response.getBody().get("code").equals("00") == false) {
 						throw new InvalidActivityException("Invalid Response");
@@ -103,8 +97,7 @@ public class AccountService {
 					HashMap responseBody = response.getBody();
 					HttpHeaders responseHeaders = response.getHeaders();
 					List<String> loginKey = responseHeaders.get(HEADER_LOGIN_KEY);
-
-					System.out.println("response: " + new ObjectMapper().writeValueAsString(responseBody));
+ 
 					User responseUser = (User) MapUtil.mapToObject((Map) responseBody.get("entity"), User.class);
 
 					AppSession.setLoginKey(loginKey.get(0));
@@ -119,16 +112,18 @@ public class AccountService {
 					Dialogs.showErrorDialog("Login Error: " + e.getMessage());
 				} finally {
 
-					System.out.println("Login success: " + success);
+					Log.log("Login success: " + success);
 
 					try {
 						callback.handle(success);
 					} catch (Exception e) {
-						System.out.println("Error calling back login");
+						Log.log("Error calling back login");
 						e.printStackTrace();
 					}
 				}
 			}
+
+			
 
 		});
 		thread.start();
@@ -151,11 +146,10 @@ public class AccountService {
 
 				try {
 
-					ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGOUT,
-							RestComponent.buildEmptyAuthRequest(true), ShopApiResponse.class);
+					ShopApiResponse response  = callLogout();
 
-					if (response.getBody().getCode().equals("00") == false) {
-						throw new InvalidActivityException("Invalid Response: "+response.getBody().getCode());
+					if (response. getCode().equals("00") == false) {
+						throw new InvalidActivityException("Invalid Response: "+response. getCode());
 					}
   
 					AppSession.removeLoginKey(); 
@@ -168,20 +162,61 @@ public class AccountService {
 					Dialogs.showErrorDialog("Logout Error: " + e.getMessage());
 				} finally {
 
-					System.out.println("Logout success: " + success); 
+					Log.log("Logout success: " + success); 
 					try {
 						callback.handle(success);
 					} catch (Exception e) {
-						System.out.println("Error calling back Logout");
+						Log.log("Error calling back Logout");
 						e.printStackTrace();
 					}
 				}
-			}
+			} 
 
 		});
 
 		thread.start();
 
+	}
+	
+	/**
+	 * =================================================
+	 *                 WEBSERVICE CALL
+	 * =================================================           
+	 * 
+	 */
+	
+	private ShopApiResponse callLogout() {
+		try {
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGOUT,
+				RestComponent.buildEmptyAuthRequest(true), ShopApiResponse.class);
+			return response.getBody();
+		}catch (Exception e) { 
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private ResponseEntity<HashMap> callLogin(String username, String password) {
+		User user = User.builder().username(username).password(password).build();
+
+		final ShopApiRequest loginRequest = ShopApiRequest.builder().user(user).build();
+
+		try {
+			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_LOGIN,
+					RestComponent.buildAuthRequest(loginRequest, false), HashMap.class);
+			
+			return response;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+
+	private ShopApiResponse callRequestAppId() {
+		ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
+				new ShopApiRequest(), ShopApiResponse.class);
+		return response.getBody();
 	}
 
 }
