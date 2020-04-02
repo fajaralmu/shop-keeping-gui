@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -322,5 +323,18 @@ public class ComponentBuilder {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 5, Color.white);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
+	}
+	
+	public static JTextArea textarea(Object defaultValue) {
+		if(null == defaultValue) {
+			defaultValue = "";
+		}
+		
+		JTextArea textArea = new JTextArea(defaultValue.toString());
+		textArea.setSize(100, 50);
+		textArea.setColumns(10);
+		textArea.setRows(3); 
+		textArea.setBackground(Color.LIGHT_GRAY);
+		return textArea ;
 	}
 }

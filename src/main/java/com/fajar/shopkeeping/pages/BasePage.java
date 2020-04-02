@@ -11,6 +11,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -264,6 +265,10 @@ public class BasePage {
 		JTextField label = new JTextField(string); 
 		label.setSize(100, 20);
 		return label;
+	}
+	
+	protected JTextArea textArea(Object defaultValue) {
+		return ComponentBuilder.textarea(defaultValue);
 	}
 	
 	protected static void changeSize(Component component, int width, int height) {

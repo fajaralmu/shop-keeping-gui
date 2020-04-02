@@ -318,6 +318,7 @@ public class DashboardPage extends BasePage {
 				log("Selected month: "+selectedMonth);
 			}
 		});
+		 
 		comboBoxYear.addActionListener(new ActionListener() {
 			
 			@Override
