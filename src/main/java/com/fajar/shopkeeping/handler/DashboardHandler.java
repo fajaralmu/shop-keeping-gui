@@ -9,7 +9,6 @@ import javax.swing.JComboBox;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.pages.DailyCashflowPage;
 import com.fajar.shopkeeping.pages.DashboardPage;
@@ -117,6 +116,10 @@ public class DashboardHandler extends MainHandler {
 
 	public ActionListener gotoPeriodicReportPage() {
 		return navigationListener(AppHandler.PAGE_PERIODIC_REPORT);
+	}
+
+	public ActionListener gotoManagementPage() {
+		return navigationListener(AppHandler.PAGE_MANAGEMENT);
 	}
 
 }

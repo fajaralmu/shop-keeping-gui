@@ -24,7 +24,7 @@ public class LauncherPage extends BasePage {
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true); 
 		
-		JPanel mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
 				title("BUMDES", 50),
 				title("\"MAJU MAPAN\"", 50),

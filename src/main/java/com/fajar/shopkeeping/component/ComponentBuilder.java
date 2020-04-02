@@ -317,4 +317,10 @@ public class ComponentBuilder {
 		label.setSize(width, new BigDecimal(fontSize * 1.5).intValue()); 
 		return label;
 	}
+	
+	public static JPanel buildInlineComponent(int colWidth, Component...components) {
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 5, Color.white);
+		Object[] components_ = components;
+		return buildPanelV2(panelRequest, components_ );
+	}
 }

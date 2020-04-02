@@ -36,6 +36,7 @@ public class DashboardPage extends BasePage {
 	private JButton buttonLogout;
 	private JButton buttonGotoPeriodicReport;
 	private JButton buttonLoadMonthlyCashflow;
+	private JButton buttonGoToManagement;
 	
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
@@ -70,6 +71,7 @@ public class DashboardPage extends BasePage {
 		PanelRequest mainPanelRequest = mainPanelRequest();
 
 		buttonLogout = button("logout");
+		buttonGoToManagement = button("Management");
 
 		if (labelUserInfo == null) {
 			labelUserInfo = title("Welcome to Dasboard!");
@@ -83,8 +85,12 @@ public class DashboardPage extends BasePage {
 		
 		panelPeriodFilter = buildPanelPeriodFilter();
 		
+		
+		JPanel panelButton = ComponentBuilder.buildInlineComponent(100, buttonLogout, buttonGoToManagement);
+		
 		mainPanel = buildPanelV2(mainPanelRequest, 
-				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, buttonLogout,
+				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, 
+				panelButton,
 				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
 				panelTodayCashflow, panelPeriodFilter, 
 				panelMonthlySummary);
@@ -303,6 +309,7 @@ public class DashboardPage extends BasePage {
 		buttonLogout.addActionListener(getHandler().logout());
 		buttonLoadMonthlyCashflow.addActionListener(getHandler().getMonthlyCashflow(comboBoxMonth, comboBoxYear, callbackUpdateMonthlyCashflow()));
 		buttonGotoPeriodicReport.addActionListener(getHandler().gotoPeriodicReportPage());
+		buttonGoToManagement.addActionListener(getHandler().gotoManagementPage());
 		comboBoxMonth.addActionListener(new ActionListener() {
 			
 			@Override
