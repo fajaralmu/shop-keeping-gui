@@ -260,14 +260,17 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void keyReleased(KeyEvent event) {
 				
-				final String componentText = ((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).getText();
-				Log.log("search: ", componentText, "class:",fieldType, " key: ",optionItemName);
+				final String componentText = ((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).getText(); 
 				getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText, new MyCallback() {
 					
 					@Override
 					public void handle(Object... params) throws Exception { 
 						
 						HashMap shopApiResponse = (HashMap) params[0];
+						populateDynamicDropdown(shopApiResponse);
+					}
+
+					private void populateDynamicDropdown(HashMap shopApiResponse) {
 						List  entities = (List) shopApiResponse.get("entities");
 						dynamicListContainer.put(optionItemName, entities);
 						
@@ -278,6 +281,8 @@ public class ManagementPage extends BasePage {
 							dynamicComboBox.addItem(mapItem.get(optionItemName));
 						}
 						dynamicComboBox.setSelectedItem(componentText);
+						((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).setSelectionStart(componentText.length());
+						((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).setSelectionEnd(componentText.length());
 						dynamicComboBox.showPopup();
 					}
 				});
