@@ -1,10 +1,11 @@
 package com.fajar.shopkeeping.handler;
 
-import java.awt.event.ActionEvent; 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.service.AccountService;
+import com.fajar.shopkeeping.service.EntityService;
 import com.fajar.shopkeeping.service.ReportService;
 
 public class MainHandler {
@@ -13,6 +14,7 @@ public class MainHandler {
 	protected static final AppHandler APP_HANDLER = AppHandler.getInstance();
 	protected final AccountService accountService = AccountService.getInstance();
 	protected final ReportService reportService = ReportService.getInstance();
+	protected final EntityService entityService = EntityService.getInstance();
 
 	public MainHandler() {
 		init();

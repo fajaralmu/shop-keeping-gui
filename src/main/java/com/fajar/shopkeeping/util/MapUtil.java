@@ -1,10 +1,23 @@
 package com.fajar.shopkeeping.util;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class MapUtil {
+	
+	public static <T> List convertMapList(List mapList, Class objectClass) {
+		
+		List result = new ArrayList<>();
+		
+		for (Object object : mapList) {
+			result.add(mapToObject( (Map) object, objectClass));
+		} 
+		
+		return result;
+	}
 
 	public static Object mapToObject(Map map, Class objectClass) {
 		Set mapKeys = map.keySet();
