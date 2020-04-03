@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -84,6 +85,10 @@ public class BasePage {
 			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		}
 	}
+	
+	protected void setDefaultValues() {
+		
+	}
 
 	protected void initEvent() { 
 
@@ -98,6 +103,7 @@ public class BasePage {
 		System.out.println("mainHandler: " + mainHandler);
 		this.appHandler = mainHandler;
 		initEvent();
+		setDefaultValues();
 	}
 
 	private void initMainComponent() {
@@ -336,6 +342,54 @@ public class BasePage {
 		Log.log(objects);
 	}
 
+	/**
+	 * change object field based on jTextfield's text
+	 * @param inputComponent
+	 * @param elementId
+	 * @return
+	 */
+	protected KeyListener textFieldActionListener(final JTextField inputComponent, final String fieldName) {
+		
+		try {
+			final Field field = this.getClass().getDeclaredField(fieldName);
+			final Object origin = this;
+			field.setAccessible(true);
+			
+			return new KeyListener() {
+
+				@Override
+				public void keyTyped(KeyEvent e) { }
+
+				@Override
+				public void keyPressed(KeyEvent e) { }
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					Object value = inputComponent.getText();
+					try {
+						field.set(origin, value );
+						log(field.getName(), ":" , value);
+					} catch (IllegalArgumentException | IllegalAccessException e1) {
+						log("Error setting value for field: ",field.getName()," the value is :",value);
+						e1.printStackTrace();
+					} 
+					
+				}  
+			};
+		} catch (Exception e1) { 
+			Log.log("Error setting key listener");
+			e1.printStackTrace();
+			return null;
+		}  
+		
+	}
+	
+	/**
+	 * change object field based on comboBox's selected item
+	 * @param comboBox
+	 * @param fieldName
+	 * @return
+	 */
 	protected ActionListener comboBoxListener(final JComboBox comboBox, String fieldName) {
 		try {
 			final Field field = this.getClass().getDeclaredField(fieldName);
@@ -350,7 +404,7 @@ public class BasePage {
 						field.set(origin, value );
 						log(field.getName(), ":" , value);
 					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						log("Error stting valu for field: ",field.getName()," and value :",value);
+						log("Error setting value for field: ",field.getName()," the value :",value);
 						e1.printStackTrace();
 					} 
 					

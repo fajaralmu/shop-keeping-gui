@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.handler;
 
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -10,8 +9,8 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import com.fajar.dto.Filter;
+import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 
@@ -29,7 +28,7 @@ public class ManagementHandler extends MainHandler {
 
 	public List<Map> getAllEntity(Class<?> fieldType) {
 
-		List<Map> resultList = entityService.getAllEntityList(fieldType);
+		List<Map> resultList = entityService.getAllEntityOnlyList(fieldType);
 		return resultList;
 	}
 
@@ -42,7 +41,7 @@ public class ManagementHandler extends MainHandler {
 			}
 		};
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
-		entityService.getEntityList(filter, entityClass, callback);
+		entityService.getEntityListHashMapResponse(filter, entityClass, callback);
 	}
 	
 	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
@@ -88,8 +87,7 @@ public class ManagementHandler extends MainHandler {
 		Map<String, Object> managedObject = getPage().getManagedObject();
 		String idField = getPage().getIdFieldName();
 		
-		Log.log("Submit managedObject: ", managedObject);
-		Log.log("id field:"+idField+",  value: ", managedObject.get(idField));
+		Log.log("Submit managedObject: ", managedObject); 
 		
 		entityService.addNewEntity(managedObject, getPage().getEntityClass(), new MyCallback() {
 			
@@ -101,6 +99,42 @@ public class ManagementHandler extends MainHandler {
 			}
 		});
 		
+	}
+	
+	public ActionListener filterEntity() {
+		
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getEntities();				
+			}
+		};
+	}
+	
+	/**
+	 * get entities for populating data table
+	 * @param fieldFilter
+	 * @param callback
+	 */
+	public void getEntities( ) {	
+		
+		Log.log("Page: ",getPage().getSelectedPage(), "Limit: ", getPage().getSelectedLimit());
+		
+		entityService.getEntityList(
+				Integer.parseInt(getPage().getSelectedPage()), 
+				Integer.parseInt(getPage().getSelectedLimit()), 
+				getPage().getFieldsFiler(), 
+				getPage().getEntityClass(),
+				
+				new MyCallback() {
+					
+					@Override
+					public void handle(Object... params) throws Exception {
+						ShopApiResponse response = (ShopApiResponse) params[0];
+						getPage().handleGetFilteredEntities(response);
+					}
+				});
 	}
 
 

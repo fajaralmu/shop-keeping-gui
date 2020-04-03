@@ -8,7 +8,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,9 +24,9 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
+import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CostFlow;
-import com.fajar.entity.User;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -38,7 +37,6 @@ import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -50,15 +48,25 @@ public class ManagementPage extends BasePage {
 
 	private JPanel formPanel;
 
-	private JButton buttonSubmit;
-	private JButton buttonClear;
+	private final JButton buttonSubmit = button("Submit");
+	private final JButton buttonClear = button("Clear");
+	private final JButton buttonFilterEntity = button("Filter");
 
 	private Class<? extends BaseEntity> entityClass = CostFlow.class;
  
 	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
+	private Map<String, Object> fieldsFiler = new HashMap<>();
+	
 	private String idFieldName;
+	
+	private final JTextField inputPage = numberField("0");
+	private final JTextField inputLimit = numberField("10");
 
+	private String selectedPage;
+	private String selectedLimit;
+	
+	
 	public ManagementPage() {
 		super("Management", BASE_WIDTH, BASE_HEIGHT);
 	}
@@ -76,15 +84,13 @@ public class ManagementPage extends BasePage {
 
 		if (formPanel == null) {
 			formPanel = buildPanelV2(panelRequest, label("Please wait.."));
-		}
-
-		buttonSubmit = button("Submit");
-		buttonClear = button("Clear");
+		} 
 
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
 				title("Management Page", 50), formPanel,
-				ComponentBuilder.buildInlineComponent(100, buttonSubmit, buttonClear));
+				ComponentBuilder.buildInlineComponent(100, buttonSubmit, buttonClear),
+				ComponentBuilder.buildInlineComponent(100, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity));
 
 		parentPanel.add(mainPanel);
 		exitOnClose();
@@ -95,7 +101,17 @@ public class ManagementPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		buttonSubmit.addActionListener(getHandler().submit());
-
+		inputPage.addKeyListener(textFieldActionListener(inputPage, "selectedPage"));
+		inputLimit.addKeyListener(textFieldActionListener(inputLimit, "selectedLimit"));
+		buttonFilterEntity.addActionListener(getHandler().filterEntity()); 
+		
+	}
+	
+	@Override
+	protected void setDefaultValues() { 
+		super.setDefaultValues();
+		selectedPage = inputPage.getText();
+		selectedLimit = inputLimit.getText();
 	}
 
 	/**
@@ -119,7 +135,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
-	 * CRUD Form
+	 * CRUD Form Generation
 	 * 
 	 * @return
 	 */
@@ -196,7 +212,7 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals(FormField.FIELD_TYPE_NUMBER)) {
 
 				inputComponent = numberField(elementId);
-				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId));
+				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId));
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_DATE)) {
 
@@ -206,7 +222,7 @@ public class ManagementPage extends BasePage {
 				
 			} else {
 				inputComponent = textField(elementId);
-				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId) );
+				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
 			}
 
 			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
@@ -286,7 +302,12 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
-
+	/**
+	 * when JDateChooser changed
+	 * @param inputComponent
+	 * @param elementId
+	 * @return
+	 */
 	private PropertyChangeListener dateChooserPropertyChangeListener(final JDateChooser inputComponent, final String elementId) {
 		 
 		return new PropertyChangeListener() {
@@ -335,7 +356,7 @@ public class ManagementPage extends BasePage {
 	 * @param elementId
 	 * @return
 	 */
-	private KeyListener textFieldActionListener(final JTextField inputComponent, final String elementId) {
+	private KeyListener crudTextFieldActionListener(final JTextField inputComponent, final String elementId) {
 		 
 		return new KeyListener() {
 
@@ -428,6 +449,10 @@ public class ManagementPage extends BasePage {
 						populateDynamicDropdown(shopApiResponse);
 					}
 
+					/**
+					 * populate items on comboBox
+					 * @param shopApiResponse
+					 */
 					private void populateDynamicDropdown(HashMap shopApiResponse) {
 						List  entities = (List) shopApiResponse.get("entities");
 						comboBoxListContainer.put(elementId, entities);
@@ -470,24 +495,7 @@ public class ManagementPage extends BasePage {
 			result[i] = item.get(optionItemName);
 		}
 		return result;
-	}
-
-	private List<Map> convertToMapList(String jsonListString) {
-		List<Map> result = new ArrayList<>();
-
-		try {
-			List rawList = EntityUtil.OBJECT_MAPPER.readValue(jsonListString, List.class);
-			for (Object object : rawList) {
-				result.add((Map) object);
-			}
-		} catch (IOException e) {
-			Log.log("ERROR parsing list");
-			e.printStackTrace();
-		}
-
-		return result;
-	}
- 
+	} 
 
 	private ManagementHandler getHandler() {
 		return (ManagementHandler) appHandler;
@@ -506,6 +514,15 @@ public class ManagementPage extends BasePage {
 			Dialogs.showErrorDialog("Update failed!");
 		}
 		Log.log("Callback update entity: ", response);
+		
+	}
+
+	/**
+	 * handle response when get filtered entities
+	 * @param response
+	 */
+	public void handleGetFilteredEntities(ShopApiResponse response) {
+		Log.log("Filtered Entities: ",response.getEntities());
 		
 	}
 

@@ -3,8 +3,6 @@ package com.fajar.shopkeeping.handler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JTextField;
-
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LoginPage;
@@ -17,17 +15,21 @@ public class LoginHandler extends MainHandler {
 		page = new LoginPage();
 	}
 
-	public ActionListener doLogin(final JTextField usernameField, final JTextField passwordField) {
+	public ActionListener doLogin() {
 		return new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				final String username = usernameField.getText();
-				final String password = passwordField.getText();
+				final String username = getPage().getTypedUsername();
+				final String password = getPage().getTypedPassword();
 				doLogin(username, password);
 				System.out.println("LOGIN: " + username + " & " + password);
 
 			} 
 		};
+	}
+	
+	private LoginPage getPage() {
+		return (LoginPage) page;
 	}
 
 	private void doLogin(String username, String password) {

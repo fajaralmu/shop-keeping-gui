@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.util;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,12 +28,11 @@ public class MapUtil {
 			Object result = objectClass.newInstance();
 
 			for (Object key : mapKeys) {
-
-				try {
-					Object value = map.get(key);
-
-					Field field = EntityUtil.getDeclaredField(objectClass, key.toString());
-
+				Object value = map.get(key);
+				Field field = EntityUtil.getDeclaredField(objectClass, key.toString()); 
+				
+				try {  
+					
 					if (value != null && field != null) {
 
 						Class<?> fieldType = field.getType();
@@ -47,20 +47,41 @@ public class MapUtil {
 							/**
 							 * long
 							 */
-							if (fieldType.equals(long.class) || fieldType.equals(Long.class)) {
+							if (equals(fieldType,long.class,Long.class)) {
 							value = Long.valueOf(value.toString());
+						} else 
+							/**
+							 * int
+							 */
+							if (equals(fieldType,int.class,Integer.class)) {
+							value = Integer.parseInt(value.toString());
 						} else 
 							/**
 							 * double
 							 */
-							if (fieldType.equals(double.class) || fieldType.equals(Double.class)) {
+							if (equals(fieldType, double.class  ,Double.class)) {
 							value = Double.valueOf(value.toString());
-						}
+						} else
+							/**
+							 * date from Long
+							 */
+							if(fieldType.equals(Date.class) && (equals(value.getClass(),Long.class,long.class))) {
+								value = new Date((Long) value);
+						}else
+							/**
+							 * long from date
+							 */
+							if(equals(fieldType, long.class ,Long.class) && value.getClass().equals(Date.class)) {
+								value = ((Date) value).getTime();
+							}
+							
 
 						field.setAccessible(true);
 						field.set(result, value);
 					}
 				} catch (Exception e) {
+					String valueType = value == null ? "NULL": value.getClass().toString();
+					Log.log("fieldType: ",(field == null? "NULL":field.getType())," value: ",value, "type:",valueType);
 					e.printStackTrace();
 					continue;
 				}
@@ -72,6 +93,18 @@ public class MapUtil {
 			return null;
 		}
 
+	}
+	
+	public static boolean equals(Object object, Object ...objects) {
+		
+		
+		for (Object object2 : objects) {
+			if(object.equals(object2)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 }

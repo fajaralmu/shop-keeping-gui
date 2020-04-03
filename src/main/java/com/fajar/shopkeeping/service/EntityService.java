@@ -33,15 +33,15 @@ public class EntityService extends BaseService {
 
 	}
 
-	public void getEntityList(final int page, final int limit, final Class entityClass, final MyCallback callback) {
+	public void getEntityList(final int page, final int limit, final Map<String, Object> fieldFilter, final Class entityClass, final MyCallback callback) {
 		Loadings.start();
 
 		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
 
-				try {
-					ShopApiResponse response = getEntityList(page, limit, entityClass);
+				try { 
+					ShopApiResponse response = getEntityList(page, limit, entityClass, fieldFilter);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -55,7 +55,13 @@ public class EntityService extends BaseService {
 		thread.start();
 	} 
 	
-	public void getEntityList(final Filter filter, final Class entityClass, final MyCallback callback) {
+	/**
+	 * the given response is hashmap
+	 * @param filter
+	 * @param entityClass
+	 * @param callback
+	 */
+	public void getEntityListHashMapResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
 		Loadings.start();
 
 		Thread thread = new Thread(new Runnable() {
@@ -77,7 +83,13 @@ public class EntityService extends BaseService {
 		thread.start();
 	}
 	
-	public void getEntityListHashMap(final Filter filter, final Class entityClass, final MyCallback callback) {
+	/**
+	 * the given response is java object [ShopApiResponse]
+	 * @param filter
+	 * @param entityClass
+	 * @param callback
+	 */
+	public void getEntityListJsonResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
 		Loadings.start();
 
 		Thread thread = new Thread(new Runnable() {
@@ -85,7 +97,7 @@ public class EntityService extends BaseService {
 			public void run() {
 
 				try {
-					ShopApiResponse response = getEntityList(filter, entityClass);
+					ShopApiResponse response = getEntityListFullResponse(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -99,7 +111,7 @@ public class EntityService extends BaseService {
 		thread.start();
 	}
 
-	private ShopApiResponse getEntityList(Filter filter, Class entityClass) {
+	private ShopApiResponse getEntityListFullResponse(Filter filter, Class entityClass) {
 
 		HashMap response = callGetEntity(filter, entityClass);
 
@@ -120,7 +132,7 @@ public class EntityService extends BaseService {
 
 	}
 	
-	public List< Map> getAllEntityList(  Class entityClass) {
+	public List< Map> getAllEntityOnlyList(Class entityClass) {
 
 		HashMap response = callGetEntity(Filter.builder().page(1).limit(0).build(), entityClass); 
 		List rawEntityList = (List) response.get("entities");
@@ -129,9 +141,9 @@ public class EntityService extends BaseService {
 
 	}
 
-	private ShopApiResponse getEntityList(int page, int limit, Class entityClass) {
-
-		return getEntityList(Filter.builder().page(page).limit(limit).build(), entityClass);
+	private ShopApiResponse getEntityList(int page, int limit, Class entityClass, Map<String, Object> fieldsFilter) { 
+		
+		return getEntityListFullResponse(Filter.builder().page(page).fieldsFilter(fieldsFilter).limit(limit).build(), entityClass);
 	}
 	
 	public void addNewEntity( final Map entityObject, final Class entityClass, final MyCallback myCallback) { 

@@ -331,7 +331,7 @@ public class ComponentBuilder {
 		return label;
 	}
 	
-	public static JPanel buildInlineComponent(int colWidth, Component...components) {
+	public static JPanel buildInlineComponent(int colWidth, Object...components) {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 5, Color.white);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );

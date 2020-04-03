@@ -1,17 +1,36 @@
 package com.fajar.util;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fajar.annotation.Dto;
 import com.fajar.shopkeeping.util.EntityUtil;
+import com.fajar.shopkeeping.util.Log;
 
 public class MyJsonUtil {
 
 	public static void main(String[] aaa) {
 		 
+	}
+	
+	public static List<Map> convertToMapList(String jsonListString) {
+		List<Map> result = new ArrayList<>();
+
+		try {
+			List rawList = EntityUtil.OBJECT_MAPPER.readValue(jsonListString, List.class);
+			for (Object object : rawList) {
+				result.add((Map) object);
+			}
+		} catch (IOException e) {
+			Log.log("ERROR parsing list");
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	public static String objectToJson(Object o) {
