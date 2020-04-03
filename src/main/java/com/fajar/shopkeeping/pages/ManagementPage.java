@@ -108,10 +108,10 @@ public class ManagementPage extends BasePage {
 	}
 	
 	@Override
-	protected void setDefaultValues() { 
-		super.setDefaultValues();
+	protected void setDefaultValues() {  
 		selectedPage = inputPage.getText();
 		selectedLimit = inputLimit.getText();
+		super.setDefaultValues();
 	}
 
 	/**
@@ -167,40 +167,15 @@ public class ManagementPage extends BasePage {
 			inputComponent.requestFocus();
 
 			if (elementType.equals(FormField.FIELD_TYPE_FIXED_LIST)) {
-
-				String optionValueName = element.getOptionItemName();
-				String optionItemName = element.getOptionItemName();
-				String jsonListString = element.getJsonList();
-				/**
-				 * call API
-				 */
-				List<Map> objectList = getHandler().getAllEntity(fieldType);
-				comboBoxListContainer.put(elementId, objectList);
-
-				Object[] comboBoxValues = extractListOfSpecifiedField(objectList, optionItemName);
-				inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
-				
-				((JComboBox)inputComponent).addActionListener(comboBoxOnSelectListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
-
+ 
+				inputComponent = buildFixedComboBox(element, elementId, fieldType);
 			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
-				
-				String optionValueName = element.getOptionItemName();
-				String optionItemName = element.getOptionItemName();
-				inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
-				inputComponent.setSize(150, 20);
 				 
-				((JComboBox) inputComponent).getEditor().getEditorComponent()
-						.addKeyListener(dynamicComboBoxListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
-				((JComboBox)inputComponent).addActionListener(comboBoxOnSelectListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
-
+				inputComponent = buildDynamicComboBox(element, elementId, fieldType);
 			} else if (element.isIdentity()) {
 				
-				inputComponent = textField("ID");
-				inputComponent.setEnabled(false);
-				this.idFieldName = elementId;
-				
-				Log.log("ID Field:", elementId);
-
+				inputComponent = textFieldDisabled("ID"); 
+				this.idFieldName = elementId;  
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
 
 				inputComponent = textArea(elementId);
@@ -302,6 +277,33 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
+	private JComboBox buildDynamicComboBox(EntityElement element, String elementId, Class<?> fieldType) {
+		String optionItemName = element.getOptionItemName();
+		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
+		inputComponent.setSize(150, 20);
+		 
+		(inputComponent).getEditor().getEditorComponent()
+				.addKeyListener(dynamicComboBoxListener(  inputComponent, optionItemName, fieldType, elementId));
+		(inputComponent).addActionListener(comboBoxOnSelectListener(  inputComponent, optionItemName, fieldType, elementId));
+		
+		return inputComponent;
+	}
+
+	private JComboBox  buildFixedComboBox(EntityElement element, String elementId, Class fieldType) {
+		String optionItemName = element.getOptionItemName(); 
+		/**
+		 * call API
+		 */
+		List<Map> objectList = getHandler().getAllEntity(fieldType);
+		comboBoxListContainer.put(elementId, objectList);
+
+		Object[] comboBoxValues = extractListOfSpecifiedField(objectList, optionItemName);
+		JComboBox inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
+		
+		inputComponent .addActionListener(comboBoxOnSelectListener( inputComponent, optionItemName, fieldType, elementId));
+		return inputComponent;
+	}
+
 	/**
 	 * when JDateChooser changed
 	 * @param inputComponent

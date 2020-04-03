@@ -280,6 +280,14 @@ public class BasePage {
 		return label;
 	}
 	
+	protected JTextField textFieldDisabled(String string) { 
+		
+		JTextField label = new JTextField(string); 
+		label.setSize(100, 20);
+		label.setEditable(false);
+		return label;
+	}
+	
 	protected JColorChooser colorChooser() {
 		
 		JColorChooser colorChooser = new JColorChooser();
@@ -287,9 +295,14 @@ public class BasePage {
 		return colorChooser;
 	}
 	
-	protected JDateChooser dateChooser() {
+	protected JDateChooser dateChooser() { 
 		
-		JDateChooser dateChooser = new JDateChooser(new Date());
+		return dateChooser(new Date()) ;
+	}
+	
+	protected JDateChooser dateChooser(Date date) {
+		
+		JDateChooser dateChooser = new JDateChooser(date);
 		dateChooser.setSize(100, 20);
 		return dateChooser ;
 	}
