@@ -33,10 +33,10 @@ public class DashboardPage extends BasePage {
 	
 	private JLabel labelUserInfo;
 	
-	private JButton buttonLogout;
+	private final JButton buttonLogout = button("logout");
 	private JButton buttonGotoPeriodicReport;
 	private JButton buttonLoadMonthlyCashflow;
-	private JButton buttonGoToManagement;
+	private final JButton buttonGoToManagement = button("Management");;
 	
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
@@ -68,10 +68,7 @@ public class DashboardPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest mainPanelRequest = mainPanelRequest();
-
-		buttonLogout = button("logout");
-		buttonGoToManagement = button("Management");
+		PanelRequest mainPanelRequest = mainPanelRequest(); 
 
 		if (labelUserInfo == null) {
 			labelUserInfo = title("Welcome to Dasboard!");
@@ -83,8 +80,7 @@ public class DashboardPage extends BasePage {
 			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
 		}
 		
-		panelPeriodFilter = buildPanelPeriodFilter();
-		
+		panelPeriodFilter = buildPanelPeriodFilter(); 
 		
 		JPanel panelButton = ComponentBuilder.buildInlineComponent(100, buttonLogout, buttonGoToManagement);
 		

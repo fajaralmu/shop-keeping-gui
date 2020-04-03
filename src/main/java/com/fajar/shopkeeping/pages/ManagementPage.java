@@ -277,6 +277,13 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
+	/**
+	 * build dynamic combo box for CRUD form
+	 * @param element
+	 * @param elementId
+	 * @param fieldType
+	 * @return
+	 */
 	private JComboBox buildDynamicComboBox(EntityElement element, String elementId, Class<?> fieldType) {
 		String optionItemName = element.getOptionItemName();
 		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
@@ -289,6 +296,13 @@ public class ManagementPage extends BasePage {
 		return inputComponent;
 	}
 
+	/**
+	 * build fixed combo box for CRUD form
+	 * @param element
+	 * @param elementId
+	 * @param fieldType
+	 * @return
+	 */
 	private JComboBox  buildFixedComboBox(EntityElement element, String elementId, Class fieldType) {
 		String optionItemName = element.getOptionItemName(); 
 		/**
@@ -326,7 +340,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
-	 * when textArea has changed
+	 * when CRUD textArea has changed
 	 * @param inputComponent
 	 * @param elementId
 	 * @return
@@ -353,7 +367,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
-	 * when jTextfield has changed
+	 * when CRUD jTextfield has changed
 	 * @param inputComponent
 	 * @param elementId
 	 * @return
@@ -378,7 +392,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
-	 * when combo box selected
+	 * when CRUD combo box selected
 	 * @param inputComponent
 	 * @param optionItemName
 	 * @param fieldType
@@ -423,7 +437,7 @@ public class ManagementPage extends BasePage {
 	
 	
 	/**
-	 * when dynamic comboBox has changed
+	 * when CRUD dynamic comboBox has changed
 	 * @param dynamicComboBox
 	 * @param optionItemName
 	 * @param fieldType
