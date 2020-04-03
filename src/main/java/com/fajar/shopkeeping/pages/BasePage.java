@@ -4,7 +4,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -24,6 +28,7 @@ import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
+import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -34,6 +39,7 @@ public class BasePage {
 	
 	public static final int BASE_HEIGHT = 700;
 	public static final int BASE_WIDTH = 800; 
+	protected static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static final JLabel BLANK_LABEL = label("");
 
@@ -273,6 +279,34 @@ public class BasePage {
 		JColorChooser colorChooser = new JColorChooser();
 		colorChooser.setSize(100,20);
 		return colorChooser;
+	}
+	
+	protected JDateChooser dateChooser() {
+		
+		JDateChooser dateChooser = new JDateChooser(new Date());
+		dateChooser.setSize(100, 20);
+		return dateChooser ;
+	}
+	 
+	protected JTextField numberField(String elementId) {
+		final JTextField textField = textField(elementId);
+		textField.addKeyListener(new KeyAdapter() {
+	         public void keyPressed(KeyEvent ke) {
+	            String value = textField.getText();
+	            final  int l = value.length();
+	            if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
+	            	 
+	            } else {
+	            	if(l == 1) {
+	            		textField.setText("0");
+	            	}else if(l > 1) {
+	            		String newValue = value.replace(ke.getKeyChar()+"", "");
+						textField.setText(newValue );
+	            	}
+	            }
+	         }
+	      });
+		return textField;
 	}
 	
 	protected JTextArea textArea(Object defaultValue) {

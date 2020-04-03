@@ -6,9 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
 
@@ -189,6 +193,17 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals("color")) {
 				
 				continue;
+			} else if (elementType.equals(FormField.FIELD_TYPE_NUMBER)) {
+
+				inputComponent = numberField(elementId);
+				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId));
+				
+			} else if (elementType.equals(FormField.FIELD_TYPE_DATE)) {
+
+				inputComponent = dateChooser();
+				((JDateChooser) inputComponent).addPropertyChangeListener(dateChooserPropertyChangeListener(
+						(JDateChooser) inputComponent, elementId ));
+				
 			} else {
 				inputComponent = textField(elementId);
 				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId) );
@@ -271,6 +286,21 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
+
+	private PropertyChangeListener dateChooserPropertyChangeListener(final JDateChooser inputComponent, final String elementId) {
+		 
+		return new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				Date selectedDate = inputComponent.getDate(); 
+				String convertedDate = SIMPLE_DATE_FORMAT.format(selectedDate);
+				Log.log("selected date converted: ", convertedDate);
+				
+				updateManagedObject(elementId, convertedDate);
+			}
+		};
+	}
 
 	/**
 	 * when textArea has changed
@@ -457,27 +487,16 @@ public class ManagementPage extends BasePage {
 
 		return result;
 	}
-
-	public static void mainX(String[] args) throws IOException {
-		User.builder().displayName("FAJAR").build();
-		ObjectMapper objectMapper = EntityUtil.OBJECT_MAPPER;
-		List list = new ArrayList<User>() {
-			{
-				add(User.builder().displayName("FAJAR").build());
-				add(User.builder().displayName("FAJAR 2").build());
-				add(User.builder().displayName("FAJAR 1").build());
-			}
-		};
-		String str = objectMapper.writeValueAsString(list);
-		Log.log("STR:", str);
-		List listr = objectMapper.readValue(str, List.class);
-		Log.log("MAP:", listr);
-	}
+ 
 
 	private ManagementHandler getHandler() {
 		return (ManagementHandler) appHandler;
 	}
 
+	/**
+	 * handle response when add/update entity
+	 * @param response
+	 */
 	public void callbackUpdateEntity(HashMap response) {
 		Object code = response.get("code");
 		
