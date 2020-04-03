@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.handler;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,26 @@ public class ManagementHandler extends MainHandler {
 		}
 		
 		return null;
+	}
+
+	public ActionListener submit() {
+		 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Map<String, Object> managedObject = getPage().getManagedObject();
+				String idField = getPage().getIdFieldName();
+				
+				Log.log("Submit managedObject: ", managedObject);
+				Log.log("id field:"+idField+",  value: ", managedObject.get(idField));
+				
+			}
+		};
+	}
+	
+	private ManagementPage getPage() {
+		return (ManagementPage) this.page;
 	}
 
 

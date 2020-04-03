@@ -53,6 +53,7 @@ public class ManagementPage extends BasePage {
  
 	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
+	private String idFieldName;
 
 	public ManagementPage() {
 		super("Management", BASE_WIDTH, BASE_HEIGHT);
@@ -89,6 +90,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	protected void initEvent() {
 		super.initEvent();
+		buttonSubmit.addActionListener(getHandler().submit());
 
 	}
 
@@ -174,6 +176,9 @@ public class ManagementPage extends BasePage {
 			} else if (element.isIdentity()) {
 				inputComponent = textField("ID");
 				inputComponent.setEnabled(false);
+				this.idFieldName = elementId;
+				
+				Log.log("ID Field:", elementId);
 
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
 

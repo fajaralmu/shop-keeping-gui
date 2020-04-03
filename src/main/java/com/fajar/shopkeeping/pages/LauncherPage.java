@@ -3,7 +3,6 @@ package com.fajar.shopkeeping.pages;
 import java.awt.Color;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.LauncherHandler;
