@@ -2,6 +2,8 @@ package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -15,9 +17,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
+import com.fajar.entity.BaseEntity;
+import com.fajar.entity.CostFlow;
 import com.fajar.entity.Product;
 import com.fajar.entity.User;
 import com.fajar.entity.setting.EntityElement;
@@ -43,10 +49,10 @@ public class ManagementPage extends BasePage {
 	private JButton buttonSubmit;
 	private JButton buttonClear;
 
-	private Class entityClass = Product.class;
-
-	private Map<String, List<Map>> fixedListContainer = new HashMap<>();
-	private Map<String, List<Map>> dynamicListContainer = new HashMap<>();
+	private Class<? extends BaseEntity> entityClass = Product.class;
+ 
+	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
+	private Map<String, Object> managedObject = new HashMap<>();
 
 	public ManagementPage() {
 		super("Management", BASE_WIDTH, BASE_HEIGHT);
@@ -116,9 +122,8 @@ public class ManagementPage extends BasePage {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 10, Color.yellow);
 
 		List<Component> formComponents = new ArrayList<Component>();
-
-		dynamicListContainer.clear();
-		fixedListContainer.clear();
+ 
+		comboBoxListContainer.clear();
 		entityProperty = EntityUtil.createEntityProperty(entityClass, null);
 
 		List<EntityElement> entityElements = entityProperty.getElements();
@@ -144,21 +149,27 @@ public class ManagementPage extends BasePage {
 				String optionValueName = element.getOptionItemName();
 				String optionItemName = element.getOptionItemName();
 				String jsonListString = element.getJsonList();
+				/**
+				 * call API
+				 */
 				List<Map> objectList = getHandler().getAllEntity(fieldType);
-				fixedListContainer.put(elementId, objectList);
+				comboBoxListContainer.put(elementId, objectList);
 
 				Object[] comboBoxValues = extractListOfSpecifiedField(objectList, optionItemName);
 				inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
+				
+				((JComboBox)inputComponent).addActionListener(comboBoxOnSelectListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
 
 			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
 				
 				String optionValueName = element.getOptionItemName();
 				String optionItemName = element.getOptionItemName();
-				inputComponent = ComponentBuilder.buildComboBox("", "type something..");
+				inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
 				inputComponent.setSize(150, 20);
-				((JComboBox) inputComponent).setEditable(true);
+				 
 				((JComboBox) inputComponent).getEditor().getEditorComponent()
-						.addKeyListener(dynamicComboBoxListener((JComboBox) inputComponent, optionItemName, fieldType));
+						.addKeyListener(dynamicComboBoxListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
+				((JComboBox)inputComponent).addActionListener(comboBoxOnSelectListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
 
 			} else if (element.isIdentity()) {
 				inputComponent = textField("ID");
@@ -167,8 +178,10 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
 
 				inputComponent = textArea(elementId);
+				((JTextArea) inputComponent).addKeyListener(textAreaActionListener((JTextArea) inputComponent, elementId));
 			} else {
 				inputComponent = textField(elementId);
+				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId) );
 			}
 
 			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
@@ -247,8 +260,112 @@ public class ManagementPage extends BasePage {
 		JPanel formPanel = buildPanelV2(panelRequest, toArrayOfComponent(formComponents));
 		return formPanel;
 	}
+	
+	/**
+	 * when textArea has changed
+	 * @param inputComponent
+	 * @param elementId
+	 * @return
+	 */
+	private KeyListener textAreaActionListener(final JTextArea inputComponent, final String elementId) {
+		 
+		return new KeyListener() {
 
-	private KeyListener dynamicComboBoxListener(final JComboBox dynamicComboBox, final String optionItemName, final Class<?> fieldType) {
+			@Override
+			public void keyTyped(KeyEvent e) { }
+
+			@Override
+			public void keyPressed(KeyEvent e) { }
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String value = inputComponent.getText();
+				updateManagedObject(elementId, value);
+				
+			}
+			
+			 
+		};
+	}
+
+	/**
+	 * when jTextfield has changed
+	 * @param inputComponent
+	 * @param elementId
+	 * @return
+	 */
+	private KeyListener textFieldActionListener(final JTextField inputComponent, final String elementId) {
+		 
+		return new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) { }
+
+			@Override
+			public void keyPressed(KeyEvent e) { }
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String value = inputComponent.getText();
+				updateManagedObject(elementId, value);
+				
+			}  
+		};
+	}
+
+	/**
+	 * when combo box selected
+	 * @param inputComponent
+	 * @param optionItemName
+	 * @param fieldType
+	 * @param elementId
+	 * @return
+	 */
+	private ActionListener comboBoxOnSelectListener(final JComboBox inputComponent, final String optionItemName, final Class<?> fieldType,
+			final String elementId) {
+		 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				 Object selectedValue = inputComponent.getSelectedItem();
+				 List<Map> rawList = comboBoxListContainer.get(elementId); 
+				 Map selectedObjectFromList = ManagementHandler.getMapFromList(optionItemName, selectedValue, rawList);
+				 
+				 if(null == selectedObjectFromList) {
+					 return ;
+				 }
+				 
+				 updateManagedObject(elementId, selectedObjectFromList);
+				 Log.log("managedObject: ",managedObject);
+			}
+
+			
+		};
+	}
+	
+	/**
+	 * update managed entity
+	 * @param elementId
+	 * @param selectedObjectFromList
+	 */
+	private void updateManagedObject(String elementId, Object selectedObjectFromList) {
+		if(null == managedObject) {
+			managedObject = new HashMap<>();
+		}
+		managedObject.put(elementId, selectedObjectFromList);
+	}
+	
+	
+	/**
+	 * when dynamic comboBox has changed
+	 * @param dynamicComboBox
+	 * @param optionItemName
+	 * @param fieldType
+	 * @return
+	 */
+	private KeyListener dynamicComboBoxListener(final JComboBox dynamicComboBox, final String optionItemName, final Class<?> fieldType, final String elementId) {
 
 		return new KeyListener() {
 
@@ -272,7 +389,7 @@ public class ManagementPage extends BasePage {
 
 					private void populateDynamicDropdown(HashMap shopApiResponse) {
 						List  entities = (List) shopApiResponse.get("entities");
-						dynamicListContainer.put(optionItemName, entities);
+						comboBoxListContainer.put(elementId, entities);
 						
 						dynamicComboBox.removeAllItems();
 						

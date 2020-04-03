@@ -7,6 +7,7 @@ import java.util.Map;
 import com.fajar.dto.Filter;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.ManagementPage;
+import com.fajar.shopkeeping.util.Log;
 
 public class ManagementHandler extends MainHandler {
 
@@ -37,5 +38,20 @@ public class ManagementHandler extends MainHandler {
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityList(filter, entityClass, callback);
 	}
+	
+	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
+		if(null == list) {
+			Log.log("list is null");
+			return null;
+		}
+		for (Map map : list) {
+			if(map.get(key).equals(selectedValue)) {
+				return map;
+			}
+		}
+		
+		return null;
+	}
+
 
 }

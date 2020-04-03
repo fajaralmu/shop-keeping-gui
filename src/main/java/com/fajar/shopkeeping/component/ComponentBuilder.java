@@ -246,6 +246,13 @@ public class ComponentBuilder {
 						"height:", component.getHeight()));
 	}
 
+	public static JComboBox buildEditableComboBox(Object defaultValue, Object...values) {
+		
+		JComboBox comboBox=  buildComboBox(defaultValue, values);
+		comboBox.setEditable(true);
+		return comboBox;
+	}
+	
 	public static JComboBox buildComboBox(Object defaultValue, Object... values) {
 
 		ComboBoxModel model = new DefaultComboBoxModel<>();
