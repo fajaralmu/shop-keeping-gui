@@ -1,13 +1,17 @@
 package com.fajar.shopkeeping.handler;
 
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import com.fajar.dto.Filter;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 
@@ -61,18 +65,42 @@ public class ManagementHandler extends MainHandler {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Map<String, Object> managedObject = getPage().getManagedObject();
-				String idField = getPage().getIdFieldName();
 				
-				Log.log("Submit managedObject: ", managedObject);
-				Log.log("id field:"+idField+",  value: ", managedObject.get(idField));
+				submitEntity();
 				
-			}
+			} 
+			
 		};
 	}
 	
 	private ManagementPage getPage() {
 		return (ManagementPage) this.page;
+	}
+	
+	private void submitEntity() {
+		int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?");
+		
+		if(confirm != 0) {
+			Log.log("Operation aborted");
+			return;
+		}
+		
+		Map<String, Object> managedObject = getPage().getManagedObject();
+		String idField = getPage().getIdFieldName();
+		
+		Log.log("Submit managedObject: ", managedObject);
+		Log.log("id field:"+idField+",  value: ", managedObject.get(idField));
+		
+		entityService.addNewEntity(managedObject, getPage().getEntityClass(), new MyCallback() {
+			
+			@Override
+			public void handle(Object... params) throws Exception {
+				HashMap response = (HashMap) params[0]; 
+				
+				getPage().callbackUpdateEntity(response);
+			}
+		});
+		
 	}
 
 

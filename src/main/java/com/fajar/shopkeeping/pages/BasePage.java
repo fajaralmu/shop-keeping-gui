@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -265,6 +266,13 @@ public class BasePage {
 		JTextField label = new JTextField(string); 
 		label.setSize(100, 20);
 		return label;
+	}
+	
+	protected JColorChooser colorChooser() {
+		
+		JColorChooser colorChooser = new JColorChooser();
+		colorChooser.setSize(100,20);
+		return colorChooser;
 	}
 	
 	protected JTextArea textArea(Object defaultValue) {

@@ -133,7 +133,44 @@ public class EntityService extends BaseService {
 
 		return getEntityList(Filter.builder().page(page).limit(limit).build(), entityClass);
 	}
+	
+	public void addNewEntity( final Map entityObject, final Class entityClass, final MyCallback myCallback) { 
+		Loadings.start();
+		
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					HashMap response = callAddEntity(entityObject, entityClass);
+					myCallback.handle(response);
+					
+				}catch (Exception e) {
+					e.printStackTrace();
+				}finally {
+					Loadings.end();
+				}
+			}
+		});
+		
+		thread.start();
+	}
 
+	
+	/**
+	 * 
+	 * ==========================================
+	 *             WEBSERVICE CALLS
+	 * =========================================
+	 * 
+	 */
+	
+	/**
+	 * call endpoint api/entity/get
+	 * @param filter
+	 * @param entityClass
+	 * @return
+	 */
 	private HashMap callGetEntity(Filter filter, Class entityClass) {
 		try {
 
@@ -147,6 +184,24 @@ public class EntityService extends BaseService {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	private HashMap callAddEntity(Map entityObject, Class entityClass) {
+		
+		try {
+			Map shopApiRequest = new HashMap<>();
+			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
+			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
+			
+			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_ADD,
+					RestComponent.buildAuthRequest(shopApiRequest , true), HashMap.class);
+			Log.log("response: ",response);
+			return response.getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
 	}
 
 }

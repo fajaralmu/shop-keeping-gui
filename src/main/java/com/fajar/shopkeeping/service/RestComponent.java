@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.service;
 
+import java.util.Map;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
@@ -40,6 +42,10 @@ public class RestComponent {
 	
 	public static HttpEntity<ShopApiRequest> buildAuthRequest(ShopApiRequest shopApiRequest, boolean withLoginKey) {
 		return new HttpEntity<ShopApiRequest>(shopApiRequest, buildAuthHeader(withLoginKey));
+	}
+	
+	public static HttpEntity<Map> buildAuthRequest(Map shopApiRequest, boolean withLoginKey) {
+		return new HttpEntity<Map>(shopApiRequest, buildAuthHeader(withLoginKey));
 	}
 
 }

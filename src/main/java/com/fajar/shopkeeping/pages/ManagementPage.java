@@ -24,12 +24,12 @@ import javax.swing.text.JTextComponent;
 import com.fajar.annotation.FormField;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CostFlow;
-import com.fajar.entity.Product;
 import com.fajar.entity.User;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -49,7 +49,7 @@ public class ManagementPage extends BasePage {
 	private JButton buttonSubmit;
 	private JButton buttonClear;
 
-	private Class<? extends BaseEntity> entityClass = Product.class;
+	private Class<? extends BaseEntity> entityClass = CostFlow.class;
  
 	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
@@ -174,6 +174,7 @@ public class ManagementPage extends BasePage {
 				((JComboBox)inputComponent).addActionListener(comboBoxOnSelectListener((JComboBox) inputComponent, optionItemName, fieldType, elementId));
 
 			} else if (element.isIdentity()) {
+				
 				inputComponent = textField("ID");
 				inputComponent.setEnabled(false);
 				this.idFieldName = elementId;
@@ -184,6 +185,10 @@ public class ManagementPage extends BasePage {
 
 				inputComponent = textArea(elementId);
 				((JTextArea) inputComponent).addKeyListener(textAreaActionListener((JTextArea) inputComponent, elementId));
+				
+			} else if (elementType.equals("color")) {
+				
+				continue;
 			} else {
 				inputComponent = textField(elementId);
 				((JTextField) inputComponent).addKeyListener(textFieldActionListener((JTextField) inputComponent, elementId) );
@@ -266,6 +271,7 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
+
 	/**
 	 * when textArea has changed
 	 * @param inputComponent
@@ -470,6 +476,18 @@ public class ManagementPage extends BasePage {
 
 	private ManagementHandler getHandler() {
 		return (ManagementHandler) appHandler;
+	}
+
+	public void callbackUpdateEntity(HashMap response) {
+		Object code = response.get("code");
+		
+		if(code.equals("00")) {
+			Dialogs.showInfoDialog("Update success!");
+		}else {
+			Dialogs.showErrorDialog("Update failed!");
+		}
+		Log.log("Callback update entity: ", response);
+		
 	}
 
 }
