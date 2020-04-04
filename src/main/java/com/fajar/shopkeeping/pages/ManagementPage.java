@@ -69,6 +69,7 @@ public class ManagementPage extends BasePage {
 	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
 	private Map<String, Object> fieldsFiler = new HashMap<>();
+	private boolean refreshing;
 	
 	private String idFieldName;
 	
@@ -127,9 +128,13 @@ public class ManagementPage extends BasePage {
 	
 	@Override
 	public void refresh() {
-		preInitComponent();
-		initEvent();
-		super.refresh();
+		if(!refreshing) {
+			refreshing = true; 
+			preInitComponent();
+			initEvent();
+			super.refresh();
+			refreshing = false;
+		}
 	}
 	
 	@Override
@@ -307,7 +312,7 @@ public class ManagementPage extends BasePage {
 	}
 	
 	/**
-	 * BUILD DATA TABLE
+	 * CRUID DATA TABLE
 	 * @return
 	 */
 	private JPanel buildListPanel() {
@@ -386,8 +391,11 @@ public class ManagementPage extends BasePage {
 		}
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 500);
-		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponentAdditionalComponentBefore(listComponents, panelPagination));
-		return panel;
+		
+		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
+		
+		PanelRequest panelRequest2 = PanelRequest.autoPanelNonScroll(1, 510, 5, Color.white);
+		return buildPanelV2(panelRequest2, panelPagination, panel);
 	}
 	
 	/**

@@ -114,6 +114,8 @@ public class BasePage {
 		parentPanel.setSize(WIDTH, HEIGHT); 
 		frame.setContentPane(parentPanel);
 		frame.addKeyListener(frameKeyListener());
+		frame. setFocusable(true);
+		frame.    setFocusTraversalKeysEnabled(false);
 
 	}
 

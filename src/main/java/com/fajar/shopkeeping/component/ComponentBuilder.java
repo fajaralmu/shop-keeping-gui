@@ -221,27 +221,30 @@ public class ComponentBuilder {
 
 		if (autoScroll && panelH > 0) {
 
-			customPanel.setPreferredSize(new Dimension(customPanel.getCustomWidth(), customPanel.getCustomHeight()));
-
+			customPanel.setPreferredSize(new Dimension(customPanel.getCustomWidth(), customPanel.getCustomHeight())); 
+			customPanel.setSize(new Dimension());
 			BasePage.printSize(customPanel);
 			
-			JScrollPane scrollPane = new JScrollPane(customPanel);
+			JScrollPane scrollPane = new JScrollPane(customPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			
 			if(panelW > 0) {
-				scrollPane.setPreferredSize(new Dimension(panelW, panelH)); 
-			}else {
+				scrollPane.setPreferredSize(new Dimension(panelW, panelH));
+			}else {			
 				scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
 			}
+			 
+			scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);  
+			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			
 			MyCustomPanel panel = new MyCustomPanel();
-			panel.setBounds(0, 0, finalWidth, panelH);
+			panel.setBounds(0, 0, (panelW > 0?panelW:finalWidth), panelH);
 			panel.add(scrollPane);
 			printComponentLayout(panel);
 			return panel;
 
 		}
-		System.out.println(
-				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
+//		System.out.println(
+//				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
 
 		return customPanel;
 	}
@@ -250,10 +253,10 @@ public class ComponentBuilder {
 		if (null == component) {
 			return;
 		}
-		Log.log(component.getClass().getName() + " built--" +
-
-				StringUtil.buildString("x:", component.getX(), " y:", component.getY(), "width:", component.getWidth(),
-						"height:", component.getHeight()));
+//		Log.log(component.getClass().getName() + " built--" +
+//
+//				StringUtil.buildString("x:", component.getX(), " y:", component.getY(), "width:", component.getWidth(),
+//						"height:", component.getHeight()));
 	}
 
 	/**
