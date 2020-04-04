@@ -344,8 +344,8 @@ public class ManagementPage extends BasePage {
 							value = converterValue;
 						}
 						
-						if(value.toString().length() > 30) {
-							value = value.toString().substring(0, 30);
+						if(value.toString().length() > 20) {
+							value = value.toString().substring(0, 20)+"...";
 						}
 					}
 					

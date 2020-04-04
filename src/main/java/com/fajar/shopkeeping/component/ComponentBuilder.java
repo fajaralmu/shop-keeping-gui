@@ -222,7 +222,7 @@ public class ComponentBuilder {
 			
 			JScrollPane scrollPane = new JScrollPane(customPanel);
 			
-			if(panelH > 0) {
+			if(panelW > 0) {
 				scrollPane.setPreferredSize(new Dimension(panelW, panelH)); 
 			}else {
 				scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
