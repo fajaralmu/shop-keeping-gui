@@ -47,31 +47,31 @@ public class MapUtil {
 							/**
 							 * long
 							 */
-							if (equals(fieldType,long.class,Long.class)) {
+							if (objectEquals(fieldType,long.class,Long.class)) {
 							value = Long.valueOf(value.toString());
 						} else 
 							/**
 							 * int
 							 */
-							if (equals(fieldType,int.class,Integer.class)) {
+							if (objectEquals(fieldType,int.class,Integer.class)) {
 							value = Integer.parseInt(value.toString());
 						} else 
 							/**
 							 * double
 							 */
-							if (equals(fieldType, double.class  ,Double.class)) {
+							if (objectEquals(fieldType, double.class  ,Double.class)) {
 							value = Double.valueOf(value.toString());
 						} else
 							/**
 							 * date from Long
 							 */
-							if(fieldType.equals(Date.class) && (equals(value.getClass(),Long.class,long.class))) {
+							if(fieldType.equals(Date.class) && (objectEquals(value.getClass(),Long.class,long.class))) {
 								value = new Date((Long) value);
 						}else
 							/**
 							 * long from date
 							 */
-							if(equals(fieldType, long.class ,Long.class) && value.getClass().equals(Date.class)) {
+							if(objectEquals(fieldType, long.class ,Long.class) && value.getClass().equals(Date.class)) {
 								value = ((Date) value).getTime();
 							}
 							
@@ -95,7 +95,7 @@ public class MapUtil {
 
 	}
 	
-	public static boolean equals(Object object, Object ...objects) {
+	public static boolean objectEquals(Object object, Object ...objects) {
 		
 		
 		for (Object object2 : objects) {

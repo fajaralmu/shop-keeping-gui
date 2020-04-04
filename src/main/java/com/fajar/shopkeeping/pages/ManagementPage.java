@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -66,8 +68,8 @@ public class ManagementPage extends BasePage {
 	private final JTextField inputPage = numberField("0");
 	private final JTextField inputLimit = numberField("10");
 
-	private String selectedPage;
-	private String selectedLimit;
+	private String selectedPage = "0";
+	private String selectedLimit = "10";
 	
 	
 	public ManagementPage() {
@@ -309,26 +311,54 @@ public class ManagementPage extends BasePage {
 		List<Component> listComponents = new ArrayList<>();
 		List<EntityElement> entityElements = entityProperty.getElements();
 		
-		final int colSize = entityElements.size();  
-		
+		final int colSize = entityElements.size() + 1;   
 		final int columnWidth = 150;
+		int sequenceNumber = Integer.valueOf(selectedPage) *  Integer.valueOf(selectedLimit);
+		Component headerPanel = createDataTableHeader();
+		
+		listComponents.add(headerPanel );
+		
+		
 		for (BaseEntity entity : entities) {
-			Component[] components = new Component[colSize];
-			int i = 0;
-			for(EntityElement element:entityElements) {
-				Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
+			Component[] components = new Component[colSize ];
+			components[0] = label(sequenceNumber + 1); 
+			
+			/**
+			 * checking the value type
+			 */
+			for(int i = 0; i< entityElements.size();i++) {
+				final EntityElement element = entityElements.get(i); 
+				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
+				final String fieldType = element.getType();
 				Object value;
+				
 				try {
 					value = field.get(entity);
-					components[i] = label(value);
+					
+					if(null != value) {
+						
+						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+							String optionItemName = element.getOptionItemName();
+							Field converterField = EntityUtil.getDeclaredField(field.getType(), optionItemName);
+							Object converterValue = converterField.get(value);
+							value = converterValue;
+						}
+						
+						if(value.toString().length() > 30) {
+							value = value.toString().substring(0, 30);
+						}
+					}
+					
+					
+					
+					components[i + 1] = label(value);
 				} catch (IllegalArgumentException | IllegalAccessException e) { 
 					e.printStackTrace();
 				}
-				
-				i++;
+				 
 			}
-			
-			JPanel rowPanel = rowPanel(colSize, columnWidth, components);
+			sequenceNumber++;
+			JPanel rowPanel = rowPanel(colSize , columnWidth, components);
 			listComponents.add(rowPanel);
 		}
 		
@@ -337,6 +367,26 @@ public class ManagementPage extends BasePage {
 		return panel;
 	}
 	
+	/**
+	 * table header for data table
+	 * @return
+	 */
+	private Component createDataTableHeader() {
+		
+		List<EntityElement> entityElements = entityProperty.getElements();
+		List<Component> headerComponents = new ArrayList<>();
+		
+		headerComponents.add(label("No"));
+		
+		for(EntityElement element:entityElements) {
+			headerComponents.add(label(element.getId()));
+		}
+		
+		Component header = rowPanelHeader(entityElements.size() + 1, 150, toArrayOfComponent(headerComponents));
+		 
+		return header;
+	}
+
 	/**
 	 * build dynamic combo box for CRUD form
 	 * @param element
