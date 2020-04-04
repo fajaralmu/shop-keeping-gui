@@ -223,7 +223,7 @@ public class ComponentBuilder {
 			customPanel.setSize(new Dimension());
 			BasePage.printSize(customPanel); 
 			 
-			MyCustomPanel panel  = buildScrolledPanel(customPanel, (panelW > 0?panelW:finalWidth), panelH);
+			MyCustomPanel panel  = buildScrolledPanel(customPanel, (panelW > 0? panelW : finalWidth), panelH);
 			 
 			printComponentLayout(panel);
 			return panel;
@@ -235,10 +235,17 @@ public class ComponentBuilder {
 		return customPanel;
 	}
 	
-	public static MyCustomPanel buildScrolledPanel(Component component, int width, int height) {
+	/**
+	 * 
+	 * @param component main component enabling scroll
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static MyCustomPanel buildScrolledPanel(Component mainComponent, int width, int height) {
 		
-		JScrollPane scrollPane = new JScrollPane(component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setPreferredSize(new Dimension(width, width)); 
+		JScrollPane scrollPane = new JScrollPane(mainComponent, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new Dimension(width, height)); 
 		 
 		MyCustomPanel panel = new MyCustomPanel();
 		panel.setBounds(0, 0, width, height);
@@ -389,6 +396,12 @@ public class ComponentBuilder {
 		return buildPanelV2(panelRequest, components_ );
 	}
 	
+	/**
+	 * build vertically inline components
+	 * @param colWidth
+	 * @param components
+	 * @return
+	 */
 	public static JPanel buildVerticallyInlineComponent(int colWidth, Object...components) {
 		for (Object object : components) {
 			try {

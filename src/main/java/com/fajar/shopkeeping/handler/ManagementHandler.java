@@ -122,8 +122,8 @@ public class ManagementHandler extends MainHandler {
 		Log.log("Page: ",getPage().getSelectedPage(), "Limit: ", getPage().getSelectedLimit());
 		
 		entityService.getEntityList(
-				Integer.parseInt(getPage().getSelectedPage()), 
-				Integer.parseInt(getPage().getSelectedLimit()), 
+				 (getPage().getSelectedPage()), 
+				 (getPage().getSelectedLimit()), 
 				getPage().getFieldsFiler(), 
 				getPage().getEntityClass(),
 				

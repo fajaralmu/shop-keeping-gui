@@ -30,6 +30,7 @@ import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.MapUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
@@ -284,11 +285,19 @@ public class BasePage {
 		return title(title, 20);
 	}
 	
-	protected JButton button(String text) {
-		int width = text.length() * 10 + 20;
+	protected JButton button(Object text) {
+		int width = String.valueOf(text).length() * 10 + 30;
 		
-		JButton jButton = new JButton(text);
+		JButton jButton = new JButton(String.valueOf(text));
 		jButton.setSize(width, 20); 
+		jButton.setBackground(Color.LIGHT_GRAY);
+		return jButton ;
+	}
+	
+	protected JButton button(Object text, int width, int height) { 
+		
+		JButton jButton = new JButton(String.valueOf(text));
+		jButton.setSize(width, height); 
 		jButton.setBackground(Color.LIGHT_GRAY);
 		return jButton ;
 	}
@@ -400,6 +409,7 @@ public class BasePage {
 		try {
 			final Field field = this.getClass().getDeclaredField(fieldName);
 			final Object origin = this;
+			final Class fieldType = field.getType();
 			field.setAccessible(true);
 			
 			return new KeyListener() {
@@ -413,6 +423,23 @@ public class BasePage {
 				@Override
 				public void keyReleased(KeyEvent e) {
 					Object value = inputComponent.getText();
+					
+					if(value == null) {
+						return;
+					}
+					/**
+					 * check type of field
+					 */
+					if(MapUtil.objectEquals(fieldType, int.class, Integer.class)) {
+						value = Integer.valueOf(value.toString());
+					}
+					if(MapUtil.objectEquals(fieldType, double.class, Double.class)) {
+						value = Double.valueOf(value.toString());
+					}
+					if(MapUtil.objectEquals(fieldType, long.class, Long.class)) {
+						value = Long.valueOf(value.toString());
+					}
+					
 					try {
 						field.set(origin, value );
 						log(field.getName(), ":" , value);

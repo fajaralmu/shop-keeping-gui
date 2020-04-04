@@ -11,6 +11,7 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,8 +75,9 @@ public class ManagementPage extends BasePage {
 	private final JTextField inputPage = numberField("0");
 	private final JTextField inputLimit = numberField("10");
 
-	private String selectedPage = "0";
-	private String selectedLimit = "10";
+	private int selectedPage = 0;
+	private int selectedLimit = 10;
+	private int totalData = 0;
 	
 	
 	public ManagementPage() {
@@ -112,10 +114,35 @@ public class ManagementPage extends BasePage {
 
 	}
 	
+	/**
+	 * generate data table navigations
+	 * @return
+	 */
 	private JPanel getPaginationPanel() {
-		JPanel panelPagination = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
-		return panelPagination;
+		
+		if(selectedLimit == 0) {
+			return new JPanel();
+		}
+		
+		Double totalPage = new BigDecimal(totalData).doubleValue() / new BigDecimal( selectedLimit).doubleValue();
+		Component[] navigationButtons = new Component[totalPage.intValue()];
+		
+		for (int i = 0; i < totalPage; i++) {
+			JButton button = button(i+1, 50, 20); 
+			button.addActionListener(navigationListener(i));
+			button.setBackground(i == selectedPage? Color.orange:Color.yellow);
+			
+			navigationButtons[i] = button; 
+		}
+		
+		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(navigationButtons.length, 50, 1, Color.gray, 500, 40);
+		JPanel panelNavigation = ComponentBuilder.buildPanelV2(panelRequest, navigationButtons);
+		
+		JPanel panelPageLimit = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
+		return ComponentBuilder.buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
 	}
+
+	
 
 	private String getEntityClassName() {
 		if(entityClass == null) {
@@ -148,8 +175,8 @@ public class ManagementPage extends BasePage {
 	
 	@Override
 	protected void setDefaultValues() {  
-		selectedPage = inputPage.getText();
-		selectedLimit = inputLimit.getText();
+		selectedPage = Integer.valueOf(inputPage.getText());
+		selectedLimit = Integer.valueOf(inputLimit.getText());
 		super.setDefaultValues();
 	}
 
@@ -397,7 +424,7 @@ public class ManagementPage extends BasePage {
 			listComponents.add(rowPanel);
 		}
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 500);
+		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 450);
 		
 		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
 		
@@ -681,8 +708,26 @@ public class ManagementPage extends BasePage {
 	public void handleGetFilteredEntities(ShopApiResponse response) {
 		Log.log("Filtered Entities: ",response.getEntities());
 		entityList = response.getEntities();
+		totalData = response.getTotalData(); 
+				
 		listPanel = buildListPanel();
 		refresh();
+	}
+	
+	/**
+	 * action when navigation button is clicked
+	 * @param i
+	 * @return
+	 */
+	private ActionListener navigationListener(final int i) { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectedPage = i;
+				getHandler().getEntities();
+			}
+		};
 	}
 
 }
