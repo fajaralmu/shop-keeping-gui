@@ -212,33 +212,19 @@ public class ComponentBuilder {
 
 		final int finalWidth = customPanel.getCustomWidth();
 		final int finalHeight = customPanel.getCustomHeight();
-
-		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
+ 
 		customPanel.setLayout(null);
-		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
-		customPanel.setSize(finalWidth, finalHeight);
+		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight); 
 		customPanel.setBackground(color);
 
 		if (autoScroll && panelH > 0) {
 
 			customPanel.setPreferredSize(new Dimension(customPanel.getCustomWidth(), customPanel.getCustomHeight())); 
 			customPanel.setSize(new Dimension());
-			BasePage.printSize(customPanel);
-			
-			JScrollPane scrollPane = new JScrollPane(customPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			
-			if(panelW > 0) {
-				scrollPane.setPreferredSize(new Dimension(panelW, panelH));
-			}else {			
-				scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
-			}
+			BasePage.printSize(customPanel); 
 			 
-			scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);  
-			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			
-			MyCustomPanel panel = new MyCustomPanel();
-			panel.setBounds(0, 0, (panelW > 0?panelW:finalWidth), panelH);
-			panel.add(scrollPane);
+			MyCustomPanel panel  = buildScrolledPanel(customPanel, (panelW > 0?panelW:finalWidth), panelH);
+			 
 			printComponentLayout(panel);
 			return panel;
 
@@ -247,6 +233,17 @@ public class ComponentBuilder {
 //				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
 
 		return customPanel;
+	}
+	
+	public static MyCustomPanel buildScrolledPanel(Component component, int width, int height) {
+		
+		JScrollPane scrollPane = new JScrollPane(component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new Dimension(width, width)); 
+		 
+		MyCustomPanel panel = new MyCustomPanel();
+		panel.setBounds(0, 0, width, height);
+		panel.add(scrollPane);
+		return panel;
 	}
 
 	public static void printComponentLayout(Component component) {
@@ -388,6 +385,22 @@ public class ComponentBuilder {
 			}
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 5, Color.white);
+		Object[] components_ = components;
+		return buildPanelV2(panelRequest, components_ );
+	}
+	
+	public static JPanel buildVerticallyInlineComponent(int colWidth, Object...components) {
+		for (Object object : components) {
+			try {
+				Component component = (Component) object;
+				if(component.getWidth() > colWidth) {
+					component.setSize(colWidth, component.getHeight());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, Color.white);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
 	}

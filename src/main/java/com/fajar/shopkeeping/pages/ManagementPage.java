@@ -28,9 +28,7 @@ import javax.swing.text.JTextComponent;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.CostFlow;
 import com.fajar.entity.Product;
-import com.fajar.entity.Transaction;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -105,14 +103,25 @@ public class ManagementPage extends BasePage {
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Management", 50),
-				null,
+				title("Management "+getEntityClassName(), 50), null,
 				formPanel, 
-				listPanel);
+				ComponentBuilder.buildVerticallyInlineComponent(500, getPaginationPanel(),  listPanel));
 
 		parentPanel.add(mainPanel);
 		exitOnClose();
 
+	}
+	
+	private JPanel getPaginationPanel() {
+		JPanel panelPagination = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
+		return panelPagination;
+	}
+
+	private String getEntityClassName() {
+		if(entityClass == null) {
+			return "";
+		}
+		return entityClass.getSimpleName();
 	}
 
 	@Override
@@ -317,8 +326,6 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel buildListPanel() {
 		
-		JPanel panelPagination = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
-		
 		List<BaseEntity> entities = entityList;
 		List<Component> listComponents = new ArrayList<>();
 		List<EntityElement> entityElements = entityProperty.getElements();
@@ -395,7 +402,7 @@ public class ManagementPage extends BasePage {
 		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
 		
 		PanelRequest panelRequest2 = PanelRequest.autoPanelNonScroll(1, 510, 5, Color.white);
-		return buildPanelV2(panelRequest2, panelPagination, panel);
+		return buildPanelV2(panelRequest2,  panel);
 	}
 	
 	/**
