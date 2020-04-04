@@ -32,6 +32,10 @@ public class PanelRequest {
 		return new PanelRequest(col, colWidth, 0, margin, color, 0, 0, 0, panelH, true);
 	}
 	
+	public static PanelRequest autoPanelScrollWidthHeightSpecified(int col, int colWidth, int margin, Color color, int panelW, int panelH) {
+		return new PanelRequest(col, colWidth, 0, margin, color, 0, 0, panelW, panelH, true);
+	}
+	
 	public static PanelRequest autoPanelScrollXYSpecified(int col, int colWidth, int margin, Color color, int panelX, int panelY, int panelH) {
 		return new PanelRequest(col, colWidth, 0, margin, color, panelX, panelY, 0, panelH, true);
 	}

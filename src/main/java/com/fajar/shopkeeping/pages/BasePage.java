@@ -10,6 +10,7 @@ import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -112,7 +113,38 @@ public class BasePage {
 		parentPanel.setBounds(10, 10, WIDTH, HEIGHT);
 		parentPanel.setSize(WIDTH, HEIGHT); 
 		frame.setContentPane(parentPanel);
+		frame.addKeyListener(frameKeyListener());
 
+	}
+
+	private KeyListener frameKeyListener() { 
+		return new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) { 
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) { 
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int code = e.getKeyCode();
+				switch (code) {
+				case KeyEvent.VK_F5:
+					Log.log("Refresh");
+					refresh();
+					break;
+
+				default:
+					break;
+				}
+				
+			}
+		};
 	}
 
 	public void initComponent() {
@@ -452,5 +484,39 @@ public class BasePage {
 		totalCashflow.setAmount(flow.getAmount() + totalCashflow.getAmount());
 		totalCashflow.setCount(flow.getCount() + totalCashflow.getCount());
 
+	}
+	
+	protected Component[] toArrayOfComponent(List<Component> formComponents) {
+
+		Component[] components = new Component[formComponents.size()];
+		for (int i = 0; i < formComponents.size(); i++) {
+			components[i] = formComponents.get(i);
+		}
+		return components;
+	}
+	
+	protected Component[] toArrayOfComponentAdditionalComponentAfter(List<Component> formComponents, Component...additionalComponents) {
+
+		Component[] components = new Component[formComponents.size() + additionalComponents.length];
+		for (int i = 0; i < formComponents.size(); i++) {
+			components[i] = formComponents.get(i);
+		}
+		for (int i = 0; i < additionalComponents.length; i++) {
+			components[i + formComponents.size()] = additionalComponents[i];
+		}
+		return components;
+	}
+	
+	protected Component[] toArrayOfComponentAdditionalComponentBefore(List<Component> formComponents, Component...additionalComponents) {
+
+		Component[] components = new Component[formComponents.size() + additionalComponents.length];
+		for (int i = 0; i < additionalComponents.length; i++) {
+			components[i  ] = additionalComponents[i];
+		}
+		for (int i = 0; i < formComponents.size(); i++) {
+			components[i + additionalComponents.length] = formComponents.get(i);
+		}
+		
+		return components;
 	}
 }

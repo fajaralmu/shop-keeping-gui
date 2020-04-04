@@ -26,7 +26,7 @@ import javax.swing.text.JTextComponent;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.CostFlow;
+import com.fajar.entity.Product;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -47,12 +47,15 @@ public class ManagementPage extends BasePage {
 	private EntityProperty entityProperty;
 
 	private JPanel formPanel;
+	private JPanel listPanel;
 
 	private final JButton buttonSubmit = button("Submit");
 	private final JButton buttonClear = button("Clear");
 	private final JButton buttonFilterEntity = button("Filter");
+	private final JButton buttonRefresh = button("Refresh");
 
-	private Class<? extends BaseEntity> entityClass = CostFlow.class;
+	private Class<? extends BaseEntity> entityClass = Product.class;
+	private List<BaseEntity> entityList;
  
 	private Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
@@ -68,7 +71,7 @@ public class ManagementPage extends BasePage {
 	
 	
 	public ManagementPage() {
-		super("Management", BASE_WIDTH, BASE_HEIGHT);
+		super("Management", BASE_WIDTH + 400, BASE_HEIGHT);
 	}
 
 	@Override
@@ -80,17 +83,22 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 550, 5, Color.GREEN);
+		panelRequest.setCenterAligment(true);
 
 		if (formPanel == null) {
 			formPanel = buildPanelV2(panelRequest, label("Please wait.."));
-		} 
-
+		}  
+		if(listPanel == null) {
+			listPanel = buildPanelV2(panelRequest, label("Please wait.."));
+		}
+		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Management Page", 50), formPanel,
-				ComponentBuilder.buildInlineComponent(100, buttonSubmit, buttonClear),
-				ComponentBuilder.buildInlineComponent(100, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity));
+				title("Management", 50),
+				null,
+				formPanel, 
+				listPanel);
 
 		parentPanel.add(mainPanel);
 		exitOnClose();
@@ -104,7 +112,15 @@ public class ManagementPage extends BasePage {
 		inputPage.addKeyListener(textFieldActionListener(inputPage, "selectedPage"));
 		inputLimit.addKeyListener(textFieldActionListener(inputLimit, "selectedLimit"));
 		buttonFilterEntity.addActionListener(getHandler().filterEntity()); 
+		buttonRefresh.addActionListener(buttonRefreshListener());
 		
+	}
+	
+	@Override
+	public void refresh() {
+		preInitComponent();
+		initEvent();
+		super.refresh();
 	}
 	
 	@Override
@@ -124,6 +140,8 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void run() {
 				formPanel = generateEntityForm();
+				 getHandler().getEntities();
+				
 				preInitComponent();
 				initEvent();
 				Loadings.end();
@@ -141,7 +159,7 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel generateEntityForm() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 10, Color.yellow);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 330, 2, Color.yellow);
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -201,8 +219,9 @@ public class ManagementPage extends BasePage {
 			}
 
 			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
-
+			
 		}
+		Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh);
 		/*
 		 * <c:forEach var="element" items="${entityProperty.elements}"> <tr
 		 * valign="top"> <td><label>${element.lableName }</label></td> <td><c:choose>
@@ -272,9 +291,50 @@ public class ManagementPage extends BasePage {
 		 * } identity="${element.identity }" /> </c:otherwise> </c:choose></td> </tr>
 		 * </c:forEach>
 		 */
+		formComponents.add(actionButtons );
 
 		JPanel formPanel = buildPanelV2(panelRequest, toArrayOfComponent(formComponents));
 		return formPanel;
+	}
+	
+	/**
+	 * BUILD DATA TABLE
+	 * @return
+	 */
+	private JPanel buildListPanel() {
+		
+		JPanel panelPagination = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
+		
+		List<BaseEntity> entities = entityList;
+		List<Component> listComponents = new ArrayList<>();
+		List<EntityElement> entityElements = entityProperty.getElements();
+		
+		final int colSize = entityElements.size();  
+		
+		final int columnWidth = 150;
+		for (BaseEntity entity : entities) {
+			Component[] components = new Component[colSize];
+			int i = 0;
+			for(EntityElement element:entityElements) {
+				Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
+				Object value;
+				try {
+					value = field.get(entity);
+					components[i] = label(value);
+				} catch (IllegalArgumentException | IllegalAccessException e) { 
+					e.printStackTrace();
+				}
+				
+				i++;
+			}
+			
+			JPanel rowPanel = rowPanel(colSize, columnWidth, components);
+			listComponents.add(rowPanel);
+		}
+		
+		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 500);
+		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponentAdditionalComponentBefore(listComponents, panelPagination));
+		return panel;
 	}
 	
 	/**
@@ -495,14 +555,7 @@ public class ManagementPage extends BasePage {
 		};
 	}
 
-	private Component[] toArrayOfComponent(List<Component> formComponents) {
-
-		Component[] components = new Component[formComponents.size()];
-		for (int i = 0; i < formComponents.size(); i++) {
-			components[i] = formComponents.get(i);
-		}
-		return components;
-	}
+	
 
 	private Object[] extractListOfSpecifiedField(List<Map> objectList, String optionItemName) {
 		Object[] result = new Object[objectList.size()];
@@ -539,7 +592,9 @@ public class ManagementPage extends BasePage {
 	 */
 	public void handleGetFilteredEntities(ShopApiResponse response) {
 		Log.log("Filtered Entities: ",response.getEntities());
-		
+		entityList = response.getEntities();
+		listPanel = buildListPanel();
+		refresh();
 	}
 
 }

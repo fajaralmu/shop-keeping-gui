@@ -221,8 +221,13 @@ public class ComponentBuilder {
 			BasePage.printSize(customPanel);
 			
 			JScrollPane scrollPane = new JScrollPane(customPanel);
-			scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
-
+			
+			if(panelH > 0) {
+				scrollPane.setPreferredSize(new Dimension(panelW, panelH)); 
+			}else {
+				scrollPane.setPreferredSize(new Dimension(customPanel.getCustomWidth(), panelH));
+			}
+			
 			MyCustomPanel panel = new MyCustomPanel();
 			panel.setBounds(0, 0, finalWidth, panelH);
 			panel.add(scrollPane);
@@ -332,6 +337,16 @@ public class ComponentBuilder {
 	}
 	
 	public static JPanel buildInlineComponent(int colWidth, Object...components) {
+		for (Object object : components) {
+			try {
+				Component component = (Component) object;
+				if(component.getWidth() > colWidth) {
+					component.setSize(colWidth, component.getHeight());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 5, Color.white);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
