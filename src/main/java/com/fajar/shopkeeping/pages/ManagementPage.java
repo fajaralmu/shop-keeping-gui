@@ -74,6 +74,8 @@ public class ManagementPage extends BasePage {
 	
 	private final JTextField inputPage = numberField("0");
 	private final JTextField inputLimit = numberField("10");
+	
+	private final JLabel labelTotalData = label("total data");
 
 	private int selectedPage = 0;
 	private int selectedLimit = 10;
@@ -107,7 +109,7 @@ public class ManagementPage extends BasePage {
 
 				title("Management "+getEntityClassName(), 50), null,
 				formPanel, 
-				ComponentBuilder.buildVerticallyInlineComponent(500, getPaginationPanel(),  listPanel));
+				ComponentBuilder.buildVerticallyInlineComponent(500, getNavigationPanel(),  listPanel));
 
 		parentPanel.add(mainPanel);
 		exitOnClose();
@@ -118,14 +120,36 @@ public class ManagementPage extends BasePage {
 	 * generate data table navigations
 	 * @return
 	 */
-	private JPanel getPaginationPanel() {
+	private JPanel getNavigationPanel() {
 		
 		if(selectedLimit == 0) {
 			return new JPanel();
-		}
+		} 
 		
-		Double totalPage = new BigDecimal(totalData).doubleValue() / new BigDecimal( selectedLimit).doubleValue();
-		Component[] navigationButtons = new Component[totalPage.intValue()];
+		Component[] navigationButtons = generationNavigationButtons();
+		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
+		JPanel panelNavigation = ComponentBuilder.buildPanelV2(panelRequest, navigationButtons);
+		
+		JPanel panelPageLimit = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity, labelTotalData);
+		return ComponentBuilder.buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
+	}
+
+	
+	/**
+	 * generate array of navigation buttons
+	 * @return
+	 */
+	private Component[] generationNavigationButtons() {
+		
+		if(selectedLimit == 0) {
+			return new Component[] {};
+		}
+		labelTotalData.setText("Total: "+totalData);
+		int totalPage =  (totalData) / ( selectedLimit);
+		if(totalData % selectedLimit != 0) {
+			totalPage ++;
+		}
+		Component[] navigationButtons = new Component[totalPage ];
 		
 		for (int i = 0; i < totalPage; i++) {
 			JButton button = button(i+1, 50, 20); 
@@ -134,15 +158,8 @@ public class ManagementPage extends BasePage {
 			
 			navigationButtons[i] = button; 
 		}
-		
-		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(navigationButtons.length, 50, 1, Color.gray, 500, 40);
-		JPanel panelNavigation = ComponentBuilder.buildPanelV2(panelRequest, navigationButtons);
-		
-		JPanel panelPageLimit = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity);
-		return ComponentBuilder.buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
+		return navigationButtons;
 	}
-
-	
 
 	private String getEntityClassName() {
 		if(entityClass == null) {
