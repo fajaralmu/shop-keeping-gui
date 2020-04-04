@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -251,6 +256,12 @@ public class ComponentBuilder {
 						"height:", component.getHeight()));
 	}
 
+	/**
+	 * comboBox with editable option
+	 * @param defaultValue
+	 * @param values
+	 * @return
+	 */
 	public static JComboBox buildEditableComboBox(Object defaultValue, Object...values) {
 		
 		JComboBox comboBox=  buildComboBox(defaultValue, values);
@@ -258,6 +269,12 @@ public class ComponentBuilder {
 		return comboBox;
 	}
 	
+	/**
+	 * common comboBox
+	 * @param defaultValue
+	 * @param values
+	 * @return
+	 */
 	public static JComboBox buildComboBox(Object defaultValue, Object... values) {
 
 		ComboBoxModel model = new DefaultComboBoxModel<>();
@@ -283,6 +300,11 @@ public class ComponentBuilder {
 		return comboBox;
 	}
 
+	/**
+	 * common jLabel
+	 * @param title
+	 * @return
+	 */
 	public static JLabel label(Object title) {
 
 		if (isNumber(title)) {
@@ -325,6 +347,12 @@ public class ComponentBuilder {
 		return false;
 	}
 
+	/**
+	 * jLabel with specified fontSize
+	 * @param title
+	 * @param fontSize
+	 * @return
+	 */
 	public static JLabel title(String title, int fontSize) {
 		 
 		int width = title.length() * (fontSize + 10);
@@ -336,6 +364,12 @@ public class ComponentBuilder {
 		return label;
 	}
 	
+	/**
+	 * build horizontally aligned components wrapped in jPanel
+	 * @param colWidth
+	 * @param components
+	 * @return
+	 */
 	public static JPanel buildInlineComponent(int colWidth, Object...components) {
 		for (Object object : components) {
 			try {
@@ -352,6 +386,11 @@ public class ComponentBuilder {
 		return buildPanelV2(panelRequest, components_ );
 	}
 	
+	/**
+	 * common textArea
+	 * @param defaultValue
+	 * @return
+	 */
 	public static JTextArea textarea(Object defaultValue) {
 		if(null == defaultValue) {
 			defaultValue = "";
@@ -363,5 +402,32 @@ public class ComponentBuilder {
 		textArea.setRows(3); 
 		textArea.setBackground(Color.LIGHT_GRAY);
 		return textArea ;
+	}
+	
+	public static JLabel imageLabel(String url, int width, int height) {
+		
+		JLabel label = new JLabel();
+		label.setSize(width, height);
+		Icon icon = imageIcon(url, width, height);
+		label.setIcon(icon );
+		return label ;
+	}
+	
+	public static ImageIcon imageIcon(String url, int width, int height) {
+		
+		URL location;
+		try {
+			location = new URL(url);
+			ImageIcon imageIcon = new ImageIcon(location);
+			Image image = imageIcon.getImage(); // transform it 
+			Image newimg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+			imageIcon = new ImageIcon(newimg);  // transform it back
+		 
+			return imageIcon;
+		} catch (MalformedURLException e) {
+			Log.log("Error creating image icon");
+			e.printStackTrace();
+		}
+		return new ImageIcon();
 	}
 }

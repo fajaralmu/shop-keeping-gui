@@ -35,10 +35,13 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.StringUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -326,7 +329,7 @@ public class ManagementPage extends BasePage {
 			/**
 			 * checking the value type
 			 */
-			for(int i = 0; i< entityElements.size();i++) {
+			elementLoop: for(int i = 0; i< entityElements.size();i++) {
 				final EntityElement element = entityElements.get(i); 
 				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
 				final String fieldType = element.getType();
@@ -338,10 +341,26 @@ public class ManagementPage extends BasePage {
 					if(null != value) {
 						
 						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+							
 							String optionItemName = element.getOptionItemName();
 							Field converterField = EntityUtil.getDeclaredField(field.getType(), optionItemName);
 							Object converterValue = converterField.get(value);
 							value = converterValue;
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
+						
+							value = value.toString().split("~")[0];
+							components[i + 1] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
+							continue elementLoop;
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
+							
+							value = DateUtil.parseDate((Date)value, "dd-MM-yyyy");
+							
+						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
+							
+							value = StringUtil.beautifyNominal(Long.valueOf(value.toString()));
+							
 						}
 						
 						if(value.toString().length() > 20) {

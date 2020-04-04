@@ -1,8 +1,11 @@
 package com.fajar.shopkeeping.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtil {
+	public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 
 	/**
 	 * get current month starting from 1
@@ -37,5 +40,14 @@ public class DateUtil {
 	public static String dateString(int month, int year) {
 
 		return StringUtil.months[month - 1] + " " + year;
+	}
+	
+	public static String parseDate(Date date, String pattern) {
+		try {
+			simpleDateFormat.applyPattern(pattern);
+			return simpleDateFormat.format(date);
+		}catch (Exception e) { 
+			return date.toString();
+		}
 	}
 }
