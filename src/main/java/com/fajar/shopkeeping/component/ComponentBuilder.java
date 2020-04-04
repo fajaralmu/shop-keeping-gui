@@ -387,7 +387,7 @@ public class ComponentBuilder {
 	}
 	
 	/**
-	 * common textArea
+	 * common textArea, size: 100 x 100
 	 * @param defaultValue
 	 * @return
 	 */
@@ -404,15 +404,29 @@ public class ComponentBuilder {
 		return textArea ;
 	}
 	
+	/**
+	 * label with image
+	 * @param url
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	public static JLabel imageLabel(String url, int width, int height) {
 		
 		JLabel label = new JLabel();
 		label.setSize(width, height);
 		Icon icon = imageIcon(url, width, height);
 		label.setIcon(icon );
-		return label ;
+		return label;
 	}
 	
+	/**
+	 * image icon from website
+	 * @param url
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	public static ImageIcon imageIcon(String url, int width, int height) {
 		
 		URL location;

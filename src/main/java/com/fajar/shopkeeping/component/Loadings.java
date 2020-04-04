@@ -1,7 +1,6 @@
 package com.fajar.shopkeeping.component;
 
 import java.awt.Color;
-import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,6 +10,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 public class Loadings {
 
 	private static final JFrame loadingFrame = loadingFrame();
+	private static int loadingCount = 0;
 
 	private static JFrame loadingFrame() {
 		JFrame jframe = new JFrame("loading... ");
@@ -29,9 +29,9 @@ public class Loadings {
 		return jframe;
 	}
 	
-	public static void main(String[] args) {
-		start();
-	}
+//	public static void main(String[] args) {
+//		start();
+//	}
 
 	public static boolean isVisible() {
 		return loadingFrame.isVisible();
@@ -39,10 +39,12 @@ public class Loadings {
 	
 	public static void start() {
 		loadingFrame.setVisible(true);
+		loadingCount++;
 	}
 
 	public static void end() {
-		if (loadingFrame.isVisible())
+		loadingCount--;
+		if (loadingFrame.isVisible() && loadingCount  == 0)
 			loadingFrame.setVisible(false);
 	}
 
