@@ -306,6 +306,9 @@ public class ComponentBuilder {
 	 * @return
 	 */
 	public static JLabel label(Object title) {
+		if(null == title) {
+			title = "";
+		}
 
 		if (isNumber(title)) {
 			try {

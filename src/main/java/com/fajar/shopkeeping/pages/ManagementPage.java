@@ -28,7 +28,9 @@ import javax.swing.text.JTextComponent;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.CostFlow;
 import com.fajar.entity.Product;
+import com.fajar.entity.Transaction;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -48,6 +50,8 @@ import lombok.Data;
 
 @Data
 public class ManagementPage extends BasePage {
+
+	private static final String DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss";
 
 	private EntityProperty entityProperty;
 
@@ -315,7 +319,7 @@ public class ManagementPage extends BasePage {
 		List<EntityElement> entityElements = entityProperty.getElements();
 		
 		final int colSize = entityElements.size() + 1;   
-		final int columnWidth = 150;
+		final int columnWidth = 160;
 		int sequenceNumber = Integer.valueOf(selectedPage) *  Integer.valueOf(selectedLimit);
 		Component headerPanel = createDataTableHeader();
 		
@@ -355,7 +359,7 @@ public class ManagementPage extends BasePage {
 							
 						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
 							
-							value = DateUtil.parseDate((Date)value, "dd-MM-yyyy");
+							value = DateUtil.parseDate((Date)value, DATE_PATTERN);
 							
 						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
 							
@@ -363,8 +367,8 @@ public class ManagementPage extends BasePage {
 							
 						}
 						
-						if(value.toString().length() > 20) {
-							value = value.toString().substring(0, 20)+"...";
+						if(value.toString().length() > 30) {
+							value = value.toString().substring(0, 30)+"...";
 						}
 					}
 					
@@ -401,7 +405,7 @@ public class ManagementPage extends BasePage {
 			headerComponents.add(label(element.getId()));
 		}
 		
-		Component header = rowPanelHeader(entityElements.size() + 1, 150, toArrayOfComponent(headerComponents));
+		Component header = rowPanelHeader(entityElements.size() + 1, 160, toArrayOfComponent(headerComponents));
 		 
 		return header;
 	}
