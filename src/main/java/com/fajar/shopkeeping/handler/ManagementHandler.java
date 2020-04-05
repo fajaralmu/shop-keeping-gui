@@ -121,12 +121,16 @@ public class ManagementHandler extends MainHandler {
 		
 		Log.log("Page: ",getPage().getSelectedPage(), "Limit: ", getPage().getSelectedLimit());
 		
+		Filter filter = new Filter();
+		filter.setPage(getPage().getSelectedPage());
+		filter.setLimit(getPage().getSelectedLimit());
+		filter.setFieldsFilter(getPage().getFieldsFilter());
+		filter.setOrderBy(getPage().getOrderBy());
+		filter.setOrderType(getPage().getOrderType());
+		
 		entityService.getEntityList(
-				 (getPage().getSelectedPage()), 
-				 (getPage().getSelectedLimit()), 
-				getPage().getFieldsFilter(), 
+				filter,
 				getPage().getEntityClass(),
-				
 				new MyCallback() {
 					
 					@Override

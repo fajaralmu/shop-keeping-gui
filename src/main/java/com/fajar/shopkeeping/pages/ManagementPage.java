@@ -51,6 +51,8 @@ import lombok.Data;
 public class ManagementPage extends BasePage {
 
 	private static final String DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss";
+	public static final String ORDER_ASC = "asc";
+	public static final String ORDER_DESC = "desc"; 
 
 	private EntityProperty entityProperty;
 
@@ -73,6 +75,8 @@ public class ManagementPage extends BasePage {
 	private boolean refreshing;
 	
 	private String idFieldName;
+	private String orderType;
+	private String orderBy;
 	
 	private final JTextField inputPage = numberField("0");
 	private final JTextField inputLimit = numberField("10");
@@ -410,6 +414,9 @@ public class ManagementPage extends BasePage {
 			
 			final String elementId = element.getId();
 			
+			JButton buttonAsc = orderButton(elementId, ORDER_ASC);
+			JButton buttonDesc = orderButton(elementId, ORDER_DESC);
+			JPanel orderButtons = ComponentBuilder.buildInlineComponent(45, buttonAsc, buttonDesc);
 			JTextField filterField = textField("");
 			filterField.addKeyListener(filterFieldKeyListener(elementId));
 			
@@ -419,7 +426,7 @@ public class ManagementPage extends BasePage {
 			columnFilterTextFields.put(elementId, filterField); 
 			
 			JLabel columnLabel = label(elementId);
-			Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField);
+			Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
 			headerComponents.add(columnHeader);
 			
 		}
@@ -427,6 +434,25 @@ public class ManagementPage extends BasePage {
 		Component header = rowPanelHeader(entityElements.size() + 1, 160, toArrayOfComponent(headerComponents));
 		 
 		return header;
+	}
+
+	private JButton orderButton(final String elementId, final String theOrderType) {
+		JButton button = button(theOrderType);
+		button.addActionListener(new ActionListener() { 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				orderBy = elementId;
+				orderType = theOrderType;
+				getHandler().getEntities();
+			}
+		});
+		
+		if(elementId.equals(orderBy) && theOrderType.equals(orderType)) {
+			button.setBackground(Color.yellow);
+		}
+		
+		button.setSize(40, 20);
+		return button ;
 	}
 
 	private KeyListener filterFieldKeyListener(final String key) { 

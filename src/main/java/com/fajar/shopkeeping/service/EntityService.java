@@ -33,7 +33,7 @@ public class EntityService extends BaseService {
 
 	}
 
-	public void getEntityList(final int page, final int limit, final Map<String, Object> fieldFilter, final Class entityClass, final MyCallback callback) {
+	public void getEntityList(final Filter filter, final Class entityClass, final MyCallback callback) {
 		Loadings.start();
 
 		Thread thread = new Thread(new Runnable() {
@@ -41,7 +41,7 @@ public class EntityService extends BaseService {
 			public void run() {
 
 				try { 
-					ShopApiResponse response = getEntityList(page, limit, entityClass, fieldFilter);
+					ShopApiResponse response = getEntityList(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -141,9 +141,9 @@ public class EntityService extends BaseService {
 
 	}
 
-	private ShopApiResponse getEntityList(int page, int limit, Class entityClass, Map<String, Object> fieldsFilter) { 
+	private ShopApiResponse getEntityList(Filter filter, Class entityClass ) { 
 		
-		return getEntityListFullResponse(Filter.builder().page(page).fieldsFilter(fieldsFilter).limit(limit).build(), entityClass);
+		return getEntityListFullResponse(filter, entityClass);
 	}
 	
 	public void addNewEntity( final Map entityObject, final Class entityClass, final MyCallback myCallback) { 
