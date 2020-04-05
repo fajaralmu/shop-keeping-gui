@@ -124,7 +124,7 @@ public class ManagementHandler extends MainHandler {
 		entityService.getEntityList(
 				 (getPage().getSelectedPage()), 
 				 (getPage().getSelectedLimit()), 
-				getPage().getFieldsFiler(), 
+				getPage().getFieldsFilter(), 
 				getPage().getEntityClass(),
 				
 				new MyCallback() {
