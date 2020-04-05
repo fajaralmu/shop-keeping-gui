@@ -14,6 +14,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.MapUtil;
 
 public class ManagementHandler extends MainHandler {
 
@@ -33,6 +34,13 @@ public class ManagementHandler extends MainHandler {
 		return resultList;
 	}
 
+	/**
+	 * populate dynamic comboBox items
+	 * @param entityClass
+	 * @param key
+	 * @param value
+	 * @param callback
+	 */
 	public void getEnitiesFormDynamicDropdown(Class<?> entityClass, final String key, final Object value,
 			MyCallback callback) {
 
@@ -46,19 +54,13 @@ public class ManagementHandler extends MainHandler {
 	}
 	
 	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
-		if(null == list) {
-			Log.log("list is null");
-			return null;
-		}
-		for (Map map : list) {
-			if(map.get(key).equals(selectedValue)) {
-				return map;
-			}
-		}
-		
-		return null;
+		return MapUtil.getMapFromList(key, selectedValue, list);
 	}
 
+	/**
+	 * when button submit clicked
+	 * @return
+	 */
 	public ActionListener submit() {
 		 
 		return new ActionListener() {
@@ -77,6 +79,9 @@ public class ManagementHandler extends MainHandler {
 		return (ManagementPage) this.page;
 	}
 	
+	/**
+	 * submit update / add new record
+	 */
 	private void submitEntity() {
 		int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?");
 		
@@ -102,6 +107,10 @@ public class ManagementHandler extends MainHandler {
 		}
 	}
 	
+	/**
+	 * when filter entity button pressed
+	 * @return
+	 */
 	public ActionListener filterEntity() {
 		
 		return new ActionListener() {
@@ -140,6 +149,18 @@ public class ManagementHandler extends MainHandler {
 						getPage().handleGetFilteredEntities(response);
 					}
 				});
+	}
+	
+	/**
+	 * get entity by ID
+	 */
+	public void getSingleEntity(String idFieldName, Object idValue) {
+		
+		entityService.getSingleEntityByID(
+				idFieldName, 
+				idValue, 
+				getPage().getEntityClass(), 
+				getPage().callbackGetSingleEntity());
 	}
 
 

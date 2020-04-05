@@ -106,5 +106,20 @@ public class MapUtil {
 		
 		return false;
 	}
+	
+	
+	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
+		if(null == list) {
+			Log.log("list is null");
+			return null;
+		}
+		for (Map map : list) {
+			if(map.get(key).equals(selectedValue)) {
+				return map;
+			}
+		}
+		
+		return null;
+	}
 
 }

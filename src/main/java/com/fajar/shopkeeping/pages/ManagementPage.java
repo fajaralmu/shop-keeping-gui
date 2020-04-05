@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -29,6 +30,7 @@ import javax.swing.text.JTextComponent;
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.CostFlow;
 import com.fajar.entity.Unit;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
@@ -64,9 +66,10 @@ public class ManagementPage extends BasePage {
 	private final JButton buttonFilterEntity = button("Go");
 	private final JButton buttonRefresh = button("Refresh");
 
-	private Class<? extends BaseEntity> entityClass = Unit.class;
+	private Class<? extends BaseEntity> entityClass = CostFlow.class;
 	private List<BaseEntity> entityList; 
-	private Map<String,JTextField> columnFilterTextFields = new HashMap<>();
+	private Map<String, JTextField> columnFilterTextFields = new HashMap<>(); //list of data table column filter inputs
+	private Map<String, Component> formInputFields = new HashMap<>(); 
  
 	private final Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
 	private Map<String, Object> managedObject = new HashMap<>();
@@ -77,6 +80,7 @@ public class ManagementPage extends BasePage {
 	private String idFieldName;
 	private String orderType;
 	private String orderBy;
+	private Object idValue;
 	
 	private final JTextField inputPage = numberField("0");
 	private final JTextField inputLimit = numberField("10");
@@ -250,6 +254,7 @@ public class ManagementPage extends BasePage {
 		List<Component> formComponents = new ArrayList<Component>();
  
 		comboBoxListContainer.clear();
+		formInputFields.clear();
 		entityProperty = EntityUtil.createEntityProperty(entityClass, null);
 
 		List<EntityElement> entityElements = entityProperty.getElements();
@@ -304,6 +309,7 @@ public class ManagementPage extends BasePage {
 				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
 			}
 
+			formInputFields.put(elementId, inputComponent);
 			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
 			
 		}
@@ -324,7 +330,7 @@ public class ManagementPage extends BasePage {
 		List<Component> listComponents = new ArrayList<>();
 		List<EntityElement> entityElements = entityProperty.getElements();
 		
-		final int colSize = entityElements.size() + 1;   
+		final int colSize = entityElements.size() + 2;   
 		final int columnWidth = 160;
 		int sequenceNumber = Integer.valueOf(selectedPage) *  Integer.valueOf(selectedLimit);
 		Component headerPanel = createDataTableHeader();
@@ -336,6 +342,9 @@ public class ManagementPage extends BasePage {
 			Component[] components = new Component[colSize ];
 			components[0] = label(sequenceNumber + 1); 
 			
+			String idFieldName = "";
+			Object idValue = "";
+			boolean idExist = false;
 			/**
 			 * checking the value type
 			 */
@@ -371,14 +380,18 @@ public class ManagementPage extends BasePage {
 							
 							value = StringUtil.beautifyNominal(Long.valueOf(value.toString()));
 							
-						}
+						} 
 						
 						if(value.toString().length() > 30) {
 							value = value.toString().substring(0, 30)+"...";
 						}
-					}
-					
-					
+						
+						if(element.isIdentity()) {
+							idExist  = true;
+							idFieldName = element.getId();
+							idValue = value;
+						}
+					}  
 					
 					components[i + 1] = label(value);
 				} catch (IllegalArgumentException | IllegalAccessException e) { 
@@ -386,6 +399,10 @@ public class ManagementPage extends BasePage {
 				}
 				 
 			}
+			
+			//end field elements
+			components[colSize - 1] = idExist ? editButton(idFieldName, idValue) : label("-");
+			
 			sequenceNumber++;
 			JPanel rowPanel = rowPanel(colSize , columnWidth, components);
 			listComponents.add(rowPanel);
@@ -399,6 +416,25 @@ public class ManagementPage extends BasePage {
 		return buildPanelV2(panelRequest2,  panel);
 	}
 	
+	/**
+	 * button edit on datatable row
+	 * @param idFieldName2
+	 * @param idValue2
+	 * @return
+	 */
+	private JButton editButton(final String idFieldName2, final Object idValue2) {
+		JButton button = button("Edit");
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getHandler().getSingleEntity(idFieldName2, idValue2);
+				
+			}
+		});
+		return button;
+	}
+
 	/**
 	 * table header for data table
 	 * @return
@@ -418,21 +454,25 @@ public class ManagementPage extends BasePage {
 			JButton buttonAsc = orderButton(elementId, ORDER_ASC);
 			JButton buttonDesc = orderButton(elementId, ORDER_DESC);
 			JPanel orderButtons = ComponentBuilder.buildInlineComponent(45, buttonAsc, buttonDesc);
+			
+			JLabel columnLabel = label(elementId);
+			
 			JTextField filterField = textField("");
 			filterField.addKeyListener(filterFieldKeyListener(elementId));
 			
 			if(fieldsFilter.get(elementId) != null) {
 				filterField.setText(fieldsFilter.get(elementId).toString());
 			}
-			columnFilterTextFields.put(elementId, filterField); 
+			columnFilterTextFields.put(elementId, filterField);  
 			
-			JLabel columnLabel = label(elementId);
 			Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
 			headerComponents.add(columnHeader);
 			
 		}
 		
-		Component header = rowPanelHeader(entityElements.size() + 1, 160, toArrayOfComponent(headerComponents));
+		headerComponents.add(label("Option"));
+		
+		Component header = rowPanelHeader(entityElements.size() + 2, 160, toArrayOfComponent(headerComponents));
 		 
 		return header;
 	}
@@ -764,8 +804,74 @@ public class ManagementPage extends BasePage {
 			this.columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
 			this.columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
 		}catch (Exception e) {
-			// TODO: handle exception
+			 
 		}
+	}
+
+	/**
+	 * callback when edit button pressed
+	 * @return
+	 */
+	public MyCallback callbackGetSingleEntity() { 
+		return new MyCallback() {
+			
+			@Override
+			public void handle(Object... params) throws Exception {
+				 Map entity = (Map) params[0];
+				 populateFormInputs(entity);
+				
+			} 
+			
+		};
+	}
+	
+	/**
+	 * populate form fields by given entity
+	 * @param entity
+	 */
+	private void populateFormInputs(Map entity) { 
+		managedObject = entity;
+		Set<String> objectKeys = managedObject.keySet();
+		
+		for (String key : objectKeys) {
+			Object value = managedObject.get(key);
+			if(value == null) {
+				value = "";
+			}
+			
+			Component formField = formInputFields.get(key);
+			try {
+				((JTextField ) formField).setText(value.toString());
+			}catch (Exception e) {
+			 
+			}
+			try {
+				((JTextArea ) formField).setText(value.toString());
+			}catch (Exception e) {
+			 
+			}
+			try {
+				Map valueMap = (Map) value;
+				EntityElement element = getEntityElement(key);
+				String optionItemName = element.getOptionItemName();
+				((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		
+		
+	}
+	
+	private EntityElement getEntityElement(String elementId) {
+		
+		List<EntityElement> elements = entityProperty.getElements();
+		for (EntityElement entityElement : elements) {
+			if(entityElement.getId().equals(elementId)) {
+				return entityElement;
+			}
+		}
+		return null;
 	}
 
 }

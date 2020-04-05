@@ -56,6 +56,48 @@ public class EntityService extends BaseService {
 	} 
 	
 	/**
+	 * get single entity by id, returning hashmap response
+	 * @param idField
+	 * @param id
+	 * @param entityClass
+	 * @param callback
+	 */
+	public void getSingleEntityByID(final String idField, final Object id, final Class entityClass, final MyCallback callback) {
+		Loadings.start();
+		final Filter filter = new Filter();
+		filter.setLimit(1);
+		filter.setPage(0);
+		filter.setExacts(true);
+		filter.setContains(false);
+		filter.setFieldsFilter(new HashMap<String, Object>(){
+			{
+				put(idField, id);
+			}
+		});
+		
+		Thread thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+					
+					HashMap response = callGetEntity(filter , entityClass);
+					List<Map> theEntities  = (List) response.get("entities");
+					Map theEntity = theEntities.get(0);
+					callback.handle(theEntity);
+				} catch (Exception e) {
+					e.printStackTrace();
+					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+			}
+
+		});
+		thread.start();
+	}
+	
+	/**
 	 * the given response is hashmap
 	 * @param filter
 	 * @param entityClass
