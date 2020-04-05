@@ -62,7 +62,7 @@ public class LoginPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 
-		loginButton.addActionListener(((LoginHandler) appHandler).doLogin( ));
+		addActionListener(loginButton,((LoginHandler) appHandler).doLogin( ));
 		usernameField.addKeyListener(super.textFieldActionListener(usernameField, "typedUsername"));
 		passwordField.addKeyListener(super.textFieldActionListener(passwordField, "typedPassword"));  
 

@@ -11,7 +11,6 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,12 +23,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.TransferHandler;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Product;
+import com.fajar.entity.Unit;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -61,10 +61,10 @@ public class ManagementPage extends BasePage {
 
 	private final JButton buttonSubmit = button("Submit");
 	private final JButton buttonClear = button("Clear");
-	private final JButton buttonFilterEntity = button("Filter");
+	private final JButton buttonFilterEntity = button("Go");
 	private final JButton buttonRefresh = button("Refresh");
 
-	private Class<? extends BaseEntity> entityClass = Product.class;
+	private Class<? extends BaseEntity> entityClass = Unit.class;
 	private List<BaseEntity> entityList; 
 	private Map<String,JTextField> columnFilterTextFields = new HashMap<>();
  
@@ -86,6 +86,8 @@ public class ManagementPage extends BasePage {
 	private int selectedPage = 0;
 	private int selectedLimit = 10;
 	private int totalData = 0;
+	
+	Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
 	
 	
 	public ManagementPage() {
@@ -177,14 +179,18 @@ public class ManagementPage extends BasePage {
 	@Override
 	protected void initEvent() {
 		super.initEvent();
-		buttonSubmit.addActionListener(getHandler().submit());
-		inputPage.addKeyListener(textFieldActionListener(inputPage, "selectedPage"));
-		inputLimit.addKeyListener(textFieldActionListener(inputLimit, "selectedLimit"));
-		buttonFilterEntity.addActionListener(getHandler().filterEntity()); 
-		buttonRefresh.addActionListener(buttonRefreshListener());
-		buttonClear.addActionListener(clearListener());
+		addActionListener(buttonSubmit, getHandler().submit()); 
+		if(inputPage.getActionListeners().length == 0)  
+			inputPage.addKeyListener(textFieldActionListener(inputPage, "selectedPage"));
 		
-	}
+		if(inputLimit.getActionListeners().length == 0)  
+			inputLimit.addKeyListener(textFieldActionListener(inputLimit, "selectedLimit"));
+		
+		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
+		addActionListener(buttonRefresh, buttonRefreshListener()); 
+		addActionListener(buttonClear,clearListener());
+		
+	} 
 	
 	private ActionListener clearListener() { 
 		return new ActionListener() {
@@ -305,7 +311,6 @@ public class ManagementPage extends BasePage {
 			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
 			
 		}
-		Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh);
 		
 		formComponents.add(actionButtons );
 
@@ -437,7 +442,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	private JButton orderButton(final String elementId, final String theOrderType) {
-		JButton button = button(theOrderType);
+		JButton button = button(theOrderType.equals(ORDER_ASC)?'˄':'˅');
 		button.addActionListener(new ActionListener() { 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -451,7 +456,7 @@ public class ManagementPage extends BasePage {
 			button.setBackground(Color.yellow);
 		}
 		
-		button.setSize(40, 20);
+		button.setSize(50, 20);
 		return button ;
 	}
 
@@ -721,6 +726,8 @@ public class ManagementPage extends BasePage {
 			Dialogs.showErrorDialog("Update failed!");
 		}
 		Log.log("Callback update entity: ", response);
+		
+		getHandler().getEntities();
 		
 	}
 

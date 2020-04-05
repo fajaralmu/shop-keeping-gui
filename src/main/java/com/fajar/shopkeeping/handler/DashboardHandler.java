@@ -93,18 +93,21 @@ public class DashboardHandler extends MainHandler {
 		dailyCashflowPage.show();
 	}
 
-	public ActionListener getMonthlyCashflow(final JComboBox comboBoxMonth, final JComboBox comboBoxYear,
-			final MyCallback callback) {
+	public ActionListener getMonthlyCashflow(final MyCallback callback) {
 
 		return new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Object month = comboBoxMonth.getSelectedItem();
-				Object year = comboBoxYear.getSelectedItem();
+				Object month = getPage().getSelectedMonth();
+				Object year = getPage().getSelectedYear();
 				reportService.getMonthlyCashflowDetail(toInt(month), toInt(year), callback);
 			}
 		};
+	}
+	
+	private DashboardPage getPage() {
+		return (DashboardPage) page;
 	}
 
 	private int toInt(Object o) {

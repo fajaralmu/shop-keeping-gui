@@ -28,6 +28,9 @@ import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.DateUtil;
 
+import lombok.Data;
+
+@Data
 public class DashboardPage extends BasePage {
 
 	
@@ -302,11 +305,12 @@ public class DashboardPage extends BasePage {
 	@Override
 	protected void initEvent() {
 		super.initEvent();
-		buttonLogout.addActionListener(getHandler().logout());
-		buttonLoadMonthlyCashflow.addActionListener(getHandler().getMonthlyCashflow(comboBoxMonth, comboBoxYear, callbackUpdateMonthlyCashflow()));
-		buttonGotoPeriodicReport.addActionListener(getHandler().gotoPeriodicReportPage());
-		buttonGoToManagement.addActionListener(getHandler().gotoManagementPage());
-		comboBoxMonth.addActionListener(new ActionListener() {
+		
+		addActionListener(buttonLogout, getHandler().logout());
+		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
+		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
+		addActionListener(buttonGoToManagement, getHandler().gotoManagementPage());
+		addActionListener(comboBoxMonth, new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) { 
@@ -315,7 +319,7 @@ public class DashboardPage extends BasePage {
 			}
 		});
 		 
-		comboBoxYear.addActionListener(new ActionListener() {
+		addActionListener(comboBoxYear, new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {

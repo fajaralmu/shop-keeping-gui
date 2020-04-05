@@ -114,12 +114,12 @@ public class PeriodicReportPage extends BasePage {
 	@Override
 	protected void initEvent() {
 		super.initEvent();
-		comboBoxMonthFrom.addActionListener(comboBoxListener(comboBoxMonthFrom, "selectedMonthFrom"));
-		comboBoxYearFrom.addActionListener(comboBoxListener(comboBoxYearFrom, "selectedYearFrom"));
-		comboBoxMonthTo.addActionListener(comboBoxListener(comboBoxMonthTo, "selectedMonthTo"));
-		comboBoxYearTo.addActionListener(comboBoxListener(comboBoxYearTo, "selectedYearTo"));
-		buttonSearch.addActionListener(buttonSearchListener());
-		buttonRefresh.addActionListener(buttonRefreshListener());
+		addActionListener(comboBoxMonthFrom, comboBoxListener(comboBoxMonthFrom, "selectedMonthFrom"));
+		addActionListener(comboBoxYearFrom, comboBoxListener(comboBoxYearFrom, "selectedYearFrom"));
+		addActionListener(comboBoxMonthTo, comboBoxListener(comboBoxMonthTo, "selectedMonthTo"));
+		addActionListener(comboBoxYearTo, comboBoxListener(comboBoxYearTo, "selectedYearTo"));
+		addActionListener(buttonSearch, buttonSearchListener());
+		addActionListener(buttonRefresh, buttonRefreshListener());
 
 	}
 	  

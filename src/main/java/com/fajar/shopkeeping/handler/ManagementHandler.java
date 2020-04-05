@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 
@@ -64,7 +65,7 @@ public class ManagementHandler extends MainHandler {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				Log.log("ACTION PERFORMED:",e.getActionCommand());
 				submitEntity();
 				
 			} 
@@ -79,26 +80,26 @@ public class ManagementHandler extends MainHandler {
 	private void submitEntity() {
 		int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?");
 		
-		if(confirm != 0) {
-			Log.log("Operation aborted");
-			return;
-		}
+		if(confirm == 0) { 
 		
-		Map<String, Object> managedObject = getPage().getManagedObject();
-		String idField = getPage().getIdFieldName();
-		
-		Log.log("Submit managedObject: ", managedObject); 
-		
-		entityService.addNewEntity(managedObject, getPage().getEntityClass(), new MyCallback() {
+			Map<String, Object> managedObject = getPage().getManagedObject();
+			String idField = getPage().getIdFieldName();
 			
-			@Override
-			public void handle(Object... params) throws Exception {
-				HashMap response = (HashMap) params[0]; 
+			Log.log("Submit managedObject: ", managedObject); 
+			
+			entityService.addNewEntity(managedObject, getPage().getEntityClass(), new MyCallback() {
 				
-				getPage().callbackUpdateEntity(response);
-			}
-		});
-		
+				@Override
+				public void handle(Object... params) throws Exception {
+					HashMap response = (HashMap) params[0]; 
+					
+					getPage().callbackUpdateEntity(response);
+				}
+			});
+		}  
+		else {
+			Log.log("Operation aborted"); 
+		}
 	}
 	
 	public ActionListener filterEntity() {

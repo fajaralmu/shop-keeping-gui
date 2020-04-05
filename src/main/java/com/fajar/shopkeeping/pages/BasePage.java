@@ -548,4 +548,20 @@ public class BasePage {
 		
 		return components;
 	}
+	
+	protected static void addActionListener(JButton button, ActionListener actionListener) {
+		if(button.getActionListeners().length == 0) {
+			button.addActionListener(actionListener);
+		}
+	}
+	protected static void addActionListener(JTextField textfield, ActionListener actionListener) {
+		if( textfield.getActionListeners().length == 0) {
+			textfield.addActionListener(actionListener);
+		}
+	}
+	protected static void addActionListener(JComboBox comboBox, ActionListener actionListener) {
+		if( comboBox.getActionListeners().length == 0) {
+			comboBox.addActionListener(actionListener);
+		}
+	}
 }
