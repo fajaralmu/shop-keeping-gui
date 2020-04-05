@@ -91,8 +91,8 @@ public class ManagementHandler extends MainHandler {
 			String idField = getPage().getIdFieldName();
 			
 			Log.log("Submit managedObject: ", managedObject); 
-			
-			entityService.addNewEntity(managedObject, getPage().getEntityClass(), new MyCallback() {
+			 
+			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(), new MyCallback() {
 				
 				@Override
 				public void handle(Object... params) throws Exception {
@@ -101,6 +101,7 @@ public class ManagementHandler extends MainHandler {
 					getPage().callbackUpdateEntity(response);
 				}
 			});
+			 
 		}  
 		else {
 			Log.log("Operation aborted"); 

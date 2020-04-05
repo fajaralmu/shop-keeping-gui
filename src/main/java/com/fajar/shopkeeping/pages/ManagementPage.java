@@ -24,14 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.TransferHandler;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.CostFlow;
-import com.fajar.entity.Unit;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -75,7 +73,9 @@ public class ManagementPage extends BasePage {
 	private Map<String, Object> managedObject = new HashMap<>();
 	private final Map<String, Object> fieldsFilter = new HashMap<>();
 	private String currentElementIdFocus = "";
+	
 	private boolean refreshing;
+	private boolean editMode;
 	
 	private String idFieldName;
 	private String orderType;
@@ -764,6 +764,8 @@ public class ManagementPage extends BasePage {
 		Log.log("Callback update entity: ", response);
 		
 		getHandler().getEntities();
+
+		editMode = false;
 		
 	}
 
@@ -819,6 +821,7 @@ public class ManagementPage extends BasePage {
 			public void handle(Object... params) throws Exception {
 				 Map entity = (Map) params[0];
 				 populateFormInputs(entity);
+				 editMode = true;
 				
 			} 
 			
@@ -840,29 +843,34 @@ public class ManagementPage extends BasePage {
 			}
 			
 			Component formField = formInputFields.get(key);
-			try {
-				((JTextField ) formField).setText(value.toString());
-			}catch (Exception e) {
-			 
-			}
-			try {
-				((JTextArea ) formField).setText(value.toString());
-			}catch (Exception e) {
-			 
-			}
-			try {
-				Map valueMap = (Map) value;
-				EntityElement element = getEntityElement(key);
-				String optionItemName = element.getOptionItemName();
-				((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			
+			if(formField instanceof JTextField)
+				try {
+					((JTextField ) formField).setText(value.toString());
+				}catch (Exception e) { }
+			
+			if(formField instanceof JTextArea)
+				try {
+					((JTextArea ) formField).setText(value.toString());
+				}catch (Exception e) { }
+			
+			if(formField instanceof JComboBox)
+				try {
+					Map valueMap = (Map) value;
+					EntityElement element = getEntityElement(key);
+					String optionItemName = element.getOptionItemName();
+					((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
+				} catch (Exception e) { }
 		}
 		
 		
 	}
 	
+	/**
+	 * get EntityElement by elementId
+	 * @param elementId
+	 * @return
+	 */
 	private EntityElement getEntityElement(String elementId) {
 		
 		List<EntityElement> elements = entityProperty.getElements();

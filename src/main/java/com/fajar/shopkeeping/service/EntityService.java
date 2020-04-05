@@ -188,7 +188,7 @@ public class EntityService extends BaseService {
 		return getEntityListFullResponse(filter, entityClass);
 	}
 	
-	public void addNewEntity( final Map entityObject, final Class entityClass, final MyCallback myCallback) { 
+	public void updateEntity( final Map entityObject, final boolean editMode, final Class entityClass, final MyCallback myCallback) { 
 		Loadings.start();
 		
 		Thread thread = new Thread(new Runnable() {
@@ -196,7 +196,14 @@ public class EntityService extends BaseService {
 			@Override
 			public void run() {
 				try {
-					HashMap response = callAddEntity(entityObject, entityClass);
+					HashMap response = new HashMap();
+					
+					if(editMode) {
+						response = callModifyEntity(entityObject, entityClass);
+					}
+					else {
+						response = callAddEntity(entityObject, entityClass);
+					}
 					myCallback.handle(response);
 					
 				}catch (Exception e) {
@@ -248,6 +255,24 @@ public class EntityService extends BaseService {
 			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
 			
 			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_ADD,
+					RestComponent.buildAuthRequest(shopApiRequest , true), HashMap.class);
+			Log.log("response: ",response);
+			return response.getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
+	
+	private HashMap callModifyEntity(Map entityObject, Class entityClass) {
+		
+		try {
+			Map shopApiRequest = new HashMap<>();
+			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
+			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
+			
+			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_UPDATE,
 					RestComponent.buildAuthRequest(shopApiRequest , true), HashMap.class);
 			Log.log("response: ",response);
 			return response.getBody();
