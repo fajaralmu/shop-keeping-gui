@@ -180,12 +180,8 @@ public class ManagementPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		addActionListener(buttonSubmit, getHandler().submit()); 
-		if(inputPage.getActionListeners().length == 0)  
-			inputPage.addKeyListener(textFieldActionListener(inputPage, "selectedPage"));
-		
-		if(inputLimit.getActionListeners().length == 0)  
-			inputLimit.addKeyListener(textFieldActionListener(inputLimit, "selectedLimit"));
-		
+		addKeyListener(inputPage, textFieldKeyListener(inputPage, "selectedPage"));
+		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit")); 
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
 		addActionListener(buttonRefresh, buttonRefreshListener()); 
 		addActionListener(buttonClear,clearListener());

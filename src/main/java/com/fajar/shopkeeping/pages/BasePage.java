@@ -404,7 +404,7 @@ public class BasePage {
 	 * @param elementId
 	 * @return
 	 */
-	protected KeyListener textFieldActionListener(final JTextField inputComponent, final String fieldName) {
+	protected KeyListener textFieldKeyListener(final JTextField inputComponent, final String fieldName) {
 		
 		try {
 			final Field field = this.getClass().getDeclaredField(fieldName);
@@ -554,9 +554,9 @@ public class BasePage {
 			button.addActionListener(actionListener);
 		}
 	}
-	protected static void addActionListener(JTextField textfield, ActionListener actionListener) {
-		if( textfield.getActionListeners().length == 0) {
-			textfield.addActionListener(actionListener);
+	protected static void addKeyListener(JTextField textfield, KeyListener actionListener) {
+		if( textfield.getKeyListeners().length == 0) {
+			textfield.addKeyListener(actionListener);
 		}
 	}
 	protected static void addActionListener(JComboBox comboBox, ActionListener actionListener) {
