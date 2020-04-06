@@ -41,7 +41,7 @@ public class EntityService extends BaseService {
 			public void run() {
 
 				try { 
-					ShopApiResponse response = getEntityList(filter, entityClass);
+					ShopApiResponse response = getEntityListFullResponse(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -153,27 +153,6 @@ public class EntityService extends BaseService {
 		thread.start();
 	}
 
-	private ShopApiResponse getEntityListFullResponse(Filter filter, Class entityClass) {
-
-		HashMap response = callGetEntity(filter, entityClass);
-
-		if (response.get("code").equals("00") == false) {
-			return ShopApiResponse.failed();
-		}
-
-		List rawEntityList = (List) response.get("entities");
-
-		List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, entityClass);
-
-		ShopApiResponse jsonResponse = new ShopApiResponse();
-
-		jsonResponse.setEntities(resultList);
-		jsonResponse.setTotalData((Integer) response.get("totalData"));
-
-		return jsonResponse;
-
-	}
-	
 	public List< Map> getAllEntityOnlyList(Class entityClass) {
 
 		HashMap response = callGetEntity(Filter.builder().page(1).limit(0).build(), entityClass); 
@@ -183,10 +162,6 @@ public class EntityService extends BaseService {
 
 	}
 
-	private ShopApiResponse getEntityList(Filter filter, Class entityClass ) { 
-		
-		return getEntityListFullResponse(filter, entityClass);
-	}
 	
 	public void updateEntity( final Map entityObject, final boolean editMode, final Class entityClass, final MyCallback myCallback) { 
 		Loadings.start();
@@ -217,6 +192,27 @@ public class EntityService extends BaseService {
 		thread.start();
 	}
 
+	private ShopApiResponse getEntityListFullResponse(Filter filter, Class entityClass) {
+
+		HashMap response = callGetEntity(filter, entityClass);
+
+		if (response.get("code").equals("00") == false) {
+			return ShopApiResponse.failed();
+		}
+
+		List rawEntityList = (List) response.get("entities");
+
+		List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, entityClass);
+
+		ShopApiResponse jsonResponse = new ShopApiResponse();
+
+		jsonResponse.setEntities(resultList);
+		jsonResponse.setTotalData((Integer) response.get("totalData"));
+
+		return jsonResponse;
+
+	}
+	
 	
 	/**
 	 * 

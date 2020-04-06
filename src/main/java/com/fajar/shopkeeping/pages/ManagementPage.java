@@ -198,6 +198,7 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				fieldsFilter.clear();
+				clearForm();
 			}
 		};
 	}
@@ -240,6 +241,33 @@ public class ManagementPage extends BasePage {
 
 		thread.start();
 
+	}
+	
+	private void clearForm() {
+		Map<String, Component> inputs = formInputFields;
+		Set<String> inputKeys = inputs.keySet();
+		for (String key : inputKeys) {
+
+			Component formField = formInputFields.get(key);
+			
+			if(formField instanceof JTextField)
+				try {
+					((JTextField ) formField).setText("");
+				}catch (Exception e) { }
+			
+			if(formField instanceof JTextArea)
+				try {
+					((JTextArea ) formField).setText("");
+				}catch (Exception e) { }
+			
+			if(formField instanceof JComboBox)
+			{
+				//leave as it
+			}
+		}
+		
+		editMode = false;
+		
 	}
 
 	/**
@@ -477,6 +505,12 @@ public class ManagementPage extends BasePage {
 		return header;
 	}
 
+	/**
+	 * create order button
+	 * @param elementId
+	 * @param theOrderType
+	 * @return
+	 */
 	private JButton orderButton(final String elementId, final String theOrderType) {
 		JButton button = button(theOrderType.equals(ORDER_ASC)?'˄':'˅');
 		button.addActionListener(new ActionListener() { 
@@ -764,6 +798,7 @@ public class ManagementPage extends BasePage {
 		Log.log("Callback update entity: ", response);
 		
 		getHandler().getEntities();
+		clearForm();
 
 		editMode = false;
 		
