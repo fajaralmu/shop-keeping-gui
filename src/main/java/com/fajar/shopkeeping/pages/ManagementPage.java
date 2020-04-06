@@ -528,33 +528,22 @@ public class ManagementPage extends BasePage {
 			if(element.getType().equals(FormField.FIELD_TYPE_DATE)) {
 				
 				//DD
-				JTextField filterFieldDay = textField("");
-				filterFieldDay.addKeyListener(filterFieldKeyListener(elementId.concat("-day")));
-				
-				if(fieldsFilter.get(elementId.concat("-day")) != null) {
-					filterFieldDay.setText(fieldsFilter.get(elementId.concat("-day")).toString());
-				}
-				columnFilterTextFields.put(elementId.concat("-day"), filterFieldDay);  
+				JTextField dateFilterDay = buildDateFilter(elementId, "day");
+				columnFilterTextFields.put(elementId.concat("-day"), dateFilterDay);  
 				//MM
-				JTextField filterFieldMonth = textField("");
-				filterFieldMonth.addKeyListener(filterFieldKeyListener(elementId.concat("-month")));
-				
-				if(fieldsFilter.get(elementId.concat("-month")) != null) {
-					filterFieldMonth.setText(fieldsFilter.get(elementId.concat("-month")).toString());
-				}
-				columnFilterTextFields.put(elementId.concat("-month"), filterFieldMonth); 
+				JTextField dateFilterMonth = buildDateFilter(elementId, "momth");
+				columnFilterTextFields.put(elementId.concat("-month"), dateFilterMonth); 
 				//yyyy
-				JTextField filterFieldYear = textField("");
-				filterFieldYear.addKeyListener(filterFieldKeyListener(elementId.concat("-year")));
-				
-				if(fieldsFilter.get(elementId.concat("-year")) != null) {
-					filterFieldYear.setText(fieldsFilter.get(elementId.concat("-year")).toString());
-				}
-				columnFilterTextFields.put(elementId.concat("-year"), filterFieldYear); 
-				
-				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterFieldDay, filterFieldMonth, filterFieldYear, orderButtons);
+				JTextField dateFilterYear = buildDateFilter(elementId, "year");
+				columnFilterTextFields.put(elementId.concat("-year"), dateFilterYear); 
+				 
+				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, dateFilterDay, dateFilterMonth, dateFilterYear, orderButtons );
 				headerComponents.add(columnHeader);
-			}else {
+//			} else if(element.getType().equals(FormField.FIELD_TYPE_IMAGE)) {
+//				
+//				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, orderButtons);
+//				headerComponents.add(columnHeader);
+			} else {
 			
 				JTextField filterField = textField("");
 				filterField.addKeyListener(filterFieldKeyListener(elementId));
@@ -575,6 +564,17 @@ public class ManagementPage extends BasePage {
 		Component header = rowPanelHeader(entityElements.size() + 2, 160, toArrayOfComponent(headerComponents));
 		 
 		return header;
+	}
+	
+	private JTextField buildDateFilter(String elementId, String mode) {
+		//DD
+		JTextField dateFilter = textField("");
+		dateFilter.addKeyListener(filterFieldKeyListener(elementId.concat("-"+mode)));
+		
+		if(fieldsFilter.get(elementId.concat("-"+mode)) != null) {
+			dateFilter.setText(fieldsFilter.get(elementId.concat("-"+mode)).toString());
+		}
+		return dateFilter;
 	}
 
 	/**
