@@ -391,7 +391,7 @@ public class ComponentBuilder {
 				// TODO: handle exception
 			}
 		}
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 3, Color.white);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 3, null);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
 	}
@@ -413,7 +413,7 @@ public class ComponentBuilder {
 				// TODO: handle exception
 			}
 		}
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, Color.white);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, null);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
 	}

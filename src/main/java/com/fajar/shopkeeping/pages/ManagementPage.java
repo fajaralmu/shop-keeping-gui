@@ -116,7 +116,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 550, 5, Color.GREEN);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 550, 5, Color.WHITE);
 		panelRequest.setCenterAligment(true);
 
 		if (formPanel == null) {
@@ -317,7 +317,7 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel generateEntityForm() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 330, 2, Color.yellow);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 330, 2, Color.WHITE);
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -479,9 +479,9 @@ public class ManagementPage extends BasePage {
 		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 450);
 		
 		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
-		
-		PanelRequest panelRequest2 = PanelRequest.autoPanelNonScroll(1, 510, 5, Color.white);
-		return buildPanelV2(panelRequest2,  panel);
+//		
+//		PanelRequest panelRequest2 = PanelRequest.autoPanelNonScroll(1, 510, 5, Color.white);
+		return panel;
 	}
 	
 	/**
@@ -563,7 +563,7 @@ public class ManagementPage extends BasePage {
 		});
 		
 		if(elementId.equals(orderBy) && theOrderType.equals(orderType)) {
-			button.setBackground(Color.yellow);
+			button.setBackground(Color.WHITE);
 		}
 		
 		button.setSize(50, 20);
