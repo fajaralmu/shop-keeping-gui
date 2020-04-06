@@ -12,12 +12,20 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.Category;
+import com.fajar.entity.Customer;
+import com.fajar.entity.Product;
+import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
+import com.fajar.entity.Unit;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
@@ -35,24 +43,28 @@ public class DashboardPage extends BasePage {
 
 	
 	private JLabel labelUserInfo;
-	
-	private final JButton buttonLogout = button("logout");
+	 
 	private JButton buttonGotoPeriodicReport;
-	private JButton buttonLoadMonthlyCashflow;
-	private final JButton buttonGoToManagement = button("Management");;
+	private JButton buttonLoadMonthlyCashflow; 
 	
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
 	private JPanel panelPeriodFilter;
 	
 	private JComboBox comboBoxMonth;
-	private JComboBox comboBoxYear;
-	
+	private JComboBox comboBoxYear; 
 	
 	private int minTransactionYear;
 	private int selectedMonth = DateUtil.getCurrentMonth();
 	private int selectedYear = DateUtil.getCurrentYear();
 	
+	private JMenuItem menuItemLogout;
+	private JMenuItem menuItemProduct;
+	private JMenuItem menuItemUnit;
+	private JMenuItem menuItemSupplier;
+	private JMenuItem menuItemCustomer;
+	private JMenuItem menuItemCategory;
+	private JMenuItem menuItemTransaction;
 
 	private ShopApiResponse responseTodayCashflow;
 
@@ -84,12 +96,10 @@ public class DashboardPage extends BasePage {
 		}
 		
 		panelPeriodFilter = buildPanelPeriodFilter(); 
-		
-		JPanel panelButton = ComponentBuilder.buildInlineComponent(100, buttonLogout, buttonGoToManagement);
+		 
 		
 		mainPanel = buildPanelV2(mainPanelRequest, 
-				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo, 
-				panelButton,
+				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo,  
 				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
 				panelTodayCashflow, panelPeriodFilter, 
 				panelMonthlySummary);
@@ -100,6 +110,39 @@ public class DashboardPage extends BasePage {
 
 	}
 
+	
+	@Override
+	protected void constructMenu() { 
+		if(menuBar.getMenuCount()>0) {
+			return;
+		}
+		
+		
+		menuItemLogout = new JMenuItem("Logout");
+		menuItemProduct = new JMenuItem("Product");
+		menuItemUnit = new JMenuItem("Unit");
+		menuItemSupplier = new JMenuItem("Supplier");
+		menuItemCustomer = new JMenuItem("Customer");
+		menuItemCategory = new JMenuItem("Category");
+		menuItemTransaction = new JMenuItem("Transction");
+		
+        JMenu managementMenu = new JMenu("Management"); 
+        managementMenu.add(menuItemProduct);
+        managementMenu.add(menuItemUnit);
+        managementMenu.add(menuItemCategory);
+        managementMenu.add(menuItemSupplier);
+        managementMenu.add(menuItemCustomer);
+        managementMenu.add(menuItemTransaction); 
+        
+        JMenu accountMenu = new JMenu("Account");
+         
+		accountMenu.add(menuItemLogout);
+        
+        menuBar.add(managementMenu); 
+		menuBar.add(accountMenu ); 
+ 
+	}
+	
 	private MyCallback callbackUpdateMonthlyCashflow() {
 		 
 		return new MyCallback() {
@@ -306,10 +349,21 @@ public class DashboardPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		
-		addActionListener(buttonLogout, getHandler().logout());
+		/**
+		 * menus
+		 */
+		//account
+		addActionListener(menuItemLogout, getHandler().logout());
+		//management
+		addActionListener(menuItemProduct, getHandler().managementNavigationListener(Product.class));
+		addActionListener(menuItemUnit, getHandler().managementNavigationListener(Unit.class));
+		addActionListener(menuItemSupplier, getHandler().managementNavigationListener(Supplier.class));
+		addActionListener(menuItemCategory, getHandler().managementNavigationListener(Category.class));
+		addActionListener(menuItemCustomer, getHandler().managementNavigationListener(Customer.class));
+		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
+		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
-		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
-		addActionListener(buttonGoToManagement, getHandler().gotoManagementPage());
+		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage()); 
 		addActionListener(comboBoxMonth, new ActionListener() {
 			
 			@Override

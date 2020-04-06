@@ -11,6 +11,7 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.Product;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
@@ -19,9 +20,7 @@ import com.fajar.shopkeeping.util.DateUtil;
 import lombok.Data;
 
 @Data
-public class DailyCashflowPage extends BasePage {
-
-	public static final String CTX_DETAIL_CASHFLOW = "detailCashflow";
+public class DailyCashflowPage extends BasePage { 
 
 	private static final int COLUMN_WIDTH = 160;
 
@@ -46,7 +45,7 @@ public class DailyCashflowPage extends BasePage {
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
 
-		SharedContext context = AppContext.getContext(CTX_DETAIL_CASHFLOW);
+		SharedContext context = AppContext.getContext(ContextConstants.CTX_DETAIL_CASHFLOW);
 		int day = context.getDay();
 		int month = context.getMonth();
 		int year = context.getYear();

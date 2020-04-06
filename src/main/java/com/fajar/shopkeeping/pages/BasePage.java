@@ -16,6 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
@@ -52,6 +55,7 @@ public class BasePage {
 	protected MyCustomFrame parentFrame;
 	protected JPanel parentPanel = new JPanel();
 	protected JPanel mainPanel;
+	protected final JMenuBar menuBar = new JMenuBar();
 	
 	private final int WIDTH;
 	private final int HEIGHT;
@@ -76,8 +80,14 @@ public class BasePage {
 	}
 	
 	protected void preInitComponent() {
-		parentPanel.removeAll();
+		parentPanel.removeAll(); 
 		initComponent();
+		constructMenu();
+		//create menu if menu count is > 0
+		if(menuBar.getMenuCount() > 0) {
+			frame.setJMenuBar(this.menuBar);
+		}
+		
 		parentPanel.revalidate();
 		parentPanel.repaint();
 	}
@@ -115,9 +125,18 @@ public class BasePage {
 		parentPanel.setSize(WIDTH, HEIGHT); 
 		frame.setContentPane(parentPanel);
 		frame.addKeyListener(frameKeyListener());
-		frame. setFocusable(true);
-		frame.    setFocusTraversalKeysEnabled(false);
+		frame.setFocusable(true);
+		frame.setFocusTraversalKeysEnabled(false);
+		frame.setResizable(false);
 
+	}
+	
+	protected void constructMenu() {
+		Log.log("No menu present..", getClass().getSimpleName());
+	}
+	
+	protected ActionListener pageNavigation(int pageCode) {
+		return appHandler.navigationListener(pageCode);
 	}
 
 	private KeyListener frameKeyListener() { 
@@ -554,6 +573,11 @@ public class BasePage {
 			button.addActionListener(actionListener);
 		}
 	}
+	protected static void addActionListener(JMenuItem button, ActionListener actionListener) {
+		if(button.getActionListeners().length == 0) {
+			button.addActionListener(actionListener);
+		}
+	} 
 	protected static void addKeyListener(JTextField textfield, KeyListener actionListener) {
 		if( textfield.getKeyListeners().length == 0) {
 			textfield.addKeyListener(actionListener);

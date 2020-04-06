@@ -21,6 +21,8 @@ import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -36,9 +38,14 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.constant.ContextConstants;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
+import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.model.SharedContext;
+import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
@@ -64,7 +71,7 @@ public class ManagementPage extends BasePage {
 	private final JButton buttonFilterEntity = button("Go");
 	private final JButton buttonRefresh = button("Refresh");
 
-	private Class<? extends BaseEntity> entityClass = CostFlow.class;
+	private Class<? extends BaseEntity> entityClass;
 	private List<BaseEntity> entityList; 
 	private Map<String, JTextField> columnFilterTextFields = new HashMap<>(); //list of data table column filter inputs
 	private Map<String, Component> formInputFields = new HashMap<>(); 
@@ -90,6 +97,8 @@ public class ManagementPage extends BasePage {
 	private int selectedPage = 0;
 	private int selectedLimit = 10;
 	private int totalData = 0;
+	
+	private JMenuItem menuBack;
 	
 	Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
 	
@@ -119,7 +128,7 @@ public class ManagementPage extends BasePage {
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Management "+getEntityClassName(), 50), null,
+				title("Management::"+getEntityClassName(), 30), null,
 				formPanel, 
 				ComponentBuilder.buildVerticallyInlineComponent(500, getNavigationPanel(),  listPanel));
 
@@ -166,7 +175,7 @@ public class ManagementPage extends BasePage {
 		for (int i = 0; i < totalPage; i++) {
 			JButton button = button(i+1, 50, 20); 
 			button.addActionListener(navigationListener(i));
-			button.setBackground(i == selectedPage? Color.orange:Color.yellow);
+			button.setBackground(i == selectedPage? Color.orange : Color.yellow);
 			
 			navigationButtons[i] = button; 
 		}
@@ -188,10 +197,23 @@ public class ManagementPage extends BasePage {
 		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit")); 
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
 		addActionListener(buttonRefresh, buttonRefreshListener()); 
-		addActionListener(buttonClear,clearListener());
+		addActionListener(buttonClear, clearListener());
+		
+		addActionListener(menuBack, pageNavigation(PageConstants.PAGE_DASHBOARD));
 		
 	} 
 	
+	@Override
+	public void setAppHandler(MainHandler mainHandler) {
+		SharedContext context = AppContext.getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
+		this.entityClass = context.getEntityClass();
+		super.setAppHandler(mainHandler);
+	}
+	
+	/**
+	 * when button clear pressed
+	 * @return
+	 */
 	private ActionListener clearListener() { 
 		return new ActionListener() {
 			
@@ -201,6 +223,20 @@ public class ManagementPage extends BasePage {
 				clearForm();
 			}
 		};
+	}
+	
+	@Override
+	protected void constructMenu() {
+		
+		if(menuBar.getMenuCount()>0) {
+			return;
+		}
+		
+		menuBack = new JMenuItem("Back");
+		
+		JMenu menu = new JMenu("Menu");
+		menu.add(menuBack);
+		menuBar.add(menu ); 
 	}
 
 	@Override
@@ -231,7 +267,8 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void run() {
 				formPanel = generateEntityForm();
-				 getHandler().getEntities();
+				clearForm();
+				getHandler().getEntities();
 				
 				preInitComponent();
 				initEvent();
@@ -243,6 +280,9 @@ public class ManagementPage extends BasePage {
 
 	}
 	
+	/**
+	 * clear input fields or set it to default values
+	 */
 	private void clearForm() {
 		Map<String, Component> inputs = formInputFields;
 		Set<String> inputKeys = inputs.keySet();

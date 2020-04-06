@@ -9,6 +9,7 @@ import javax.swing.JComboBox;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.pages.DailyCashflowPage;
@@ -82,7 +83,7 @@ public class DashboardHandler extends MainHandler {
 
 		Filter filter = shopApiResponse.getFilter();
 
-		AppContext.setContext(DailyCashflowPage.CTX_DETAIL_CASHFLOW,
+		AppContext.setContext(ContextConstants.CTX_DETAIL_CASHFLOW,
 				new SharedContext(filter.getDay(), filter.getMonth(), filter.getYear()));
 
 		DailyCashflowPage dailyCashflowPage = new DailyCashflowPage(filter.getDay(), filter.getMonth(),
@@ -124,6 +125,17 @@ public class DashboardHandler extends MainHandler {
 
 	public ActionListener gotoManagementPage() {
 		return navigationListener(PageConstants.PAGE_MANAGEMENT);
+	}
+	
+	public ActionListener managementNavigationListener( final Class<?> entityClass) {
+		return new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				SharedContext context = SharedContext.builder().entityClass(entityClass).build();
+				AppContext.setContext(ContextConstants.CTX_MANAGEMENT_PAGE, context );
+				APP_HANDLER.navigate(PageConstants.PAGE_MANAGEMENT);
+			}
+		};
 	}
 
 }

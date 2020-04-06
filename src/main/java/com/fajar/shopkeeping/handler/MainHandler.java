@@ -20,10 +20,7 @@ public class MainHandler {
 		init();
 	}
 
-	protected void init() {
-		// TODO Auto-generated method stub
-
-	}
+	protected void init() {  }
 
 	public ActionListener navigationListener(final int pageCode) {
 		return new ActionListener() {
