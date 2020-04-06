@@ -525,16 +525,48 @@ public class ManagementPage extends BasePage {
 			
 			JLabel columnLabel = label(elementId);
 			
-			JTextField filterField = textField("");
-			filterField.addKeyListener(filterFieldKeyListener(elementId));
+			if(element.getType().equals(FormField.FIELD_TYPE_DATE)) {
+				
+				//DD
+				JTextField filterFieldDay = textField("");
+				filterFieldDay.addKeyListener(filterFieldKeyListener(elementId.concat("-day")));
+				
+				if(fieldsFilter.get(elementId.concat("-day")) != null) {
+					filterFieldDay.setText(fieldsFilter.get(elementId.concat("-day")).toString());
+				}
+				columnFilterTextFields.put(elementId.concat("-day"), filterFieldDay);  
+				//MM
+				JTextField filterFieldMonth = textField("");
+				filterFieldMonth.addKeyListener(filterFieldKeyListener(elementId.concat("-month")));
+				
+				if(fieldsFilter.get(elementId.concat("-month")) != null) {
+					filterFieldMonth.setText(fieldsFilter.get(elementId.concat("-month")).toString());
+				}
+				columnFilterTextFields.put(elementId.concat("-month"), filterFieldMonth); 
+				//yyyy
+				JTextField filterFieldYear = textField("");
+				filterFieldYear.addKeyListener(filterFieldKeyListener(elementId.concat("-year")));
+				
+				if(fieldsFilter.get(elementId.concat("-year")) != null) {
+					filterFieldYear.setText(fieldsFilter.get(elementId.concat("-year")).toString());
+				}
+				columnFilterTextFields.put(elementId.concat("-year"), filterFieldYear); 
+				
+				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterFieldDay, filterFieldMonth, filterFieldYear, orderButtons);
+				headerComponents.add(columnHeader);
+			}else {
 			
-			if(fieldsFilter.get(elementId) != null) {
-				filterField.setText(fieldsFilter.get(elementId).toString());
+				JTextField filterField = textField("");
+				filterField.addKeyListener(filterFieldKeyListener(elementId));
+				
+				if(fieldsFilter.get(elementId) != null) {
+					filterField.setText(fieldsFilter.get(elementId).toString());
+				}
+				columnFilterTextFields.put(elementId, filterField);  
+				
+				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
+				headerComponents.add(columnHeader);
 			}
-			columnFilterTextFields.put(elementId, filterField);  
-			
-			Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
-			headerComponents.add(columnHeader);
 			
 		}
 		
