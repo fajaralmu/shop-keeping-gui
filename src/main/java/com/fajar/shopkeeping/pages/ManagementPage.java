@@ -433,30 +433,27 @@ public class ManagementPage extends BasePage {
 	private JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
 		if(multiple) {
-			JPanel inputFields = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add.."));
+			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add.."));
 			
 			JButton buttonAddImage = button("add");
 			
-			JPanel fileChoosersPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, inputFields, buttonAddImage) ; 
-			JPanel inputPanel= ComponentBuilder.buildVerticallyInlineComponent(200, fileChoosersPanel, buttonAddImage); 
+			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
 			
-			buttonAddImage.addActionListener(buttonAddImageFieldListener(inputFields, element, fileChoosersPanel));
+			buttonAddImage.addActionListener(buttonAddImageFieldListener( element, imageSelectionWrapperPanel));
+			
+			JPanel inputPanel= ComponentBuilder.buildVerticallyInlineComponent(200, imageSelectionWrapperPanel, buttonAddImage); 
 			
 			return inputPanel;
 			
 		}else {
-			JLabel imagePreview = label("No Preview."); 
-			imagePreview.setSize(160, 160);
-			imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			JLabel imagePreview = createImagePreview();
 			
 			addSingleImageContainer(element.getId(), imagePreview);
 			
-			JButton buttonChoose = button("choose file"); 
+			JButton buttonChoose = button("choose file", 160, onChooseSingleImageFileClick(new JFileChooser(), element.getId())); 
 			buttonChoose.addActionListener(onChooseSingleImageFileClick(new JFileChooser(), element.getId()));
 			
-			JButton buttonClear = button("clear");
-			buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
-			buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
+			JButton buttonClear = button("clear", 160, buttonClearSingleImageClick(element.getId()));  
 			
 			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
 			return inputPanel;
@@ -468,48 +465,57 @@ public class ManagementPage extends BasePage {
 		
 	}
 
-	private ActionListener buttonAddImageFieldListener(final JPanel theInputPanel, final EntityElement element, final JPanel parentPanel) {
+	private ActionListener buttonAddImageFieldListener( final EntityElement element, final JPanel imageSelectionScrollableWrapper) {
 		 
 		return new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if(theInputPanel.getComponent(0) instanceof JLabel) {
-					theInputPanel.removeAll();
-				}
-				
-				int index = theInputPanel.getComponentCount();
-				
-				JLabel imagePreview = label("No Preview."); 
-				imagePreview.setSize(160, 160);
-				imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
-				
-				addMultipleImageContainer(element.getId(), imagePreview);
-				
-				JButton buttonChoose = button("choose file ("+index+")"); 
-				buttonChoose.addActionListener(onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));
-				
-				JButton buttonClear = button("clear");
-				buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
-				buttonClear.addActionListener(buttonClearMultipleImageClick(element.getId(), index));  
-				
-				int componentCount = theInputPanel.getComponentCount();
-				
-				JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
-				newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
-				
-				Dimension newDimension = new Dimension(theInputPanel.getWidth(),  theInputPanel.getHeight() + newImageSelection.getHeight() );
-				theInputPanel.setPreferredSize(newDimension);
-				theInputPanel.setSize(newDimension);
-				theInputPanel.add(newImageSelection); 
-				//update scrollpane
- 				((JScrollPane)parentPanel.getComponent(0)).setViewportView(theInputPanel);
-				((JScrollPane)parentPanel.getComponent(0)).validate();  
-			}
- 
+				addNewImageSelectionField(element, imageSelectionScrollableWrapper); 
+			} 
 			
 		};
+	}
+	
+	private void addNewImageSelectionField(EntityElement element, JPanel imageSelectionScrollableWrapper) {
+		JPanel panel = (JPanel) ((JScrollPane)imageSelectionScrollableWrapper.getComponent(0)).getViewport().getView(); 
+		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
+		
+		if(imageSelectionPanel.getComponent(0) instanceof JLabel) {
+			imageSelectionPanel.removeAll();
+			Log.log("REMOVE ALL");
+		}
+		
+		int index = imageSelectionPanel.getComponentCount();
+		
+		JLabel imagePreview = createImagePreview();
+		
+		addMultipleImageContainer(element.getId(), imagePreview);
+		
+		JButton buttonChoose = button("choose file ("+index+")", 160, onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
+		
+		JButton buttonClear = button("clear", 160, buttonClearMultipleImageClick(element.getId(), index)); 
+		
+		int componentCount = imageSelectionPanel.getComponentCount();
+		
+		JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
+		newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
+		
+		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight() + newImageSelection.getHeight() );
+		imageSelectionPanel.setSize(newDimension);
+		imageSelectionPanel.add(newImageSelection);  
+		JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+		
+		updateScrollPane((JScrollPane)imageSelectionScrollableWrapper.getComponent(0), wrapperPanel, newDimension);
+		
+	}
+	
+	private static void updateScrollPane(JScrollPane scrollPane, Component component, Dimension newDimension) {
+		component.setPreferredSize(newDimension);
+		component.setSize(newDimension);
+		scrollPane .setViewportView(component);
+		scrollPane .validate(); 
 	}
 	
 	/**
@@ -523,6 +529,17 @@ public class ManagementPage extends BasePage {
 		}
 		multipleImagePreviews.get(id).add(imagePreview );
 		
+	}
+	
+	/**
+	 * create label for image preview
+	 * @return
+	 */
+	private JLabel createImagePreview() {
+		JLabel imagePreview = label("No Preview."); 
+		imagePreview.setSize(160, 160);
+		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
+		return imagePreview;
 	}
 	
 	/**
