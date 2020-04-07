@@ -5,7 +5,6 @@ import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,8 +14,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,11 +34,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
-import javax.xml.bind.DatatypeConverter;
 
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
@@ -433,15 +427,15 @@ public class ManagementPage extends BasePage {
 	private JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
 		if(multiple) {
-			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add.."));
-			
-			JButton buttonAddImage = button("add");
-			
+			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add..")); 
+			JButton buttonAddImage = button("add"); 
 			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
 			
 			buttonAddImage.addActionListener(buttonAddImageFieldListener( element, imageSelectionWrapperPanel));
 			
-			JPanel inputPanel= ComponentBuilder.buildVerticallyInlineComponent(200, imageSelectionWrapperPanel, buttonAddImage); 
+			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(200, imageSelectionWrapperPanel, buttonAddImage); 
+			
+			formInputFields.put(element.getId(), imageSelectionWrapperPanel);
 			
 			return inputPanel;
 			
@@ -454,8 +448,8 @@ public class ManagementPage extends BasePage {
 			buttonChoose.addActionListener(onChooseSingleImageFileClick(new JFileChooser(), element.getId()));
 			
 			JButton buttonClear = button("clear", 160, buttonClearSingleImageClick(element.getId()));  
-			
 			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
+			
 			return inputPanel;
 		}
 	}
@@ -471,15 +465,21 @@ public class ManagementPage extends BasePage {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				addNewImageSelectionField(element, imageSelectionScrollableWrapper); 
-			} 
-			
+				JScrollPane scrollableWrapper = (JScrollPane)imageSelectionScrollableWrapper.getComponent(0);  
+				addNewImageSelectionField(element, scrollableWrapper);
+			}
 		};
 	}
 	
-	private void addNewImageSelectionField(EntityElement element, JPanel imageSelectionScrollableWrapper) {
-		JPanel panel = (JPanel) ((JScrollPane)imageSelectionScrollableWrapper.getComponent(0)).getViewport().getView(); 
+	/**
+	 * add image selection field in scrollable panel
+	 * @param element
+	 * @param imageSelectionScrollPane
+	 */
+	private void addNewImageSelectionField(EntityElement element, JScrollPane imageSelectionScrollPane) {
+		Log.log("addNewImageSelectionField");
+		
+		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
 		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
 		
 		if(imageSelectionPanel.getComponent(0) instanceof JLabel) {
@@ -494,7 +494,6 @@ public class ManagementPage extends BasePage {
 		addMultipleImageContainer(element.getId(), imagePreview);
 		
 		JButton buttonChoose = button("choose file ("+index+")", 160, onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
-		
 		JButton buttonClear = button("clear", 160, buttonClearMultipleImageClick(element.getId(), index)); 
 		
 		int componentCount = imageSelectionPanel.getComponentCount();
@@ -507,7 +506,7 @@ public class ManagementPage extends BasePage {
 		imageSelectionPanel.add(newImageSelection);  
 		JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
 		
-		updateScrollPane((JScrollPane)imageSelectionScrollableWrapper.getComponent(0), wrapperPanel, newDimension);
+		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
 		
 	}
 	
@@ -605,6 +604,24 @@ public class ManagementPage extends BasePage {
 						JLabel imagePreview = multipleImagePreviews.get(elementId).get(index); 
 						multipleImagePreviews.get(elementId).get(index).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
 						String base64 = StringUtil.getBase64Image(file); 
+						Object currentValue =  managedObject.get(elementId);
+						
+						if(null == currentValue) {
+							updateManagedObject(elementId, base64);
+						}else {
+							String[] rawValues = currentValue.toString().split("~");
+							String finalValue =  currentValue.toString();
+							if(rawValues.length > index) {
+								rawValues[index] = base64;
+							}else {
+								finalValue +=( "~"+base64);
+							}
+							
+							updateManagedObject(elementId, finalValue);
+						}
+						
+						Log.log(elementId,":",managedObject.get(elementId));
+						
 //						updateManagedObject(elementId, base64);
 					} catch (IOException e1) {
 						e1.printStackTrace();
@@ -1222,12 +1239,20 @@ public class ManagementPage extends BasePage {
 		
 		for (String key : objectKeys) {
 			Object value = managedObject.get(key);
+			EntityElement entityElement = getEntityElement(key);
+			
+			if(null == entityElement) {
+				continue;
+			}
+			
+			String elementType = entityElement.getType();
+			
 			if(value == null) {
 				value = "";
 			}
-			
+			boolean isImage = FormField.FIELD_TYPE_IMAGE.equals(elementType);
 			Component formField = formInputFields.get(key);
-			if(formField != null) {
+			if(formField != null && !isImage) {
 			
 				if(formField instanceof JTextField)
 					try {
@@ -1247,11 +1272,26 @@ public class ManagementPage extends BasePage {
 						((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
 					} catch (Exception e) { }
 				
-			}else if( null != singleImagePreviews.get(key)) {
+			} else if(isImage && entityElement.isMultiple() == false) {
 				formField = singleImagePreviews.get(key);
 				Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+value, 160, 160);
 				((JLabel) formField).setIcon(imageIcon );
-			}else {
+				
+			} else if(isImage && entityElement.isMultiple() == true) {
+				String[] rawValues = value.toString().split("~");
+				int index = 0;
+				for (String string : rawValues) {
+					String imageUrl  = UrlConstants.URL_IMAGE + string;
+					JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
+					addNewImageSelectionField(entityElement, scrollPane);
+					
+					Icon icon = ComponentBuilder.imageIcon(imageUrl, 160, 160);
+					multipleImagePreviews.get(key).get(index).setIcon(icon );
+					
+					index++;
+				}
+				
+			} else {
 				Log.log("key not managed: ",key);
 			}
 		}

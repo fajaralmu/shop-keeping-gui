@@ -107,7 +107,7 @@ public class StringUtil {
 			
 			String base64 = DatatypeConverter.printBase64Binary(Files.readAllBytes(
 				    Paths.get(filePath)));
-			return base64;
+			return "data:image/"+imageType+";base64,"+base64;
 		} catch (IOException e) {
 			return null;
 		}
