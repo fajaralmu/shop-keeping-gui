@@ -310,9 +310,10 @@ public class ComponentBuilder {
 	/**
 	 * common jLabel
 	 * @param title
+	 * @param horizontalAligment SwingConstants
 	 * @return
 	 */
-	public static JLabel label(Object title) {
+	public static JLabel label(Object title, int horizontalAligment) {
 		if(null == title) {
 			title = "";
 		}
@@ -327,9 +328,14 @@ public class ComponentBuilder {
 		 
 		int width = title.toString().length() * 10;
 
-		JLabel label = new JLabel(title.toString(), SwingConstants.CENTER);
+		JLabel label = new JLabel(title.toString(), horizontalAligment);
+		
 		label.setSize(width, 20);
 		return label;
+	}
+	
+	public static JLabel label(Object title) {
+		return label(title, SwingConstants.CENTER);
 	}
 
 	/**

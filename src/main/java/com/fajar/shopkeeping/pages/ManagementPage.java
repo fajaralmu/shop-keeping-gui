@@ -26,6 +26,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
@@ -317,7 +318,7 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel generateEntityForm() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 330, 2, Color.WHITE);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 420, 2, Color.WHITE);
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -332,7 +333,7 @@ public class ManagementPage extends BasePage {
 
 			Field entityField = EntityUtil.getDeclaredField(entityClass, elementId);
 			Class<?> fieldType = entityField.getType();
-			JLabel lableName = label(element.getLableName());
+			JLabel lableName = ComponentBuilder.label(element.getLableName(), SwingConstants.LEFT);
 
 			String elementType = element.getType();
 			if (elementType == null) {
@@ -376,9 +377,9 @@ public class ManagementPage extends BasePage {
 				inputComponent = textField(elementId);
 				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
 			}
-
+			inputComponent.setSize(200, inputComponent.getHeight());
 			formInputFields.put(elementId, inputComponent);
-			formComponents.add(ComponentBuilder.buildInlineComponent(150, lableName, inputComponent));
+			formComponents.add(ComponentBuilder.buildInlineComponent(200, lableName, inputComponent));
 			
 		}
 		
