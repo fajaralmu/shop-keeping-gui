@@ -416,19 +416,50 @@ public class ManagementPage extends BasePage {
 	
 	private Component buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
-		JLabel imagePreview = label("preview"); 
+		JLabel imagePreview = label("No Preview."); 
 		imagePreview.setSize(160, 160);
 		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		singleObjectPreviews.put(element.getId(), imagePreview);
 		
-		JButton button = button("choose file"); 
-		button.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+		JButton buttonChoose = button("choose file"); 
+		buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
 		
-		JPanel inputField = ComponentBuilder.buildVerticallyInlineComponent(205, button, imagePreview) ; 
+		JButton buttonClear = button("clear");
+		buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
+		buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
+		
+		JPanel inputField = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
 		return inputField;
 	}
 	
+	/**
+	 * clear image selection
+	 * @param elementId
+	 * @return
+	 */
+	private ActionListener buttonClearSingleImageClick(final String elementId) { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					//it means does not modify current value if in edit mode
+					singleObjectPreviews.get(elementId).setIcon(new ImageIcon());
+					updateManagedObject(elementId, null);
+				} catch (Exception e2) { }
+				
+			}
+		};
+	}
+
+	/**
+	 * when fileChooser for image clicked
+	 * @param fileChooser
+	 * @param imagePreview
+	 * @param elementId
+	 * @return
+	 */
 	private ActionListener onChooseFileClick(final JFileChooser fileChooser, final JLabel imagePreview, final String elementId) {
 		
 		return new ActionListener() {
@@ -449,7 +480,7 @@ public class ManagementPage extends BasePage {
 						imagePreview.setIcon(ComponentBuilder.imageIconFromFile(filePath, imagePreview.getWidth(), imagePreview.getHeight()));
 						String base64 = DatatypeConverter.printBase64Binary(Files.readAllBytes(
 							    Paths.get(filePath)));
-						Log.log("base64: ","data:image/"+imageType+";base64,"+base64);
+						 
 						updateManagedObject(elementId, "data:image/"+imageType+";base64,"+base64);
 					} catch (IOException e1) {
 						e1.printStackTrace();
