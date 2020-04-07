@@ -13,6 +13,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -31,11 +36,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
+import javax.xml.bind.DatatypeConverter;
 
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
-import com.fajar.entity.CostFlow;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -77,12 +82,15 @@ public class ManagementPage extends BasePage {
 
 	private Class<? extends BaseEntity> entityClass;
 	private List<BaseEntity> entityList; 
-	private Map<String, JTextField> columnFilterTextFields = new HashMap<>(); //list of data table column filter inputs
-	private Map<String, Component> formInputFields = new HashMap<>(); 
+	
+	private final Map<String, JTextField> columnFilterTextFields = new HashMap<>(); //list of data table column filter inputs
+	private final Map<String, Component> formInputFields = new HashMap<>(); 
  
-	private final Map<String, List<Map>> comboBoxListContainer = new HashMap<>();
-	private Map<String, Object> managedObject = new HashMap<>();
+	private final Map<String, List<Map>> comboBoxListContainer = new HashMap<>(); 
 	private final Map<String, Object> fieldsFilter = new HashMap<>();
+	private final Map<String, JLabel> singleObjectPreviews = new HashMap<>(); 
+	
+	private Map<String, Object> managedObject = new HashMap<>();
 	private String currentElementIdFocus = "";
 	
 	private boolean refreshing;
@@ -310,6 +318,11 @@ public class ManagementPage extends BasePage {
 			}
 		}
 		
+		Set<String> singleImageKeys = singleObjectPreviews.keySet();
+		for (String key : singleImageKeys) {
+			singleObjectPreviews.get(key).setIcon(new ImageIcon());
+		}
+		
 		editMode = false;
 		
 	}
@@ -336,9 +349,10 @@ public class ManagementPage extends BasePage {
 
 			Field entityField = EntityUtil.getDeclaredField(entityClass, elementId);
 			Class<?> fieldType = entityField.getType();
-			JLabel lableName = ComponentBuilder.label(element.getLableName(), SwingConstants.LEFT);
-
+			JLabel lableName = ComponentBuilder.label(element.getLableName(), SwingConstants.LEFT); 
 			String elementType = element.getType();
+			boolean skipFormField = false;
+			
 			if (elementType == null) {
 				continue;
 			}
@@ -349,10 +363,10 @@ public class ManagementPage extends BasePage {
 
 			if (elementType.equals(FormField.FIELD_TYPE_FIXED_LIST)) {
  
-				inputComponent = buildFixedComboBox(element, elementId, fieldType);
+				inputComponent = buildFixedComboBox(element, fieldType);
 			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
 				 
-				inputComponent = buildDynamicComboBox(element, elementId, fieldType);
+				inputComponent = buildDynamicComboBox(element, fieldType);
 			} else if (element.isIdentity()) {
 				
 				inputComponent = textFieldDisabled("ID"); 
@@ -363,7 +377,7 @@ public class ManagementPage extends BasePage {
 				((JTextArea) inputComponent).addKeyListener(textAreaActionListener((JTextArea) inputComponent, elementId));
 				
 			} else if (elementType.equals("color")) {
-				
+				skipFormField = true;
 				continue;
 			} else if (elementType.equals(FormField.FIELD_TYPE_NUMBER)) {
 
@@ -377,15 +391,19 @@ public class ManagementPage extends BasePage {
 						(JDateChooser) inputComponent, elementId ));
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_IMAGE)) {
-				
-				inputComponent = buildImageField(element, elementId, fieldType, element.isMultiple());
+				skipFormField = true;
+				inputComponent = buildImageField(element, fieldType, element.isMultiple());
 				
 			} else {
 				inputComponent = textField(elementId);
 				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
 			}
 			inputComponent.setSize(200, inputComponent.getHeight());
-			formInputFields.put(elementId, inputComponent);
+			
+			if(!skipFormField) {
+				formInputFields.put(elementId, inputComponent);
+			}
+			
 			formComponents.add(ComponentBuilder.buildInlineComponent(200, lableName, inputComponent));
 			
 		}
@@ -396,17 +414,22 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
-	private Component buildImageField(EntityElement element, String elementId, Class<?> fieldType, boolean multiple) {
-		 
-		JButton button = button("choose file");
-		JLabel imagePreview = label("preview");
-		imagePreview.setSize(200, 200);
-		button.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview));
+	private Component buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
+
+		JLabel imagePreview = label("preview"); 
+		imagePreview.setSize(160, 160);
+		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
-		return ComponentBuilder.buildVerticallyInlineComponent(200, button, imagePreview) ;
+		singleObjectPreviews.put(element.getId(), imagePreview);
+		
+		JButton button = button("choose file"); 
+		button.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+		
+		JPanel inputField = ComponentBuilder.buildVerticallyInlineComponent(205, button, imagePreview) ; 
+		return inputField;
 	}
 	
-	private ActionListener onChooseFileClick(final JFileChooser fileChooser, final JLabel imagePreview) {
+	private ActionListener onChooseFileClick(final JFileChooser fileChooser, final JLabel imagePreview, final String elementId) {
 		
 		return new ActionListener() {
 
@@ -419,7 +442,15 @@ public class ManagementPage extends BasePage {
 
 					try {
 						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath());
-						imagePreview.setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), 200, 200));
+						final String filePath = file.getCanonicalPath();
+						
+						String imageType = filePath.toLowerCase().endsWith("png") ? "png":"jpeg";
+						
+						imagePreview.setIcon(ComponentBuilder.imageIconFromFile(filePath, imagePreview.getWidth(), imagePreview.getHeight()));
+						String base64 = DatatypeConverter.printBase64Binary(Files.readAllBytes(
+							    Paths.get(filePath)));
+						Log.log("base64: ","data:image/"+imageType+";base64,"+base64);
+						updateManagedObject(elementId, "data:image/"+imageType+";base64,"+base64);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -609,6 +640,12 @@ public class ManagementPage extends BasePage {
 		return header;
 	}
 	
+	/**
+	 * create date filter column field
+	 * @param elementId
+	 * @param mode
+	 * @return
+	 */
 	private JTextField buildDateFilter(String elementId, String mode) {
 		//DD
 		JTextField dateFilter = textField("");
@@ -645,6 +682,11 @@ public class ManagementPage extends BasePage {
 		return button ;
 	}
 
+	/**
+	 * when filter field typed
+	 * @param key
+	 * @return
+	 */
 	private KeyListener filterFieldKeyListener(final String key) { 
 		return new KeyListener() {
 			
@@ -673,7 +715,8 @@ public class ManagementPage extends BasePage {
 	 * @param fieldType
 	 * @return
 	 */
-	private JComboBox buildDynamicComboBox(EntityElement element, String elementId, Class<?> fieldType) {
+	private JComboBox buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
+		String elementId = element.getId();
 		String optionItemName = element.getOptionItemName();
 		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
 		inputComponent.setSize(150, 20);
@@ -692,8 +735,9 @@ public class ManagementPage extends BasePage {
 	 * @param fieldType
 	 * @return
 	 */
-	private JComboBox  buildFixedComboBox(EntityElement element, String elementId, Class fieldType) {
+	private JComboBox  buildFixedComboBox(EntityElement element,  Class fieldType) {
 		String optionItemName = element.getOptionItemName(); 
+		String elementId = element.getId();
 		/**
 		 * call API
 		 */
@@ -993,25 +1037,36 @@ public class ManagementPage extends BasePage {
 			}
 			
 			Component formField = formInputFields.get(key);
+			if(formField != null) {
 			
-			if(formField instanceof JTextField)
-				try {
-					((JTextField ) formField).setText(value.toString());
-				}catch (Exception e) { }
-			
-			if(formField instanceof JTextArea)
-				try {
-					((JTextArea ) formField).setText(value.toString());
-				}catch (Exception e) { }
-			
-			if(formField instanceof JComboBox)
-				try {
-					Map valueMap = (Map) value;
-					EntityElement element = getEntityElement(key);
-					String optionItemName = element.getOptionItemName();
-					((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
-				} catch (Exception e) { }
+				if(formField instanceof JTextField)
+					try {
+						((JTextField ) formField).setText(value.toString());
+					}catch (Exception e) { }
+				
+				if(formField instanceof JTextArea)
+					try {
+						((JTextArea ) formField).setText(value.toString());
+					}catch (Exception e) { }
+				
+				if(formField instanceof JComboBox)
+					try {
+						Map valueMap = (Map) value;
+						EntityElement element = getEntityElement(key);
+						String optionItemName = element.getOptionItemName();
+						((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
+					} catch (Exception e) { }
+				
+			}else if( null != singleObjectPreviews.get(key)) {
+				formField = singleObjectPreviews.get(key);
+				Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+value, 160, 160);
+				((JLabel) formField).setIcon(imageIcon );
+			}else {
+				Log.log("key not managed: ",key);
+			}
 		}
+		
+		Log.log("::singleObjectPreviews:",singleObjectPreviews);
 		
 		
 	}
