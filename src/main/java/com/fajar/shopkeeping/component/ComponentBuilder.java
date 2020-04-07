@@ -443,7 +443,7 @@ public class ComponentBuilder {
 	}
 	
 	/**
-	 * label with image
+	 * label with image from website
 	 * @param url
 	 * @param width
 	 * @param height
@@ -458,6 +458,8 @@ public class ComponentBuilder {
 		return label;
 	}
 	
+	 
+	
 	/**
 	 * image icon from website
 	 * @param url
@@ -466,7 +468,7 @@ public class ComponentBuilder {
 	 * @return
 	 */
 	public static ImageIcon imageIcon(String url, int width, int height) {
-		
+		 
 		URL location;
 		try {
 			location = new URL(url);
@@ -481,5 +483,17 @@ public class ComponentBuilder {
 			e.printStackTrace();
 		}
 		return new ImageIcon();
+	}
+	
+	public static ImageIcon imageIconFromFile(String fileName, int width, int height) { 
+	 
+		 
+			ImageIcon imageIcon = new ImageIcon(fileName);
+			Image image = imageIcon.getImage(); // transform it 
+			Image newimg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+			imageIcon = new ImageIcon(newimg);  // transform it back
+		 
+			return imageIcon;
+		 
 	}
 }

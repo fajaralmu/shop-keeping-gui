@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,7 @@ import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -373,6 +376,10 @@ public class ManagementPage extends BasePage {
 				((JDateChooser) inputComponent).addPropertyChangeListener(dateChooserPropertyChangeListener(
 						(JDateChooser) inputComponent, elementId ));
 				
+			} else if (elementType.equals(FormField.FIELD_TYPE_IMAGE)) {
+				
+				inputComponent = buildImageField(element, elementId, fieldType, element.isMultiple());
+				
 			} else {
 				inputComponent = textField(elementId);
 				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
@@ -389,6 +396,41 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
+	private Component buildImageField(EntityElement element, String elementId, Class<?> fieldType, boolean multiple) {
+		 
+		JButton button = button("choose file");
+		JLabel imagePreview = label("preview");
+		imagePreview.setSize(200, 200);
+		button.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview));
+		
+		return ComponentBuilder.buildVerticallyInlineComponent(200, button, imagePreview) ;
+	}
+	
+	private ActionListener onChooseFileClick(final JFileChooser fileChooser, final JLabel imagePreview) {
+		
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = fileChooser.showOpenDialog(parentPanel);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+
+					try {
+						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath());
+						imagePreview.setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), 200, 200));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					System.out.println("Open command cancelled by user.");
+				}
+
+			}
+		};
+	}
+
 	/**
 	 * CRUID DATA TABLE
 	 * @return
