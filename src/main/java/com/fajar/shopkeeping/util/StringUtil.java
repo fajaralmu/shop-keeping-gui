@@ -8,8 +8,6 @@ import java.util.Random;
 
 import javax.xml.bind.DatatypeConverter;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
-
 public class StringUtil {
 
 	static final Random rand = new Random();

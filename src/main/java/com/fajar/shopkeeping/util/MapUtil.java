@@ -20,6 +20,13 @@ public class MapUtil {
 		
 		return result;
 	}
+	
+	public static void printMap(Map map) {
+		Log.log("printing map");
+		for(Object key:map.keySet()) {
+			Log.log("key:", key,":",map.get(key));
+		}
+	}
 
 	public static Object mapToObject(Map map, Class objectClass) {
 		Set mapKeys = map.keySet();

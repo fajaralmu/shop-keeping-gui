@@ -605,14 +605,16 @@ public class ManagementPage extends BasePage {
 						multipleImagePreviews.get(elementId).get(index).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
 						String base64 = StringUtil.getBase64Image(file); 
 						Object currentValue =  managedObject.get(elementId);
+						Log.log("currentValue: ",currentValue);
 						
 						if(null == currentValue) {
 							updateManagedObject(elementId, base64);
 						}else {
 							String[] rawValues = currentValue.toString().split("~");
 							String finalValue =  currentValue.toString();
-							if(rawValues.length > index) {
+							if(rawValues.length >= index) {
 								rawValues[index] = base64;
+								finalValue = String.join("~", rawValues);
 							}else {
 								finalValue +=( "~"+base64);
 							}
@@ -1068,11 +1070,14 @@ public class ManagementPage extends BasePage {
 	 * @param elementId
 	 * @param selectedObjectFromList
 	 */
-	private void updateManagedObject(String elementId, Object selectedObjectFromList) {
+	private void updateManagedObject(String elementId, Object value) {
 		if(null == managedObject) {
 			managedObject = new HashMap<>();
 		}
-		managedObject.put(elementId, selectedObjectFromList);
+		
+		Log.log("Update managed object(",elementId,"):",value);
+		
+		managedObject.put(elementId, value);
 	}
 	
 	
@@ -1279,6 +1284,8 @@ public class ManagementPage extends BasePage {
 				
 			} else if(isImage && entityElement.isMultiple() == true) {
 				String[] rawValues = value.toString().split("~");
+				Log.log("rawValues.length:",entity);
+				String[] newValues = new String[rawValues.length];
 				int index = 0;
 				for (String string : rawValues) {
 					String imageUrl  = UrlConstants.URL_IMAGE + string;
@@ -1288,8 +1295,13 @@ public class ManagementPage extends BasePage {
 					Icon icon = ComponentBuilder.imageIcon(imageUrl, 160, 160);
 					multipleImagePreviews.get(key).get(index).setIcon(icon );
 					
+					newValues[index] = "{ORIGINAL>>"+string+"}";
+					
 					index++;
 				}
+				
+				updateManagedObject(key, String.join("~", newValues));
+				Log.log("ImageUrls:",String.join("~", newValues));
 				
 			} else {
 				Log.log("key not managed: ",key);

@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.component;
 
 import java.awt.Color;
+import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,7 +21,7 @@ public class Loadings {
 		jframe.setUndecorated(true);
 		jframe.setAlwaysOnTop(true);
 		
-		JLabel loadingContent = ComponentBuilder.title("Please Wait", 20); 
+		JLabel loadingContent = ComponentBuilder.title("Please Wait "+(new Date().getTime()), 20); 
 		loadingContent.setForeground(Color.white);
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 20, Color.LIGHT_GRAY);
