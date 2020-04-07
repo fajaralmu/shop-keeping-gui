@@ -449,10 +449,10 @@ public class ManagementPage extends BasePage {
 			imagePreview.setSize(160, 160);
 			imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			
-			singleImagePreviews.put(element.getId(), imagePreview);
+			addSingleImageContainer(element.getId(), imagePreview);
 			
 			JButton buttonChoose = button("choose file"); 
-			buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+			buttonChoose.addActionListener(onChooseSingleImageFileClick(new JFileChooser(), element.getId()));
 			
 			JButton buttonClear = button("clear");
 			buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
@@ -463,55 +463,90 @@ public class ManagementPage extends BasePage {
 		}
 	}
 	
-	private ActionListener buttonAddImageFieldListener(final JPanel inputFields, final EntityElement element, final JPanel parentPanel) {
+	private void addSingleImageContainer(String elementId, JLabel imagePreview) {
+		singleImagePreviews.put(elementId, imagePreview);
+		
+	}
+
+	private ActionListener buttonAddImageFieldListener(final JPanel theInputPanel, final EntityElement element, final JPanel parentPanel) {
 		 
 		return new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				if(theInputPanel.getComponent(0) instanceof JLabel) {
+					theInputPanel.removeAll();
+				}
+				
+				int index = theInputPanel.getComponentCount();
+				
 				JLabel imagePreview = label("No Preview."); 
 				imagePreview.setSize(160, 160);
 				imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
 				
-				JButton buttonChoose = button("choose file"); 
-				buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+				addMultipleImageContainer(element.getId(), imagePreview);
+				
+				JButton buttonChoose = button("choose file ("+index+")"); 
+				buttonChoose.addActionListener(onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));
 				
 				JButton buttonClear = button("clear");
 				buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
-				buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
+				buttonClear.addActionListener(buttonClearMultipleImageClick(element.getId(), index));  
 				
-				if(inputFields.getComponent(0) instanceof JLabel) {
-					inputFields.removeAll();
-				}
+				int componentCount = theInputPanel.getComponentCount();
 				
-				int componentCount = inputFields.getComponentCount();
+				JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
+				newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
 				
-				JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
-				inputPanel.setBounds(inputPanel.getX(), componentCount * inputPanel.getHeight(), inputPanel.getWidth(), inputPanel.getHeight());
+				Dimension newDimension = new Dimension(theInputPanel.getWidth(),  theInputPanel.getHeight() + newImageSelection.getHeight() );
+				theInputPanel.setPreferredSize(newDimension);
+				theInputPanel.setSize(newDimension);
+				theInputPanel.add(newImageSelection); 
+				//update scrollpane
+ 				((JScrollPane)parentPanel.getComponent(0)).setViewportView(theInputPanel);
+				((JScrollPane)parentPanel.getComponent(0)).validate();  
+			}
+ 
+			
+		};
+	}
+	
+	/**
+	 * add new multiple image selection label(image icon)
+	 * @param id
+	 * @param imagePreview
+	 */
+	private void addMultipleImageContainer(String id, JLabel imagePreview) {
+		if(multipleImagePreviews.get(id) == null) {
+			multipleImagePreviews.put(id, new ArrayList<JLabel>());
+		}
+		multipleImagePreviews.get(id).add(imagePreview );
+		
+	}
+	
+	/**
+	 * clear image in multiple image selection
+	 * @param id
+	 * @param index
+	 * @return
+	 */
+	private ActionListener buttonClearMultipleImageClick(final String elementId, final int index) {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try { 
+					multipleImagePreviews.get(elementId).get(index).setIcon(new ImageIcon());
+//					updateManagedObject(elementId, null);
+				} catch (Exception e2) { }
 				
-				Dimension newDimension = new Dimension(inputFields.getWidth(),  inputFields.getHeight() + inputPanel.getHeight() );
-				inputFields.setPreferredSize(newDimension);
-				inputFields.setSize(newDimension);
-				inputFields.add(inputPanel); 
-//				((JScrollPane)parentPanel.getComponent(0)).setLayout(new ScrollPaneLayout.UIResource());
-//				((JScrollPane)parentPanel.getComponent(0)).setViewport(new JViewport());
-//				((JScrollPane)parentPanel.getComponent(0)).setVerticalScrollBar(((JScrollPane)parentPanel.getComponent(0)).createVerticalScrollBar());
-//				((JScrollPane)parentPanel.getComponent(0)).setHorizontalScrollBar(((JScrollPane)parentPanel.getComponent(0)).createHorizontalScrollBar() );
-				((JScrollPane)parentPanel.getComponent(0)).setViewportView(inputFields);
-				((JScrollPane)parentPanel.getComponent(0)).validate();
-				
-
-//				((JScrollPane)parentPanel.getComponent(0)).setSize(200, 200);
-//				Log.log("(JScrollPane)parentPanel.getComponent(0): ",(JScrollPane)parentPanel.getComponent(0));
-//				((JScrollPane)parentPanel.getComponent(0)).getViewport().setView(inputFields);
-//				((JScrollPane)parentPanel.getComponent(0)).setPreferredSize(new Dimension(160, 300));  
-				Log.log("inputFields.component count: ",inputFields.getComponentCount());
 			}
 		};
 	}
 
 	/**
-	 * clear image selection
+	 * clear image in single image selection
 	 * @param elementId
 	 * @return
 	 */
@@ -529,6 +564,41 @@ public class ManagementPage extends BasePage {
 			}
 		};
 	}
+	
+	/**
+	 * when filechooser for multiple image clicked
+	 * @param jFileChooser
+	 * @param id
+	 * @param index
+	 * @return
+	 */
+	private ActionListener onChooseMultipleImageFileClick(final JFileChooser fileChooser,final  String elementId,final  int index) {
+		  
+			
+			return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int returnVal = fileChooser.showOpenDialog(parentPanel);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fileChooser.getSelectedFile();
+
+					try { 
+						JLabel imagePreview = multipleImagePreviews.get(elementId).get(index); 
+						multipleImagePreviews.get(elementId).get(index).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
+						String base64 = StringUtil.getBase64Image(file); 
+//						updateManagedObject(elementId, base64);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					System.out.println("Open command cancelled by user.");
+				}
+			}
+			 
+		};
+	}
 
 	/**
 	 * when fileChooser for image clicked
@@ -537,7 +607,7 @@ public class ManagementPage extends BasePage {
 	 * @param elementId
 	 * @return
 	 */
-	private ActionListener onChooseFileClick(final JFileChooser fileChooser, final JLabel imagePreview, final String elementId) {
+	private ActionListener onChooseSingleImageFileClick(final JFileChooser fileChooser, final String elementId) {
 		
 		return new ActionListener() {
 
@@ -549,16 +619,11 @@ public class ManagementPage extends BasePage {
 					File file = fileChooser.getSelectedFile();
 
 					try {
-//						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath());
-						final String filePath = file.getCanonicalPath();
-						
-						String imageType = filePath.toLowerCase().endsWith("png") ? "png":"jpeg";
-						
-						imagePreview.setIcon(ComponentBuilder.imageIconFromFile(filePath, imagePreview.getWidth(), imagePreview.getHeight()));
-						String base64 = DatatypeConverter.printBase64Binary(Files.readAllBytes(
-							    Paths.get(filePath)));
-						 
-						updateManagedObject(elementId, "data:image/"+imageType+";base64,"+base64);
+//						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath()); 
+						JLabel imagePreview = singleImagePreviews.get(elementId);
+						singleImagePreviews.get(elementId).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
+						String base64 = StringUtil.getBase64Image(file); 
+						updateManagedObject(elementId, base64);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}

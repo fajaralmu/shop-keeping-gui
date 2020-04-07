@@ -1,6 +1,14 @@
 package com.fajar.shopkeeping.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Random;
+
+import javax.xml.bind.DatatypeConverter;
+
+import com.fajar.shopkeeping.component.ComponentBuilder;
 
 public class StringUtil {
 
@@ -88,6 +96,23 @@ public class StringUtil {
 		}
 
 		return hasil;
+	}
+	
+	public static String getBase64Image(File file) {
+		
+		try {
+			String filePath;
+			filePath = file.getCanonicalPath();
+			String imageType = filePath.toLowerCase().endsWith("png") ? "png":"jpeg";
+			
+			String base64 = DatatypeConverter.printBase64Binary(Files.readAllBytes(
+				    Paths.get(filePath)));
+			return base64;
+		} catch (IOException e) {
+			return null;
+		}
+		
+		
 	}
 
 }
