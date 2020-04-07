@@ -224,7 +224,7 @@ public class ComponentBuilder {
 			BasePage.printSize(customPanel); 
 			 
 			MyCustomPanel panel  = buildScrolledPanel(customPanel, (panelW > 0? panelW : finalWidth), panelH);
-			 
+			Log.log("scrollPane count: ",((JScrollPane)panel.getComponent(0)).getViewport().getView());
 			printComponentLayout(panel);
 			return panel;
 
@@ -246,7 +246,7 @@ public class ComponentBuilder {
 		
 		JScrollPane scrollPane = new JScrollPane(mainComponent, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setPreferredSize(new Dimension(width, height)); 
-		 
+		
 		MyCustomPanel panel = new MyCustomPanel();
 		panel.setBounds(0, 0, width, height);
 		panel.add(scrollPane);
@@ -381,7 +381,7 @@ public class ComponentBuilder {
 	}
 	
 	/**
-	 * build horizontally aligned components wrapped in jPanel
+	 * build horizontally aligned components wrapped in JPanel
 	 * @param colWidth
 	 * @param components
 	 * @return
@@ -393,17 +393,15 @@ public class ComponentBuilder {
 				if(component.getWidth() > colWidth) {
 					component.setSize(colWidth, component.getHeight());
 				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			} catch (Exception e) { }
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 3, null);
-		Object[] components_ = components;
-		return buildPanelV2(panelRequest, components_ );
+		Object[] componentsClone = components;
+		return buildPanelV2(panelRequest, componentsClone );
 	}
 	
 	/**
-	 * build vertically inline components
+	 * build vertically in line components wrapped in JPanel
 	 * @param colWidth
 	 * @param components
 	 * @return
@@ -420,6 +418,28 @@ public class ComponentBuilder {
 			}
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, null);
+		Object[] components_ = components;
+		return buildPanelV2(panelRequest, components_ );
+	}
+	
+	/**
+	 * build vertically in line components wrapped in JPanel scroll enabled
+	 * @param colWidth
+	 * @param components
+	 * @return
+	 */
+	public static JPanel buildVerticallyInlineComponentScroll(int colWidth, int height, Object...components) {
+		for (Object object : components) {
+			try {
+				Component component = (Component) object;
+				if(component.getWidth() > colWidth) {
+					component.setSize(colWidth, component.getHeight());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, colWidth, 5, null, height);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
 	}

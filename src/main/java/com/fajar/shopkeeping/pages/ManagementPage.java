@@ -4,6 +4,8 @@ import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -32,8 +34,11 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 import javax.xml.bind.DatatypeConverter;
@@ -88,8 +93,9 @@ public class ManagementPage extends BasePage {
  
 	private final Map<String, List<Map>> comboBoxListContainer = new HashMap<>(); 
 	private final Map<String, Object> fieldsFilter = new HashMap<>();
-	private final Map<String, JLabel> singleObjectPreviews = new HashMap<>(); 
-	
+	private final Map<String, JLabel> singleImagePreviews = new HashMap<>(); 
+	private final Map<String, List<JLabel>> multipleImagePreviews = new HashMap<>(); 
+
 	private Map<String, Object> managedObject = new HashMap<>();
 	private String currentElementIdFocus = "";
 	
@@ -112,11 +118,14 @@ public class ManagementPage extends BasePage {
 	
 	private JMenuItem menuBack;
 	
+	private final ManagementPageHelper helper;
+	
 	Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
 	
 	
 	public ManagementPage() {
 		super("Management", BASE_WIDTH + 400, BASE_HEIGHT);
+		helper = new ManagementPageHelper(this);
 	}
 
 	@Override
@@ -244,7 +253,7 @@ public class ManagementPage extends BasePage {
 			return;
 		}
 		
-		menuBack = new JMenuItem("Back");
+		setMenuBack(new JMenuItem("Back"));
 		
 		JMenu menu = new JMenu("Menu");
 		menu.add(menuBack);
@@ -254,18 +263,18 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void refresh() {
 		if(!refreshing) {
-			refreshing = true; 
+			setRefreshing(true);
 			preInitComponent();
 			initEvent();
 			super.refresh();
-			refreshing = false;
+			setRefreshing(false);
 		}
 	}
 	
 	@Override
 	protected void setDefaultValues() {  
-		selectedPage = Integer.valueOf(inputPage.getText());
-		selectedLimit = Integer.valueOf(inputLimit.getText());
+		setSelectedPage(Integer.valueOf(inputPage.getText()));
+		setSelectedLimit(Integer.valueOf(inputLimit.getText()));
 		super.setDefaultValues();
 	}
 
@@ -318,12 +327,12 @@ public class ManagementPage extends BasePage {
 			}
 		}
 		
-		Set<String> singleImageKeys = singleObjectPreviews.keySet();
+		Set<String> singleImageKeys = singleImagePreviews.keySet();
 		for (String key : singleImageKeys) {
-			singleObjectPreviews.get(key).setIcon(new ImageIcon());
+			singleImagePreviews.get(key).setIcon(new ImageIcon());
 		}
 		
-		editMode = false;
+		setEditMode(false);
 		
 	}
 
@@ -414,25 +423,93 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
-	private Component buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
+	/**
+	 * build single image input form field
+	 * @param element
+	 * @param fieldType
+	 * @param multiple
+	 * @return
+	 */
+	private JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
-		JLabel imagePreview = label("No Preview."); 
-		imagePreview.setSize(160, 160);
-		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
-		singleObjectPreviews.put(element.getId(), imagePreview);
-		
-		JButton buttonChoose = button("choose file"); 
-		buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
-		
-		JButton buttonClear = button("clear");
-		buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
-		buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
-		
-		JPanel inputField = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
-		return inputField;
+		if(multiple) {
+			JPanel inputFields = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add.."));
+			
+			JButton buttonAddImage = button("add");
+			
+			JPanel fileChoosersPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, inputFields, buttonAddImage) ; 
+			JPanel inputPanel= ComponentBuilder.buildVerticallyInlineComponent(200, fileChoosersPanel, buttonAddImage); 
+			
+			buttonAddImage.addActionListener(buttonAddImageFieldListener(inputFields, element, fileChoosersPanel));
+			
+			return inputPanel;
+			
+		}else {
+			JLabel imagePreview = label("No Preview."); 
+			imagePreview.setSize(160, 160);
+			imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			
+			singleImagePreviews.put(element.getId(), imagePreview);
+			
+			JButton buttonChoose = button("choose file"); 
+			buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+			
+			JButton buttonClear = button("clear");
+			buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
+			buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
+			
+			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
+			return inputPanel;
+		}
 	}
 	
+	private ActionListener buttonAddImageFieldListener(final JPanel inputFields, final EntityElement element, final JPanel parentPanel) {
+		 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JLabel imagePreview = label("No Preview."); 
+				imagePreview.setSize(160, 160);
+				imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
+				
+				JButton buttonChoose = button("choose file"); 
+				buttonChoose.addActionListener(onChooseFileClick(new JFileChooser(), imagePreview, element.getId()));
+				
+				JButton buttonClear = button("clear");
+				buttonClear.setSize(buttonChoose.getWidth(), buttonClear.getHeight());
+				buttonClear.addActionListener(buttonClearSingleImageClick(element.getId()));
+				
+				if(inputFields.getComponent(0) instanceof JLabel) {
+					inputFields.removeAll();
+				}
+				
+				int componentCount = inputFields.getComponentCount();
+				
+				JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
+				inputPanel.setBounds(inputPanel.getX(), componentCount * inputPanel.getHeight(), inputPanel.getWidth(), inputPanel.getHeight());
+				
+				Dimension newDimension = new Dimension(inputFields.getWidth(),  inputFields.getHeight() + inputPanel.getHeight() );
+				inputFields.setPreferredSize(newDimension);
+				inputFields.setSize(newDimension);
+				inputFields.add(inputPanel); 
+//				((JScrollPane)parentPanel.getComponent(0)).setLayout(new ScrollPaneLayout.UIResource());
+//				((JScrollPane)parentPanel.getComponent(0)).setViewport(new JViewport());
+//				((JScrollPane)parentPanel.getComponent(0)).setVerticalScrollBar(((JScrollPane)parentPanel.getComponent(0)).createVerticalScrollBar());
+//				((JScrollPane)parentPanel.getComponent(0)).setHorizontalScrollBar(((JScrollPane)parentPanel.getComponent(0)).createHorizontalScrollBar() );
+				((JScrollPane)parentPanel.getComponent(0)).setViewportView(inputFields);
+				((JScrollPane)parentPanel.getComponent(0)).validate();
+				
+
+//				((JScrollPane)parentPanel.getComponent(0)).setSize(200, 200);
+//				Log.log("(JScrollPane)parentPanel.getComponent(0): ",(JScrollPane)parentPanel.getComponent(0));
+//				((JScrollPane)parentPanel.getComponent(0)).getViewport().setView(inputFields);
+//				((JScrollPane)parentPanel.getComponent(0)).setPreferredSize(new Dimension(160, 300));  
+				Log.log("inputFields.component count: ",inputFields.getComponentCount());
+			}
+		};
+	}
+
 	/**
 	 * clear image selection
 	 * @param elementId
@@ -445,7 +522,7 @@ public class ManagementPage extends BasePage {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					//it means does not modify current value if in edit mode
-					singleObjectPreviews.get(elementId).setIcon(new ImageIcon());
+					singleImagePreviews.get(elementId).setIcon(new ImageIcon());
 					updateManagedObject(elementId, null);
 				} catch (Exception e2) { }
 				
@@ -472,7 +549,7 @@ public class ManagementPage extends BasePage {
 					File file = fileChooser.getSelectedFile();
 
 					try {
-						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath());
+//						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath());
 						final String filePath = file.getCanonicalPath();
 						
 						String imageType = filePath.toLowerCase().endsWith("png") ? "png":"jpeg";
@@ -990,7 +1067,7 @@ public class ManagementPage extends BasePage {
 		getHandler().getEntities();
 		clearForm();
 
-		editMode = false;
+		setEditMode(false);
 		
 	}
 
@@ -1000,10 +1077,10 @@ public class ManagementPage extends BasePage {
 	 */
 	public void handleGetFilteredEntities(ShopApiResponse response) {
 		Log.log("Filtered Entities: ", response.getEntities());
-		entityList = response.getEntities();
-		totalData = response.getTotalData(); 
-				
-		listPanel = buildListPanel();
+		setEntityList(response.getEntities());
+		setTotalData(response.getTotalData());  
+		setListPanel(buildListPanel());
+		
 		refresh();
 		updateColumnFilterFieldFocus();
 	}
@@ -1018,7 +1095,7 @@ public class ManagementPage extends BasePage {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedPage = i;
+				setSelectedPage(i);
 				getHandler().getEntities();
 			}
 		};
@@ -1046,7 +1123,7 @@ public class ManagementPage extends BasePage {
 			public void handle(Object... params) throws Exception {
 				 Map entity = (Map) params[0];
 				 populateFormInputs(entity);
-				 editMode = true;
+				 setEditMode(true);
 				
 			} 
 			
@@ -1058,7 +1135,7 @@ public class ManagementPage extends BasePage {
 	 * @param entity
 	 */
 	private void populateFormInputs(Map entity) { 
-		managedObject = entity;
+		setManagedObject(entity);
 		Set<String> objectKeys = managedObject.keySet();
 		
 		for (String key : objectKeys) {
@@ -1088,8 +1165,8 @@ public class ManagementPage extends BasePage {
 						((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
 					} catch (Exception e) { }
 				
-			}else if( null != singleObjectPreviews.get(key)) {
-				formField = singleObjectPreviews.get(key);
+			}else if( null != singleImagePreviews.get(key)) {
+				formField = singleImagePreviews.get(key);
 				Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+value, 160, 160);
 				((JLabel) formField).setIcon(imageIcon );
 			}else {
@@ -1097,7 +1174,7 @@ public class ManagementPage extends BasePage {
 			}
 		}
 		
-		Log.log("::singleObjectPreviews:",singleObjectPreviews);
+		Log.log("::singleObjectPreviews:",singleImagePreviews);
 		
 		
 	}
