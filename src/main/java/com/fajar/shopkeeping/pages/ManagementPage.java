@@ -60,6 +60,7 @@ import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -1391,8 +1392,19 @@ public class ManagementPage extends BasePage {
 				
 			} else if(isImage && entityElement.isMultiple() == false) {
 				formField = singleImagePreviews.get(key);
-				Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+value, 160, 160);
-				((JLabel) formField).setIcon(imageIcon );
+				final String imageName = value.toString();
+				final JLabel iconLabel =(JLabel) formField;
+				
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+imageName, 160, 160);
+						(iconLabel).setIcon(imageIcon );
+						
+					}
+				}); 
+				
 				
 			} else if(isImage && entityElement.isMultiple() == true) {
 				String[] rawValues = value.toString().split("~");

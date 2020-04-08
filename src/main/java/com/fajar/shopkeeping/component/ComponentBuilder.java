@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
@@ -26,9 +27,16 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 
 public class ComponentBuilder {
 
+	/**
+	 * build grid panel v1
+	 * @param panelRequest
+	 * @param components
+	 * @return
+	 */
 	public static JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 
 		int column = panelRequest.column;
@@ -130,8 +138,13 @@ public class ComponentBuilder {
 		return panel;
 	}
 
+	/**
+	 * build grid panel v2
+	 * @param panelRequest
+	 * @param components
+	 * @return
+	 */
 	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
-		System.out.println("======v2=======");
 
 		int column = panelRequest.column;
 		int width = panelRequest.width;
@@ -334,6 +347,12 @@ public class ComponentBuilder {
 		return label;
 	}
 	
+	/**
+	 * JLabel for info only
+	 * @param title
+	 * @param horizontalAligment
+	 * @return
+	 */
 	public static MyInfoLabel infoLabel(Object title, int horizontalAligment) {
 		if(null == title) {
 			title = "";
@@ -490,12 +509,21 @@ public class ComponentBuilder {
 	 * @param height
 	 * @return
 	 */
-	public static JLabel imageLabel(String url, int width, int height) {
+	public static JLabel imageLabel(final String url, final int width, final int height) {
 		
-		JLabel label = new JLabel();
+		final JLabel label = new JLabel("No Preview");
 		label.setSize(width, height);
-		Icon icon = imageIcon(url, width, height);
-		label.setIcon(icon );
+		label.setBorder(BorderFactory.createLineBorder(Color.green));
+		ThreadUtil.run(new Runnable() {
+
+			@Override
+			public void run() {
+				Icon icon = imageIcon(url, width, height);
+				label.setIcon(icon ); 
+			}
+			
+		});
+		
 		return label;
 	}
 	
