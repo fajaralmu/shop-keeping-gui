@@ -303,50 +303,57 @@ public class ManagementPage extends BasePage {
 	 * clear input fields or set it to default values
 	 */
 	private void clearForm() {
-		Map<String, Component> inputs = formInputFields;
-		Set<String> inputKeys = inputs.keySet();
-		for (String key : inputKeys) {
+		
+		ThreadUtil.run(new Runnable() {
+			public void run() {
+				Map<String, Component> inputs = formInputFields;
+				Set<String> inputKeys = inputs.keySet();
+				for (String key : inputKeys) {
 
-			Component formField = formInputFields.get(key);
-			
-			if(formField instanceof JTextField)
-				try {
-					((JTextField ) formField).setText("");
-				}catch (Exception e) { }
-			
-			if(formField instanceof JTextArea)
-				try {
-					((JTextArea ) formField).setText("");
-				}catch (Exception e) { }
-			
-			if(formField instanceof JComboBox)
-			{
-				//leave as it
-			}
-			
-			//multiple image
-			if(formField instanceof JPanel) {
-				try {
-					JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
-					removeAllImageSelectionField(scrollPane);
-				}catch (Exception e) {
-					// TODO: handle exception
+					Component formField = formInputFields.get(key);
+					
+					if(formField instanceof JTextField)
+						try {
+							((JTextField ) formField).setText("");
+						}catch (Exception e) { }
+					
+					if(formField instanceof JTextArea)
+						try {
+							((JTextArea ) formField).setText("");
+						}catch (Exception e) { }
+					
+					if(formField instanceof JComboBox)
+					{
+						//leave as it
+					}
+					
+					//multiple image
+					if(formField instanceof JPanel) {
+						try {
+							JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
+							removeAllImageSelectionField(scrollPane);
+						}catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					
 				}
+				
+				Set<String> singleImageKeys = singleImagePreviews.keySet();
+				for (String key : singleImageKeys) {
+					singleImagePreviews.get(key).setIcon(new ImageIcon());
+				}
+				Set<String> multipleImagePreviewsKeys = multipleImagePreviews.keySet();
+				for (String key : multipleImagePreviewsKeys) {
+					multipleImagePreviews.get(key).clear();
+				}
+				
+				
+				setEditMode(false);
 			}
-			
-		}
-		
-		Set<String> singleImageKeys = singleImagePreviews.keySet();
-		for (String key : singleImageKeys) {
-			singleImagePreviews.get(key).setIcon(new ImageIcon());
-		}
-		Set<String> multipleImagePreviewsKeys = multipleImagePreviews.keySet();
-		for (String key : multipleImagePreviewsKeys) {
-			multipleImagePreviews.get(key).clear();
-		}
+		});
 		
 		
-		setEditMode(false);
 		
 	}
 
@@ -1291,14 +1298,29 @@ public class ManagementPage extends BasePage {
 	 * handle response when get filtered entities
 	 * @param response
 	 */
-	public void handleGetFilteredEntities(ShopApiResponse response) {
-		Log.log("Filtered Entities: ", response.getEntities());
-		setEntityList(response.getEntities());
-		setTotalData(response.getTotalData());  
-		setListPanel(buildListPanel());
+	public void callbackGetFilteredEntities(final ShopApiResponse response) { 
 		
-		refresh();
-		updateColumnFilterFieldFocus();
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				Log.log("Filtered Entities: ", response.getEntities());
+				int totalData = response.getTotalData();
+				int totalPage = totalData / getSelectedLimit();
+				
+				if(totalPage < selectedPage) {
+					setSelectedPage(totalPage);
+				}
+				
+				setEntityList(response.getEntities());
+				setTotalData(response.getTotalData());  
+				setListPanel(buildListPanel()); 
+				refresh();
+				updateColumnFilterFieldFocus();
+				
+			}
+		});
+		
 	}
 	
 	/**
@@ -1318,14 +1340,22 @@ public class ManagementPage extends BasePage {
 	}
 	
 	private void updateColumnFilterFieldFocus() {
-		try {
-			String textValue = this.columnFilterTextFields.get(currentElementIdFocus).getText();
-			this.columnFilterTextFields.get(currentElementIdFocus).requestFocus();
-			this.columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
-			this.columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
-		}catch (Exception e) {
-			 
-		}
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					String textValue = columnFilterTextFields.get(currentElementIdFocus).getText();
+					columnFilterTextFields.get(currentElementIdFocus).requestFocus();
+					columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
+					columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
+				}catch (Exception e) {
+					 
+				}
+				
+			}
+		});
+		
 	}
 
 	/**

@@ -148,7 +148,7 @@ public class ManagementHandler extends MainHandler {
 					@Override
 					public void handle(Object... params) throws Exception {
 						ShopApiResponse response = (ShopApiResponse) params[0];
-						getPage().handleGetFilteredEntities(response);
+						getPage().callbackGetFilteredEntities(response);
 					}
 				});
 	}

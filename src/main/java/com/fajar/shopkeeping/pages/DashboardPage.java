@@ -35,6 +35,7 @@ import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.DateUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 
 import lombok.Data;
 
@@ -150,7 +151,7 @@ public class DashboardPage extends BasePage {
 			@Override
 			public void handle(Object... params) throws Exception {
 				ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
-				handleResponseMonthlyCashflow(jsonResponse);
+				callbackMonthlyCashflow(jsonResponse);
 			}
 		};
 	}
@@ -182,16 +183,21 @@ public class DashboardPage extends BasePage {
 	 * 
 	 * @param response
 	 */
-	private void handleResponseMonthlyCashflow(ShopApiResponse response) {
-
-		responseTodayCashflow = response;
-		panelTodayCashflow = buildTodayCashflow(response);
-		panelMonthlySummary = buildMonthlySummaryTable(response);
-		minTransactionYear = response.getTransactionYears()[0];
-		AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
-		
-		preInitComponent();
-		initEvent();
+	private void callbackMonthlyCashflow(final ShopApiResponse response) {
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				responseTodayCashflow = response;
+				panelTodayCashflow = buildTodayCashflow(response);
+				panelMonthlySummary = buildMonthlySummaryTable(response);
+				minTransactionYear = response.getTransactionYears()[0];
+				AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
+				
+				preInitComponent();
+				initEvent();
+			}
+		});
 
 	}
 

@@ -1,8 +1,8 @@
 package com.fajar.shopkeeping.component;
 
 import java.awt.Color;
-import java.util.Date;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
@@ -25,7 +25,7 @@ public class Loadings {
 		loadingContent.setForeground(Color.white);
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 20, Color.LIGHT_GRAY);
-		MyCustomPanel loadingPanel = ComponentBuilder.buildPanelV2(panelRequest , loadingContent);
+		MyCustomPanel loadingPanel = ComponentBuilder.buildPanelV2(panelRequest , loadingContent); 
 		jframe.setContentPane(loadingPanel);
 		return jframe;
 	}

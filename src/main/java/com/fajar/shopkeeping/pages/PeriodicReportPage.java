@@ -23,6 +23,7 @@ import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.ThreadUtil;
 
 public class PeriodicReportPage extends BasePage {
 	
@@ -126,7 +127,7 @@ public class PeriodicReportPage extends BasePage {
 	
 	@Override
 	public void refresh() {
-		handlePeriodicCashflow(periodicCashflowResponse);
+		callbackPeriodicCashflow(periodicCashflowResponse);
 		Log.log("refresh done...");
 		super.refresh();
 	}
@@ -157,29 +158,37 @@ public class PeriodicReportPage extends BasePage {
 			@Override
 			public void handle(Object... params) throws Exception {
 				 ShopApiResponse response = (ShopApiResponse) params[0];
-				 handlePeriodicCashflow(response);
+				 callbackPeriodicCashflow(response);
 			} 
 			
 		};
 	}
 	
-	private void handlePeriodicCashflow(ShopApiResponse response) {
+	private void callbackPeriodicCashflow(final ShopApiResponse response) {
 		
-		if(null == panelCashflowListTable) {
-			log("panelCashflowListTable IS NULL");
-			return;
-		}
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(null == panelCashflowListTable) {
+					log("panelCashflowListTable IS NULL");
+					return;
+				}
+				
+				periodicCashflowResponse = response;
+				
+				try {
+					panelCashflowListTable = buildPeriodicCashflowTable();
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				preInitComponent();
+				initEvent();
+				
+			}
+		});
 		
-		periodicCashflowResponse = response;
-		
-		try {
-			panelCashflowListTable = buildPeriodicCashflowTable();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		preInitComponent();
-		initEvent();
 	}
 	
 	private JPanel buildPeriodicCashflowTable() {
@@ -187,7 +196,7 @@ public class PeriodicReportPage extends BasePage {
 		if(null == periodicCashflowResponse) {
 			log("periodicCashflowResponse IS NULL");
 			return new JPanel();
-		}
+		} 
 		
 		List<BaseEntity> productSupplied = periodicCashflowResponse.getSupplies();
 		List<BaseEntity> productSold = periodicCashflowResponse.getPurchases();

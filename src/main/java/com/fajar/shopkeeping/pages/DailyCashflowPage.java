@@ -16,6 +16,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.util.DateUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 
 import lombok.Data;
 
@@ -70,9 +71,14 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	public void update() {
-		
-		dailyCashflowPanel = buildDetailTable(); 
-		preInitComponent();
+		ThreadUtil.run(new Runnable() {
+				
+				@Override
+				public void run() {
+					dailyCashflowPanel = buildDetailTable(); 
+					preInitComponent();
+				}
+		});
 	}
 
 	private JPanel buildDetailTable() {
