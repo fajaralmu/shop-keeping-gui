@@ -249,10 +249,13 @@ public class ManagementPageHelper {
 	 * @return
 	 */
 	public JComboBox buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
+		
 		String elementId = element.getId();
 		String optionItemName = element.getOptionItemName();
+		
 		KeyListener comboBoxKeyListener = dynamicComboBoxListener(optionItemName, fieldType, elementId);
 		ActionListener comboBoxActionListener = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
+		
 		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("",comboBoxKeyListener, comboBoxActionListener, "type something.." );
 		inputComponent.setSize(150, 20); 
 		
@@ -267,6 +270,7 @@ public class ManagementPageHelper {
 	 * @return
 	 */
 	public JComboBox buildFixedComboBox(EntityElement element,  Class fieldType) {
+		
 		String optionItemName = element.getOptionItemName(); 
 		String elementId = element.getId();
 		/**
@@ -276,8 +280,10 @@ public class ManagementPageHelper {
 		page.setComboBoxValuesContainer(elementId, objectList);
 
 		Object[] comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
-		ActionListener comboBoxActionListener  = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
 		Object defaultValue = objectList.get(0).get(optionItemName);
+		
+		ActionListener comboBoxActionListener  = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
+		
 		JComboBox inputComponent = ComponentBuilder.buildComboBox(defaultValue , comboBoxActionListener, comboBoxValues);
 		 
 		return inputComponent;
@@ -667,8 +673,8 @@ public class ManagementPageHelper {
 			@Override
 			public void keyReleased(KeyEvent event) {
 				
-				final JComboBox dynamicComboBox = (JComboBox) ((Component)event.getSource()).getParent();
-				final String componentText = ((JTextComponent) (dynamicComboBox).getEditor().getEditorComponent()).getText(); 
+				final JComboBox dynamicComboBox = page.getComboBox(event);
+				final String componentText = page.getComboBoxText(dynamicComboBox);
 				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText, new MyCallback() {
 					
 					@Override

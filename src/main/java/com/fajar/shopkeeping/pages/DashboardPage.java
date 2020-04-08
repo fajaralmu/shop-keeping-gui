@@ -21,6 +21,7 @@ import javax.swing.border.Border;
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.Category;
+import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
@@ -30,6 +31,7 @@ import com.fajar.entity.Unit;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
@@ -68,6 +70,9 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemCategory;
 	private JMenuItem menuItemTransaction;
 	private JMenuItem menuItemCostFlow;
+	private JMenuItem menuItemCostType;
+	
+	private JMenuItem menuItemTransactionSupply;
 
 	private ShopApiResponse responseTodayCashflow;
 
@@ -128,22 +133,33 @@ public class DashboardPage extends BasePage {
 		setMenuItemCategory(new JMenuItem("Category"));
 		setMenuItemTransaction(new JMenuItem("Transction"));
 		setMenuItemCostFlow(new JMenuItem("Cost Flow"));
+		setMenuItemCostType(new JMenuItem("Cost Type"));
+		setMenuItemTransactionSupply(new JMenuItem("Supply"));
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct);
-        managementMenu.add(menuItemUnit);
-        managementMenu.add(menuItemCategory);
+        
         managementMenu.add(menuItemSupplier);
         managementMenu.add(menuItemCustomer);
         managementMenu.add(menuItemTransaction); 
         managementMenu.add(menuItemCostFlow);
         
-        JMenu accountMenu = new JMenu("Account");
-         
-		accountMenu.add(menuItemLogout);
+        JMenu settingMenu = new JMenu("Setting");
+        settingMenu.add(menuItemCostType);
+        settingMenu.add(menuItemUnit);
+        settingMenu.add(menuItemCategory);
         
-        menuBar.add(managementMenu); 
+        JMenu accountMenu = new JMenu("Account"); 
+		accountMenu.add(menuItemLogout);
+		
+		JMenu transactionMenu = new JMenu("Transaction");
+		transactionMenu.add(menuItemTransactionSupply);
+        
 		menuBar.add(accountMenu ); 
+		menuBar.add(settingMenu);
+        menuBar.add(managementMenu); 
+        menuBar.add(transactionMenu);
+		
  
 	}
 	
@@ -374,7 +390,10 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemCustomer, getHandler().managementNavigationListener(Customer.class));
 		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
 		addActionListener(menuItemCostFlow, getHandler().managementNavigationListener(CostFlow.class)); 
+		addActionListener(menuItemCostType, getHandler().managementNavigationListener(Cost.class)); 
 		
+		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
+
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
 		

@@ -44,6 +44,7 @@ public class AppHandler {
 		handlers.put(PAGE_DASHBOARD, new DashboardHandler());
 		handlers.put(PAGE_PERIODIC_REPORT, new PeriodicReportHandler());
 		handlers.put(PAGE_MANAGEMENT, new ManagementHandler());
+		handlers.put(PAGE_TRAN_SUPPLY, new TransactionHandler());
 
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}

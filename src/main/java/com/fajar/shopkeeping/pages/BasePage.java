@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +26,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.text.JTextComponent;
 
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
@@ -56,6 +59,7 @@ public class BasePage {
 	protected JPanel parentPanel = new JPanel();
 	protected JPanel mainPanel;
 	protected final JMenuBar menuBar = new JMenuBar();
+	protected JMenuItem menuBack;
 	
 	private final int WIDTH;
 	private final int HEIGHT;
@@ -316,9 +320,13 @@ public class BasePage {
 
 	protected static JLabel label(Object title) {
 		
-		return ComponentBuilder.label(title);
+		return ComponentBuilder.label(title );
 	}
 	
+	protected static JLabel label(Object title, int horizontalAligment) {
+		
+		return ComponentBuilder.label(title, horizontalAligment );
+	}
 	
 	
 	protected JPasswordField passwordField(String string) { 
@@ -362,8 +370,8 @@ public class BasePage {
 		return dateChooser ;
 	}
 	 
-	protected JTextField numberField(String elementId) {
-		final JTextField textField = textField(elementId);
+	protected JTextField numberField(String text) {
+		final JTextField textField = textField(text);
 		textField.addKeyListener(new KeyAdapter() {
 	         public void keyPressed(KeyEvent ke) {
 	            String value = textField.getText();
@@ -434,6 +442,7 @@ public class BasePage {
 
 				@Override
 				public void keyReleased(KeyEvent e) {
+					Log.log("HELLO");
 					Object value = inputComponent.getText();
 					
 					if(value == null) {
@@ -498,6 +507,42 @@ public class BasePage {
 			};
 		} catch (NoSuchFieldException | SecurityException e1) {
 			return new BlankActionListener();
+		}
+		
+	}
+	
+	/**
+	 * change object field based on dateChooser selected date
+	 * @param dateChooser
+	 * @param fieldName
+	 * @return
+	 */
+	protected PropertyChangeListener dateChooserListener(final JDateChooser dateChooser, String fieldName) {
+		try {
+			final Field field = this.getClass().getDeclaredField(fieldName);
+			final Object origin = this;
+			field.setAccessible(true);
+			return new PropertyChangeListener() {
+ 
+
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) { 
+					Date value = dateChooser.getDate();
+					try {
+						field.set(origin, value );
+						log(field.getName(), ":" , value);
+					} catch (IllegalArgumentException | IllegalAccessException e1) {
+						log("Error setting value for field: ",field.getName()," the value :",value);
+						e1.printStackTrace();
+					} 
+					
+				}
+			};
+		} catch (NoSuchFieldException | SecurityException e1) {
+			 return new PropertyChangeListener() { 
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {  }
+			};
 		}
 		
 	}
@@ -567,18 +612,40 @@ public class BasePage {
 		}
 	}
 	protected static void addActionListener(JMenuItem button, ActionListener actionListener) {
-		if(button.getActionListeners().length == 0) {
+		if(button.getActionListeners().length == 0) { 
 			button.addActionListener(actionListener);
 		}
 	} 
-	protected static void addKeyListener(JTextField textfield, KeyListener actionListener) {
-		if( textfield.getKeyListeners().length == 0) {
+	protected static void addKeyListener(JTextField textfield, KeyListener actionListener, final boolean limitToOneListener) {
+		
+		if(!limitToOneListener) {
 			textfield.addKeyListener(actionListener);
+		}else if(limitToOneListener) {
+			if(textfield.getKeyListeners().length == 0) { 
+				textfield.addKeyListener(actionListener);
+			} 
 		}
+	}
+	protected static void addKeyListener(JTextField textfield, KeyListener actionListener ) {
+		addKeyListener(textfield, actionListener, true);
 	}
 	protected static void addActionListener(JComboBox comboBox, ActionListener actionListener) {
 		if( comboBox.getActionListeners().length == 0) {
 			comboBox.addActionListener(actionListener);
 		}
+	}
+	protected static void addActionListener(JDateChooser dateChooser, PropertyChangeListener actionListener) {
+		if( dateChooser.getPropertyChangeListeners().length == 0) {
+			dateChooser.addPropertyChangeListener(actionListener);
+		}
+	}
+	
+	
+	public JComboBox getComboBox(KeyEvent event) {
+		return (JComboBox) ((Component)event.getSource()).getParent();
+	}
+	
+	public String getComboBoxText(JComboBox comboBox) {
+		return ((JTextComponent) (comboBox).getEditor().getEditorComponent()).getText(); 
 	}
 }

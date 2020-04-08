@@ -119,9 +119,7 @@ public class ManagementPage extends BasePage {
 
 	private int selectedPage = 0;
 	private int selectedLimit = 10;
-	private int totalData = 0;
-	
-	private JMenuItem menuBack;
+	private int totalData = 0; 
 	
 	private final ManagementPageHelper helper;
 	
