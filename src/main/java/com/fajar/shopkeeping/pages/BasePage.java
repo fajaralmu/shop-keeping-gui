@@ -18,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -61,6 +60,7 @@ public class BasePage {
 	protected final JMenuBar menuBar = new JMenuBar();
 	protected JMenuItem menuBack;
 	
+	protected boolean refreshing;
 	private final int WIDTH;
 	private final int HEIGHT;
 	private final String title;
@@ -641,11 +641,11 @@ public class BasePage {
 	}
 	
 	
-	public JComboBox getComboBox(KeyEvent event) {
+	public static JComboBox getComboBox(KeyEvent event) {
 		return (JComboBox) ((Component)event.getSource()).getParent();
 	}
 	
-	public String getComboBoxText(JComboBox comboBox) {
+	public static String getComboBoxText(JComboBox comboBox) {
 		return ((JTextComponent) (comboBox).getEditor().getEditorComponent()).getText(); 
 	}
 }

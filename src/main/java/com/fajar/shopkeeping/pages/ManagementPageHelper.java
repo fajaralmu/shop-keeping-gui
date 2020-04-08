@@ -642,6 +642,12 @@ public class ManagementPageHelper {
 		};
 	}
 	
+	/**
+	 * button add when clicked will perform adding new file chooser button
+	 * @param element
+	 * @param imageSelectionScrollableWrapper
+	 * @return
+	 */
 	public ActionListener buttonAddImageFieldListener( final EntityElement element, final JPanel imageSelectionScrollableWrapper) {
 		 
 		return new ActionListener() {
