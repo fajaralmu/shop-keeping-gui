@@ -66,7 +66,7 @@ public class ManagementPageHelper {
 		
 		for (int i = 0; i < totalPage; i++) {
 			JButton button = ComponentBuilder.button(i+1, 50, 20); 
-			button.addActionListener(page.dataTableNavigationListener(i));
+			button.addActionListener(dataTableNavigationListener(i));
 			button.setBackground(i == page.getSelectedPage() ? Color.orange : Color.yellow);
 			
 			navigationButtons[i] = button; 
@@ -321,13 +321,48 @@ public class ManagementPageHelper {
 		}
 	}
 	
-	
+	/**
+	 * button edit on datatable row
+	 * @param idFieldName2
+	 * @param idValue2
+	 * @return
+	 */
+	public JButton editButton(final String idFieldName2, final Object idValue2) {
+		JButton button = ComponentBuilder.button("Edit");
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				page.getHandler().getSingleEntity(idFieldName2, idValue2);
+				
+			}
+		});
+		return button;
+	}
+
 	
 	/**
 	 * =========================================
 	 *             Listeners
 	 * =========================================            
 	 */
+	
+	
+	/**
+	 * action when navigation button is clicked
+	 * @param i
+	 * @return
+	 */
+	public ActionListener dataTableNavigationListener(final int i) { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				page.setSelectedPage(i);
+				page.getHandler().getEntities();
+			}
+		};
+	}
 
 	/**
 	 * clear image in single image selection

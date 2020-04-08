@@ -606,4 +606,11 @@ public class ComponentBuilder {
 		jButton.setBackground(Color.LIGHT_GRAY);
 		return jButton ;
 	}
+
+	public static JPanel blankPanel(int i, int j) {
+		JPanel panel = new JPanel();
+		panel.setSize(i, j);
+//		panel.setBackground(Color.green);
+		return panel ;
+	}
 }

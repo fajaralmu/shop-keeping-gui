@@ -1,5 +1,12 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.ComponentBuilder.buildInlineComponent;
+import static com.fajar.shopkeeping.component.ComponentBuilder.buildPanelV2;
+import static com.fajar.shopkeeping.component.ComponentBuilder.buildVerticallyInlineComponent;
+import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
+import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
+import static com.fajar.shopkeeping.service.AppContext.getContext;
+import static com.fajar.shopkeeping.util.EntityUtil.getDeclaredField;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 
 import java.awt.Color;
@@ -55,7 +62,6 @@ import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
-import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
@@ -77,6 +83,7 @@ public class ManagementPage extends BasePage {
 
 	private JPanel formPanel;
 	private JPanel listPanel;
+	private JPanel navigationPanel;
 
 	private final JButton buttonSubmit = button("Submit");
 	private final JButton buttonClear = button("Clear");
@@ -118,7 +125,7 @@ public class ManagementPage extends BasePage {
 	
 	private final ManagementPageHelper helper;
 	
-	Component actionButtons = ComponentBuilder.buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
+	Component actionButtons = buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
 	
 	
 	public ManagementPage() {
@@ -135,7 +142,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 550, 5, Color.WHITE);
+		PanelRequest panelRequest = autoPanelNonScroll(2, 550, 5, Color.WHITE);
 		panelRequest.setCenterAligment(true);
 
 		if (formPanel == null) {
@@ -143,19 +150,44 @@ public class ManagementPage extends BasePage {
 		}  
 		if(listPanel == null) {
 			listPanel = buildPanelV2(panelRequest, label("Please wait.."));
-		}
+		} 
+		if(navigationPanel == null) { //will be populated with pagination buttons when get filtered entities
+			navigationPanel = ComponentBuilder.blankPanel(520, 90);
+		} 
 		
-		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		mainPanel = buildPanelV2(panelRequest,
 
 				title("Management::"+getEntityClassName(), 30), null,
 				formPanel, 
-				ComponentBuilder.buildVerticallyInlineComponent(500, getNavigationPanel(),  listPanel));
+				buildVerticallyInlineComponent(520, navigationPanel,  listPanel));
 
 		parentPanel.add(mainPanel);
+		
 		exitOnClose();
 
 	}
 	
+	/**
+	 * rebuild the navigation buttons for data table
+	 */
+	private void validateNavigationPanel() { 
+
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				JPanel contentNavigation = getNavigationPanel();
+				contentNavigation.setBounds(0, 0, 515, 81);
+				contentNavigation.setPreferredSize(new Dimension(515, 81));
+				navigationPanel.removeAll();
+				navigationPanel.add(contentNavigation); 
+				navigationPanel.revalidate();
+				navigationPanel.repaint();
+			}
+		});
+		
+	}
+
 	/**
 	 * generate data table navigations
 	 * @return
@@ -167,11 +199,11 @@ public class ManagementPage extends BasePage {
 		} 
 		
 		Component[] navigationButtons = helper.generateDataTableNavigationButtons();
-		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
-		JPanel panelNavigation = ComponentBuilder.buildPanelV2(panelRequest, navigationButtons);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
+		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
-		JPanel panelPageLimit = ComponentBuilder.buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity, labelTotalData);
-		return ComponentBuilder.buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
+		JPanel panelPageLimit = buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity, labelTotalData);
+		return buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
 	}
 
 	
@@ -200,9 +232,10 @@ public class ManagementPage extends BasePage {
 	
 	@Override
 	public void setAppHandler(MainHandler mainHandler) {
-		SharedContext context = AppContext.getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
+		SharedContext context = getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
 		setEntityClass(context.getEntityClass());
 		super.setAppHandler(mainHandler);
+		
 	}
 	
 	/**
@@ -264,7 +297,7 @@ public class ManagementPage extends BasePage {
 	 */
 	public void loadForm() {
 		Loadings.start();
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.run(new Runnable() {
 
 			@Override
 			public void run() {
@@ -276,9 +309,7 @@ public class ManagementPage extends BasePage {
 				initEvent();
 				Loadings.end();
 			}
-		});
-
-		thread.start();
+		}); 
 
 	}
 	
@@ -329,7 +360,7 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel generateEntityForm() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 420, 2, Color.WHITE);
+		PanelRequest panelRequest = autoPanelNonScroll(1, 420, 2, Color.WHITE);
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -402,7 +433,7 @@ public class ManagementPage extends BasePage {
 				setFormInputComponent(elementId, inputComponent);
 			}
 			
-			formComponents.add(ComponentBuilder.buildInlineComponent(200, lableName, inputComponent));
+			formComponents.add(buildInlineComponent(200, lableName, inputComponent));
 			
 		}
 		
@@ -435,7 +466,7 @@ public class ManagementPage extends BasePage {
 			
 			Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(), 200);// - componentToRemove.getHeight() );
 			imageSelectionPanel.setSize(newDimension); 
-			JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+			JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
 			
 			updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
 		}catch (Exception e) {
@@ -469,13 +500,13 @@ public class ManagementPage extends BasePage {
 		
 		int componentCount = imageSelectionPanel.getComponentCount();
 		
-		JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
+		JPanel newImageSelection = buildVerticallyInlineComponent(200, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
 		newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
 		
 		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight() + newImageSelection.getHeight() );
 		imageSelectionPanel.setSize(newDimension);
 		imageSelectionPanel.add(newImageSelection);  
-		JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+		JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
 		
 		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
 		
@@ -510,7 +541,7 @@ public class ManagementPage extends BasePage {
 		 	
 		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight());// - componentToRemove.getHeight() );
 		imageSelectionPanel.setSize(newDimension); 
-		JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+		JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
 		
 		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
 		
@@ -518,11 +549,16 @@ public class ManagementPage extends BasePage {
 		
 	}
 	
-	private void removeMultipleImageContainerItem(String id, int index) {
+	/**
+	 * remove value (in specified field & index) from managed object
+	 * @param elementId
+	 * @param index
+	 */
+	private void removeMultipleImageContainerItem(String elementId, int index) {
 		// TODO multipleImagePreviews.get(id).remove(index);
-		Log.log("removeMultipleImageContainerItem[",id,"] at", index);
+		Log.log("removeMultipleImageContainerItem[",elementId,"] at", index);
 		try {
-			 Object currentObject = managedObject.get(id);
+			 Object currentObject = managedObject.get(elementId);
 			 String[] rawString = currentObject.toString().split("~");
 			 Log.log( rawString);
 			 
@@ -532,7 +568,7 @@ public class ManagementPage extends BasePage {
 			 
 			 String newValue = String.join("~", rawString);
 			 Log.log("new value: ",newValue);
-			 updateManagedObject(id, newValue);
+			 updateManagedObject(elementId, newValue);
 		}catch (Exception e) { 
 		}
 	}
@@ -546,12 +582,12 @@ public class ManagementPage extends BasePage {
 	private static void updateScrollPane(JScrollPane scrollPane, Component component, Dimension newDimension) {
 		component.setPreferredSize(newDimension);
 		component.setSize(newDimension);
-		scrollPane .setViewportView(component);
-		scrollPane .validate(); 
+		scrollPane.setViewportView(component);
+		scrollPane.validate(); 
 	}
 	
 	/**
-	 * add new multiple image selection label(image icon)
+	 * add new multiple image previews label(image icon)
 	 * @param id
 	 * @param imagePreview
 	 */
@@ -609,8 +645,9 @@ public class ManagementPage extends BasePage {
 			 * checking the value type
 			 */
 			elementLoop: for(int i = 0; i< entityElements.size();i++) {
+				
 				final EntityElement element = entityElements.get(i); 
-				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
+				final Field field = getDeclaredField(entity.getClass(), element.getId());
 				final String fieldType = element.getType();
 				Object value;
 				
@@ -661,14 +698,14 @@ public class ManagementPage extends BasePage {
 			}
 			
 			//end field elements
-			components[colSize - 1] = idExist ? editButton(idFieldName, idValue) : label("-");
+			components[colSize - 1] = idExist ? helper.editButton(idFieldName, idValue) : label("-");
 			
 			sequenceNumber++;
 			JPanel rowPanel = rowPanel(colSize , columnWidth, components);
 			listComponents.add(rowPanel);
 		}
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 450);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 450);
 		
 		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
 //		
@@ -676,25 +713,7 @@ public class ManagementPage extends BasePage {
 		return panel;
 	}
 	
-	/**
-	 * button edit on datatable row
-	 * @param idFieldName2
-	 * @param idValue2
-	 * @return
-	 */
-	private JButton editButton(final String idFieldName2, final Object idValue2) {
-		JButton button = button("Edit");
-		button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getHandler().getSingleEntity(idFieldName2, idValue2);
-				
-			}
-		});
-		return button;
-	}
-
+	
 	/**
 	 * table header for data table
 	 * @return
@@ -713,7 +732,7 @@ public class ManagementPage extends BasePage {
 			
 			JButton buttonAsc = orderButton(elementId, ORDER_ASC);
 			JButton buttonDesc = orderButton(elementId, ORDER_DESC);
-			JPanel orderButtons = ComponentBuilder.buildInlineComponent(45, buttonAsc, buttonDesc);
+			JPanel orderButtons = buildInlineComponent(45, buttonAsc, buttonDesc);
 			
 			JLabel columnLabel = label(elementId);
 			
@@ -729,7 +748,7 @@ public class ManagementPage extends BasePage {
 				JTextField dateFilterYear = buildDateFilter(elementId, "year");
 				columnFilterTextFields.put(elementId.concat("-year"), dateFilterYear); 
 				 
-				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, dateFilterDay, dateFilterMonth, dateFilterYear, orderButtons );
+				Component columnHeader = buildVerticallyInlineComponent(100, columnLabel, dateFilterDay, dateFilterMonth, dateFilterYear, orderButtons );
 				headerComponents.add(columnHeader);
 //			} else if(element.getType().equals(FormField.FIELD_TYPE_IMAGE)) {
 //				
@@ -745,7 +764,7 @@ public class ManagementPage extends BasePage {
 				}
 				columnFilterTextFields.put(elementId, filterField);  
 				
-				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
+				Component columnHeader = buildVerticallyInlineComponent(100, columnLabel, filterField, orderButtons);
 				headerComponents.add(columnHeader);
 			}
 			
@@ -843,6 +862,14 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
+	 * 
+	 * ======================================================
+	 *                  CALLBACKS
+	 * ======================================================           
+	 *  
+	 */
+	
+	/**
 	 * handle response when add/update entity
 	 * @param response
 	 */
@@ -856,8 +883,14 @@ public class ManagementPage extends BasePage {
 		}
 		Log.log("Callback update entity: ", response);
 		
-		getHandler().getEntities();
-		helper.doClearForm();
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				getHandler().getEntities();
+				helper.doClearForm(); 
+			}
+		}); 
 
 		setEditMode(false);
 		
@@ -886,27 +919,13 @@ public class ManagementPage extends BasePage {
 				setListPanel(buildListPanel()); 
 				refresh();
 				updateColumnFilterFieldFocus();
-				
+				validateNavigationPanel();
 			}
 		});
 		
 	}
 	
-	/**
-	 * action when navigation button is clicked
-	 * @param i
-	 * @return
-	 */
-	public ActionListener dataTableNavigationListener(final int i) { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setSelectedPage(i);
-				getHandler().getEntities();
-			}
-		};
-	}
+	
 	
 	/**
 	 * reset cursor to the last focus component
@@ -948,10 +967,19 @@ public class ManagementPage extends BasePage {
 		};
 	}
 	
+	/**
+	 * get value of managed object with field: key
+	 * @param key
+	 * @return
+	 */
 	public Object getManagedObjectValue(String key) {
 		return managedObject.get(key);
 	}
 	
+	/**
+	 * get managed object fields
+	 * @return
+	 */
 	public Set<String> managedObjectKeySet(){
 		return managedObject.keySet();
 	} 

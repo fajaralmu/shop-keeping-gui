@@ -139,8 +139,7 @@ public class MyCustomPanel extends JPanel {
 
 	}
 
-	private int calculateWidth() {
-		System.out.println("centerAligment: " + centerAligment);
+	private int calculateWidth() { 
 
 		int width = centerAligment ? 0 : margin;
 
