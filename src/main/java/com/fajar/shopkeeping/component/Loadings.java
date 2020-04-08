@@ -21,7 +21,7 @@ public class Loadings {
 		jframe.setUndecorated(true);
 		jframe.setAlwaysOnTop(true);
 		
-		JLabel loadingContent = ComponentBuilder.title("Please Wait "+(new Date().getTime()), 20); 
+		JLabel loadingContent = ComponentBuilder.title("Please Wait " , 20); 
 		loadingContent.setForeground(Color.white);
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 20, Color.LIGHT_GRAY);
@@ -45,7 +45,7 @@ public class Loadings {
 
 	public static void end() {
 		loadingCount--;
-		if (loadingFrame.isVisible() && loadingCount  == 0)
+		if (loadingFrame.isVisible() && loadingCount <= 0)
 			loadingFrame.setVisible(false);
 	}
 

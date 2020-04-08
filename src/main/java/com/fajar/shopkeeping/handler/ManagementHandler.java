@@ -92,6 +92,7 @@ public class ManagementHandler extends MainHandler {
 			
 			Log.log("Submit managedObject: ", managedObject); 
 			 
+			getPage().validateEntity();
 			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(), new MyCallback() {
 				
 				@Override

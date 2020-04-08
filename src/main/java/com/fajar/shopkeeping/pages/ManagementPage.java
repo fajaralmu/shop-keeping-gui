@@ -44,8 +44,10 @@ import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.component.MyInfoLabel;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -67,7 +69,8 @@ public class ManagementPage extends BasePage {
 
 	private static final String DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss";
 	public static final String ORDER_ASC = "asc";
-	public static final String ORDER_DESC = "desc"; 
+	public static final String ORDER_DESC = "desc";
+	private static final String NULL_IMAGE = "NULL"; 
 
 	private EntityProperty entityProperty;
 
@@ -319,12 +322,28 @@ public class ManagementPage extends BasePage {
 			{
 				//leave as it
 			}
+			
+			//multiple image
+			if(formField instanceof JPanel) {
+				try {
+					JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
+					removeAllImageSelectionField(scrollPane);
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			
 		}
 		
 		Set<String> singleImageKeys = singleImagePreviews.keySet();
 		for (String key : singleImageKeys) {
 			singleImagePreviews.get(key).setIcon(new ImageIcon());
 		}
+		Set<String> multipleImagePreviewsKeys = multipleImagePreviews.keySet();
+		for (String key : multipleImagePreviewsKeys) {
+			multipleImagePreviews.get(key).clear();
+		}
+		
 		
 		setEditMode(false);
 		
@@ -427,7 +446,7 @@ public class ManagementPage extends BasePage {
 	private JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
 		if(multiple) {
-			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, label("click add..")); 
+			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, ComponentBuilder.infoLabel("click add..", SwingConstants.CENTER)); 
 			JButton buttonAddImage = button("add"); 
 			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
 			
@@ -472,6 +491,27 @@ public class ManagementPage extends BasePage {
 	}
 	
 	/**
+	 * remove all file chooser buttons in multiple image selection fields
+	 * @param imageSelectionScrollPane
+	 */
+	private void removeAllImageSelectionField(JScrollPane imageSelectionScrollPane) {
+		
+		try {
+			JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
+			JPanel imageSelectionPanel = (JPanel) panel.getComponent(0);  
+			imageSelectionPanel.removeAll();
+			
+			Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(), 200);// - componentToRemove.getHeight() );
+			imageSelectionPanel.setSize(newDimension); 
+			JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+			
+			updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	/**
 	 * add image selection field in scrollable panel
 	 * @param element
 	 * @param imageSelectionScrollPane
@@ -482,23 +522,22 @@ public class ManagementPage extends BasePage {
 		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
 		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
 		
-		if(imageSelectionPanel.getComponent(0) instanceof JLabel) {
+		if(imageSelectionPanel.getComponentCount() > 0 && imageSelectionPanel.getComponent(0) instanceof MyInfoLabel) {
 			imageSelectionPanel.removeAll();
 			Log.log("REMOVE ALL");
 		}
 		
 		int index = imageSelectionPanel.getComponentCount();
 		
-		JLabel imagePreview = createImagePreview();
-		
-		addMultipleImageContainer(element.getId(), imagePreview);
+		JLabel imagePreview = createImagePreview(); 
 		
 		JButton buttonChoose = button("choose file ("+index+")", 160, onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
 		JButton buttonClear = button("clear", 160, buttonClearMultipleImageClick(element.getId(), index)); 
+		JButton buttonRemove = button("remove" , 160, removeImageSelectionListener(element, index, imageSelectionScrollPane));
 		
 		int componentCount = imageSelectionPanel.getComponentCount();
 		
-		JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, imagePreview) ;  
+		JPanel newImageSelection = ComponentBuilder.buildVerticallyInlineComponent(200, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
 		newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
 		
 		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight() + newImageSelection.getHeight() );
@@ -508,8 +547,80 @@ public class ManagementPage extends BasePage {
 		
 		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
 		
+		addMultipleImageContainer(element.getId(), imagePreview);
+		
 	}
 	
+	
+	private ActionListener removeImageSelectionListener(final EntityElement element,final int index, final JScrollPane imageSelectionScrollableWrapper) {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				removeImageSelectionItem(element ,index, imageSelectionScrollableWrapper);
+				
+			}
+		};
+	}
+	 
+	/**
+	 * do remove input fields for upload image
+	 * @param index
+	 * @param imageSelectionScrollPane
+	 */
+	private void removeImageSelectionItem(EntityElement element, int index, JScrollPane imageSelectionScrollPane) {
+		Log.log("removeImageSelectionItem");
+		
+		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
+		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
+		
+		if(imageSelectionPanel.getComponentCount() > 0 && imageSelectionPanel.getComponent(0) instanceof MyInfoLabel) {
+			imageSelectionPanel.removeAll();
+			Log.log("REMOVE ALL");
+			return;
+		}
+		
+		JPanel componentToRemove = (JPanel) imageSelectionPanel.getComponent(index);
+		
+		JLabel removedInfo = label("removed at:"+index);
+		removedInfo.setBackground(Color.gray);
+		ComponentModifier.updatePosition(removedInfo, componentToRemove);
+		imageSelectionPanel.remove(index);
+		imageSelectionPanel.add(removedInfo, index); 
+		 	
+		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight());// - componentToRemove.getHeight() );
+		imageSelectionPanel.setSize(newDimension); 
+		JPanel wrapperPanel  = ComponentBuilder.buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
+		
+		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
+		
+		removeMultipleImageContainerItem(element.getId(), index);
+		
+	}
+	
+	private void removeMultipleImageContainerItem(String id, int index) {
+		// TODO multipleImagePreviews.get(id).remove(index);
+		Log.log("removeMultipleImageContainerItem[",id,"] at", index);
+		try {
+			 Object currentObject = managedObject.get(id);
+			 String[] rawString = currentObject.toString().split("~");
+			 Log.log( rawString);
+			 if(rawString.length >= index + 1) {
+				 rawString[index] = NULL_IMAGE;
+			 }
+			 String newValue = String.join("~", rawString);
+			 Log.log("new value: ",newValue);
+			 updateManagedObject(id, newValue);
+		}catch (Exception e) { 
+		}
+	}
+
+	/**
+	 * update scrollable content
+	 * @param scrollPane
+	 * @param component
+	 * @param newDimension
+	 */
 	private static void updateScrollPane(JScrollPane scrollPane, Component component, Dimension newDimension) {
 		component.setPreferredSize(newDimension);
 		component.setSize(newDimension);
@@ -612,7 +723,7 @@ public class ManagementPage extends BasePage {
 						}else {
 							String[] rawValues = currentValue.toString().split("~");
 							String finalValue =  currentValue.toString();
-							if(rawValues.length >= index) {
+							if(rawValues.length >= index + 1) {
 								rawValues[index] = base64;
 								finalValue = String.join("~", rawValues);
 							}else {
@@ -1238,7 +1349,8 @@ public class ManagementPage extends BasePage {
 	 * populate form fields by given entity
 	 * @param entity
 	 */
-	private void populateFormInputs(Map entity) { 
+	private void populateFormInputs(Map entity) {
+		clearForm();
 		setManagedObject(entity);
 		Set<String> objectKeys = managedObject.keySet();
 		
@@ -1287,6 +1399,7 @@ public class ManagementPage extends BasePage {
 				Log.log("rawValues.length:",entity);
 				String[] newValues = new String[rawValues.length];
 				int index = 0;
+				
 				for (String string : rawValues) {
 					String imageUrl  = UrlConstants.URL_IMAGE + string;
 					JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
@@ -1300,8 +1413,7 @@ public class ManagementPage extends BasePage {
 					index++;
 				}
 				
-				updateManagedObject(key, String.join("~", newValues));
-				Log.log("ImageUrls:",String.join("~", newValues));
+				updateManagedObject(key, String.join("~", newValues)); 
 				
 			} else {
 				Log.log("key not managed: ",key);
@@ -1327,6 +1439,46 @@ public class ManagementPage extends BasePage {
 			}
 		}
 		return null;
+	}
+
+	public void validateEntity() {
+		if(null == managedObject) {
+			return;
+		}
+		
+		Set<String> keys = managedObject.keySet();
+		
+		for(String key: keys) {
+			
+			EntityElement element = getEntityElement(key);
+			Object value = managedObject.get(key);
+			
+			if(null == element || null == value) {
+				continue;
+			} 
+			
+			if(FormField.FIELD_TYPE_IMAGE.equals(element.getType()) && element.isMultiple()) {
+				String[] rawValue = value.toString().split("~"); 
+				Log.log("rawValue length:",rawValue.length);
+				List<String> validValues = new ArrayList<>();
+				for (int i = 0; i < rawValue.length; i++) {
+				
+					if(rawValue[i] != null && rawValue[i].equals(NULL_IMAGE) == false) { 
+						validValues.add(rawValue[i]); 
+					}
+					
+				}
+				
+				String[] rawOfValidValue = StringUtil.toArrayOfString(validValues);
+				Log.log("rawOfValidValue.length:",rawOfValidValue.length);
+				String finalValidValue = String.join("~", rawOfValidValue);
+				updateManagedObject(key, finalValidValue);
+				
+			}
+		}
+		
+		Log.log("entity validated");
+		Log.log("entity: ",managedObject);
 	}
 
 }

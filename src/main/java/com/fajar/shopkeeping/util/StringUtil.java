@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.util;
 
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,12 +43,26 @@ public class StringUtil {
 		return random;
 	}
 
+	public static String[] toArrayOfString(List list) {
+		
+		String[] array = new String[list.size()];
+		
+		for (int i = 0; i < list.size(); i++) {
+			try {
+				array[i]  = list.get(i).toString();
+			}catch (Exception e) {  }
+		}
+		
+		return array ;
+	}
+	
 	public static void main(String[] xxx) {
 
-		for (int i = 1; i <= 611; i++) {
-
-			System.out.println("update `transaction` set code= '" + generateRandomNumber(10) + "' where id=" + i + ";");
-		}
+		 String[] s = new String[11];
+		 s[0] = "ss";
+		 s[1] = "sff";
+		 s[4] = "3333";
+		 System.out.println(String.join("~", s));
 	}
 
 	public static String addZeroBefore(Integer number) {

@@ -12,4 +12,13 @@ public class Log {
 		}
 		System.out.println("## "+sb.toString());
 	}
+	
+	public static void log(String[] strings) {
+		Object[] objects = new Object[strings.length];
+		for (int i = 0; i < strings.length; i++) {
+			objects[i] = strings[i];
+		}
+		
+		log(objects);
+	}
 }

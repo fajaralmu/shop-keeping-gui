@@ -334,6 +334,27 @@ public class ComponentBuilder {
 		return label;
 	}
 	
+	public static MyInfoLabel infoLabel(Object title, int horizontalAligment) {
+		if(null == title) {
+			title = "";
+		}
+
+		if (isNumber(title)) {
+			try {
+				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+			}catch (Exception e) {
+				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+			}
+		}
+		 
+		int width = title.toString().length() * 10;
+
+		MyInfoLabel label = new MyInfoLabel(title.toString(), horizontalAligment);
+		
+		label.setSize(width, 20);
+		return label;
+	}
+	
 	public static JLabel label(Object title) {
 		return label(title, SwingConstants.CENTER);
 	}
