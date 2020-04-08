@@ -96,8 +96,7 @@ public class DashboardPage extends BasePage {
 			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
 		}
 		
-		panelPeriodFilter = buildPanelPeriodFilter(); 
-		 
+		setPanelPeriodFilter(buildPanelPeriodFilter());  
 		
 		mainPanel = buildPanelV2(mainPanelRequest, 
 				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo,  
@@ -119,13 +118,13 @@ public class DashboardPage extends BasePage {
 		}
 		
 		
-		menuItemLogout = new JMenuItem("Logout");
-		menuItemProduct = new JMenuItem("Product");
-		menuItemUnit = new JMenuItem("Unit");
-		menuItemSupplier = new JMenuItem("Supplier");
-		menuItemCustomer = new JMenuItem("Customer");
-		menuItemCategory = new JMenuItem("Category");
-		menuItemTransaction = new JMenuItem("Transction");
+		setMenuItemLogout(new JMenuItem("Logout"));
+		setMenuItemProduct(new JMenuItem("Product"));
+		setMenuItemUnit(new JMenuItem("Unit"));
+		setMenuItemSupplier(new JMenuItem("Supplier"));
+		setMenuItemCustomer(new JMenuItem("Customer"));
+		setMenuItemCategory(new JMenuItem("Category"));
+		setMenuItemTransaction(new JMenuItem("Transction"));
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct);
@@ -188,10 +187,10 @@ public class DashboardPage extends BasePage {
 			
 			@Override
 			public void run() {
-				responseTodayCashflow = response;
-				panelTodayCashflow = buildTodayCashflow(response);
-				panelMonthlySummary = buildMonthlySummaryTable(response);
-				minTransactionYear = response.getTransactionYears()[0];
+				setResponseTodayCashflow(response);
+				setPanelTodayCashflow(buildTodayCashflow(response));
+				setPanelMonthlySummary(buildMonthlySummaryTable(response));
+				setMinTransactionYear(response.getTransactionYears()[0]);
 				AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
 				
 				preInitComponent();
@@ -319,10 +318,13 @@ public class DashboardPage extends BasePage {
 	 */
 	private JPanel buildPanelPeriodFilter() {
 
-		comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
-		comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
-		buttonLoadMonthlyCashflow = button("Search"); 
-		buttonGotoPeriodicReport = button("Report Page");
+		JComboBox _comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
+		JComboBox _comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
+		
+		setComboBoxMonth(_comboBoxMonth);
+		setComboBoxYear(_comboBoxYear);
+		setButtonLoadMonthlyCashflow(button("Search")); 
+		setButtonGotoPeriodicReport(button("Report Page"));
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(4, 60, 3, Color.WHITE);
 		
@@ -369,24 +371,10 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
-		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage()); 
-		addActionListener(comboBoxMonth, new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				selectedMonth =(int) comboBoxMonth.getSelectedItem();
-				log("Selected month: "+selectedMonth);
-			}
-		});
-		 
-		addActionListener(comboBoxYear, new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectedYear =(int) comboBoxYear.getSelectedItem();
-				log("Selected year: "+selectedYear);
-			}
-		});
+		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
+		
+		addActionListener(comboBoxMonth, comboBoxListener(comboBoxMonth,"selectedMonth"));  
+		addActionListener(comboBoxYear, comboBoxListener(comboBoxYear,"selectedYear")); 
 	}
 
 	private DashboardHandler getHandler() {

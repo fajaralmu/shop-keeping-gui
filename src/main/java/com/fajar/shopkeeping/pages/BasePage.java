@@ -305,29 +305,14 @@ public class BasePage {
 	}
 	
 	protected JButton button(Object text) {
-		int width = String.valueOf(text).length() * 10 + 30;
-		
-		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, 20); 
-		jButton.setBackground(Color.LIGHT_GRAY);
-		return jButton ;
+		return ComponentBuilder.button(text);
 	}
 	protected JButton button(Object text, int width, ActionListener actionListener) { 
 		
-		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, 20); 
-		jButton.setBackground(Color.LIGHT_GRAY);
-		jButton.addActionListener(actionListener);
-		return jButton ;
+		return ComponentBuilder.button(text, width, actionListener);
 	}
 	
-	protected JButton button(Object text, int width, int height) { 
-		
-		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, height); 
-		jButton.setBackground(Color.LIGHT_GRAY);
-		return jButton ;
-	}
+	
 
 	protected static JLabel label(Object title) {
 		

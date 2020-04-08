@@ -66,8 +66,7 @@ public class DailyCashflowPage extends BasePage {
 		);  
 		 
 		parentPanel.add(mainPanel);
-		 
-		System.out.println("____________ INIT COMPONENT______________");
+		  
 	}
 
 	public void update() {
@@ -75,7 +74,7 @@ public class DailyCashflowPage extends BasePage {
 				
 				@Override
 				public void run() {
-					dailyCashflowPanel = buildDetailTable(); 
+					setDailyCashflowPanel(buildDetailTable()); 
 					preInitComponent();
 				}
 		});

@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,6 +17,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -554,8 +556,14 @@ public class ComponentBuilder {
 		return new ImageIcon();
 	}
 	
-	public static ImageIcon imageIconFromFile(String fileName, int width, int height) { 
-	 
+	/**
+	 * build imageicon
+	 * @param fileName
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static ImageIcon imageIconFromFile(String fileName, int width, int height) {  
 		 
 			ImageIcon imageIcon = new ImageIcon(fileName);
 			Image image = imageIcon.getImage(); // transform it 
@@ -564,5 +572,38 @@ public class ComponentBuilder {
 		 
 			return imageIcon;
 		 
+	}
+	
+	public static JButton button(Object text) {
+		int width = String.valueOf(text).length() * 10 + 30;
+		
+		JButton jButton = new JButton(String.valueOf(text));
+		jButton.setSize(width, 20); 
+		jButton.setBackground(Color.LIGHT_GRAY);
+		return jButton ;
+	}
+	
+	public static JButton button(Object text, int width, ActionListener actionListener) { 
+		
+		JButton jButton = new JButton(String.valueOf(text));
+		jButton.setSize(width, 20); 
+		jButton.setBackground(Color.LIGHT_GRAY);
+		jButton.addActionListener(actionListener);
+		return jButton ;
+	}
+	
+	/**
+	 * build JButton with specified width & height
+	 * @param text
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static JButton button(Object text, int width, int height) { 
+		
+		JButton jButton = new JButton(String.valueOf(text));
+		jButton.setSize(width, height); 
+		jButton.setBackground(Color.LIGHT_GRAY);
+		return jButton ;
 	}
 }

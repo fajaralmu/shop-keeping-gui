@@ -166,7 +166,7 @@ public class ManagementPage extends BasePage {
 			return new JPanel();
 		} 
 		
-		Component[] navigationButtons = generationNavigationButtons();
+		Component[] navigationButtons = helper.generateDataTableNavigationButtons();
 		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
 		JPanel panelNavigation = ComponentBuilder.buildPanelV2(panelRequest, navigationButtons);
 		
@@ -175,31 +175,7 @@ public class ManagementPage extends BasePage {
 	}
 
 	
-	/**
-	 * generate array of navigation buttons
-	 * @return
-	 */
-	private Component[] generationNavigationButtons() {
-		
-		if(selectedLimit == 0) {
-			return new Component[] {};
-		}
-		labelTotalData.setText("Total: "+totalData);
-		int totalPage =  (totalData) / ( selectedLimit);
-		if(totalData % selectedLimit != 0) {
-			totalPage ++;
-		}
-		Component[] navigationButtons = new Component[totalPage ];
-		
-		for (int i = 0; i < totalPage; i++) {
-			JButton button = button(i+1, 50, 20); 
-			button.addActionListener(navigationListener(i));
-			button.setBackground(i == selectedPage? Color.orange : Color.yellow);
-			
-			navigationButtons[i] = button; 
-		}
-		return navigationButtons;
-	}
+	
 
 	private String getEntityClassName() {
 		if(entityClass == null) {
@@ -225,7 +201,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void setAppHandler(MainHandler mainHandler) {
 		SharedContext context = AppContext.getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
-		this.entityClass = context.getEntityClass();
+		setEntityClass(context.getEntityClass());
 		super.setAppHandler(mainHandler);
 	}
 	
@@ -238,8 +214,15 @@ public class ManagementPage extends BasePage {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				fieldsFilter.clear();
-				clearForm();
+				
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						fieldsFilter.clear();
+						helper.doClearForm();
+					}
+				}); 
 			}
 		};
 	}
@@ -285,8 +268,8 @@ public class ManagementPage extends BasePage {
 
 			@Override
 			public void run() {
-				formPanel = generateEntityForm();
-				clearForm();
+				setFormPanel(generateEntityForm());
+				helper.doClearForm();
 				getHandler().getEntities();
 				
 				preInitComponent();
@@ -299,62 +282,44 @@ public class ManagementPage extends BasePage {
 
 	}
 	
+	
+	
 	/**
-	 * clear input fields or set it to default values
+	 * keys of single image iconed JLabels
+	 * @return
 	 */
-	private void clearForm() {
+	public Set<String> singleImagePreviewsKeySet(){
+		return singleImagePreviews.keySet();
+	}
+	
+	/**
+	 * keys of multiple JPanel with iconed JLabels
+	 * @return
+	 */
+	public Set<String> multipleImagePreviewsKeySet(){
+		return multipleImagePreviews.keySet();
+	}
+	
+	public Component getFieldComponent(String elementId) {
 		
-		ThreadUtil.run(new Runnable() {
-			public void run() {
-				Map<String, Component> inputs = formInputFields;
-				Set<String> inputKeys = inputs.keySet();
-				for (String key : inputKeys) {
-
-					Component formField = formInputFields.get(key);
-					
-					if(formField instanceof JTextField)
-						try {
-							((JTextField ) formField).setText("");
-						}catch (Exception e) { }
-					
-					if(formField instanceof JTextArea)
-						try {
-							((JTextArea ) formField).setText("");
-						}catch (Exception e) { }
-					
-					if(formField instanceof JComboBox)
-					{
-						//leave as it
-					}
-					
-					//multiple image
-					if(formField instanceof JPanel) {
-						try {
-							JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
-							removeAllImageSelectionField(scrollPane);
-						}catch (Exception e) {
-							// TODO: handle exception
-						}
-					}
-					
-				}
-				
-				Set<String> singleImageKeys = singleImagePreviews.keySet();
-				for (String key : singleImageKeys) {
-					singleImagePreviews.get(key).setIcon(new ImageIcon());
-				}
-				Set<String> multipleImagePreviewsKeys = multipleImagePreviews.keySet();
-				for (String key : multipleImagePreviewsKeys) {
-					multipleImagePreviews.get(key).clear();
-				}
-				
-				
-				setEditMode(false);
-			}
-		});
-		
-		
-		
+		return formInputFields.get(elementId);
+	}
+	
+	/**
+	 * set icon to JLabel in the singleImagePreviews HashMap
+	 * @param elementId
+	 * @param icon
+	 */
+	public void setIconOnSingleImagePreview(String elementId, Icon icon) {
+		singleImagePreviews.get(elementId).setIcon(icon);
+	}
+	
+	/**
+	 * clear list of component in specified elementId in multipleImagePreviews HashMap 
+	 * @param key
+	 */
+	public void clearMultipleImagePreviews(String elementId) {
+		multipleImagePreviews.get(elementId).clear();
 	}
 
 	/**
@@ -370,9 +335,11 @@ public class ManagementPage extends BasePage {
  
 		comboBoxListContainer.clear();
 		formInputFields.clear();
-		entityProperty = EntityUtil.createEntityProperty(entityClass, null);
+		EntityProperty newEntityProperty = EntityUtil.createEntityProperty(entityClass, null);
+		
+		setEntityProperty(newEntityProperty);
 
-		List<EntityElement> entityElements = entityProperty.getElements();
+		List<EntityElement> entityElements = newEntityProperty.getElements();
 
 		for (EntityElement element : entityElements) {
 			final String elementId = element.getId();
@@ -393,18 +360,19 @@ public class ManagementPage extends BasePage {
 
 			if (elementType.equals(FormField.FIELD_TYPE_FIXED_LIST)) {
  
-				inputComponent = buildFixedComboBox(element, fieldType);
+				inputComponent = helper.buildFixedComboBox(element, fieldType);
 			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
 				 
-				inputComponent = buildDynamicComboBox(element, fieldType);
+				inputComponent = helper.buildDynamicComboBox(element, fieldType);
 			} else if (element.isIdentity()) {
 				
 				inputComponent = textFieldDisabled("ID"); 
-				this.idFieldName = elementId;  
+				setIdFieldName(elementId);
+				
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
 
 				inputComponent = textArea(elementId);
-				((JTextArea) inputComponent).addKeyListener(textAreaActionListener((JTextArea) inputComponent, elementId));
+				((JTextArea) inputComponent).addKeyListener(helper.textAreaActionListener((JTextArea) inputComponent, elementId));
 				
 			} else if (elementType.equals("color")) {
 				skipFormField = true;
@@ -412,26 +380,26 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals(FormField.FIELD_TYPE_NUMBER)) {
 
 				inputComponent = numberField(elementId);
-				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId));
+				((JTextField) inputComponent).addKeyListener(helper.crudTextFieldActionListener((JTextField) inputComponent, elementId));
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_DATE)) {
 
 				inputComponent = dateChooser();
-				((JDateChooser) inputComponent).addPropertyChangeListener(dateChooserPropertyChangeListener(
+				((JDateChooser) inputComponent).addPropertyChangeListener(helper.dateChooserPropertyChangeListener(
 						(JDateChooser) inputComponent, elementId ));
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_IMAGE)) {
 				skipFormField = true;
-				inputComponent = buildImageField(element, fieldType, element.isMultiple());
+				inputComponent = helper.buildImageField(element, fieldType, element.isMultiple());
 				
 			} else {
 				inputComponent = textField(elementId);
-				((JTextField) inputComponent).addKeyListener(crudTextFieldActionListener((JTextField) inputComponent, elementId) );
+				((JTextField) inputComponent).addKeyListener(helper.crudTextFieldActionListener((JTextField) inputComponent, elementId) );
 			}
 			inputComponent.setSize(200, inputComponent.getHeight());
 			
 			if(!skipFormField) {
-				formInputFields.put(elementId, inputComponent);
+				setFormInputComponent(elementId, inputComponent);
 			}
 			
 			formComponents.add(ComponentBuilder.buildInlineComponent(200, lableName, inputComponent));
@@ -444,65 +412,21 @@ public class ManagementPage extends BasePage {
 		return formPanel;
 	}
 	
-	/**
-	 * build single image input form field
-	 * @param element
-	 * @param fieldType
-	 * @param multiple
-	 * @return
-	 */
-	private JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
-
-		if(multiple) {
-			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, ComponentBuilder.infoLabel("click add..", SwingConstants.CENTER)); 
-			JButton buttonAddImage = button("add"); 
-			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
-			
-			buttonAddImage.addActionListener(buttonAddImageFieldListener( element, imageSelectionWrapperPanel));
-			
-			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(200, imageSelectionWrapperPanel, buttonAddImage); 
-			
-			formInputFields.put(element.getId(), imageSelectionWrapperPanel);
-			
-			return inputPanel;
-			
-		}else {
-			JLabel imagePreview = createImagePreview();
-			
-			addSingleImageContainer(element.getId(), imagePreview);
-			
-			JButton buttonChoose = button("choose file", 160, onChooseSingleImageFileClick(new JFileChooser(), element.getId())); 
-			buttonChoose.addActionListener(onChooseSingleImageFileClick(new JFileChooser(), element.getId()));
-			
-			JButton buttonClear = button("clear", 160, buttonClearSingleImageClick(element.getId()));  
-			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
-			
-			return inputPanel;
-		}
-	}
+	public void setFormInputComponent(String elementId, Component inputComponent) { 
+		formInputFields.put(elementId, inputComponent);
+	} 
 	
-	private void addSingleImageContainer(String elementId, JLabel imagePreview) {
+	public void setSingleImageContainer(String elementId, JLabel imagePreview) {
 		singleImagePreviews.put(elementId, imagePreview);
 		
 	}
-
-	private ActionListener buttonAddImageFieldListener( final EntityElement element, final JPanel imageSelectionScrollableWrapper) {
-		 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JScrollPane scrollableWrapper = (JScrollPane)imageSelectionScrollableWrapper.getComponent(0);  
-				addNewImageSelectionField(element, scrollableWrapper);
-			}
-		};
-	}
+ 
 	
 	/**
 	 * remove all file chooser buttons in multiple image selection fields
 	 * @param imageSelectionScrollPane
 	 */
-	private void removeAllImageSelectionField(JScrollPane imageSelectionScrollPane) {
+	public void removeAllImageSelectionField(JScrollPane imageSelectionScrollPane) {
 		
 		try {
 			JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
@@ -524,7 +448,7 @@ public class ManagementPage extends BasePage {
 	 * @param element
 	 * @param imageSelectionScrollPane
 	 */
-	private void addNewImageSelectionField(EntityElement element, JScrollPane imageSelectionScrollPane) {
+	public void addNewImageSelectionField(EntityElement element, JScrollPane imageSelectionScrollPane) {
 		Log.log("addNewImageSelectionField");
 		
 		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
@@ -539,9 +463,9 @@ public class ManagementPage extends BasePage {
 		
 		JLabel imagePreview = createImagePreview(); 
 		
-		JButton buttonChoose = button("choose file ("+index+")", 160, onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
-		JButton buttonClear = button("clear", 160, buttonClearMultipleImageClick(element.getId(), index)); 
-		JButton buttonRemove = button("remove" , 160, removeImageSelectionListener(element, index, imageSelectionScrollPane));
+		JButton buttonChoose = button("choose file ("+index+")", 160, helper.onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
+		JButton buttonClear = button("clear", 160, helper.buttonClearMultipleImageClick(element.getId(), index)); 
+		JButton buttonRemove = button("remove" , 160, helper.removeImageSelectionListener(element, index, imageSelectionScrollPane));
 		
 		int componentCount = imageSelectionPanel.getComponentCount();
 		
@@ -557,26 +481,14 @@ public class ManagementPage extends BasePage {
 		
 		addMultipleImageContainer(element.getId(), imagePreview);
 		
-	}
-	
-	
-	private ActionListener removeImageSelectionListener(final EntityElement element,final int index, final JScrollPane imageSelectionScrollableWrapper) {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				removeImageSelectionItem(element ,index, imageSelectionScrollableWrapper);
-				
-			}
-		};
-	}
+	} 
 	 
 	/**
 	 * do remove input fields for upload image
 	 * @param index
 	 * @param imageSelectionScrollPane
 	 */
-	private void removeImageSelectionItem(EntityElement element, int index, JScrollPane imageSelectionScrollPane) {
+	public void removeImageSelectionItem(EntityElement element, int index, JScrollPane imageSelectionScrollPane) {
 		Log.log("removeImageSelectionItem");
 		
 		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
@@ -613,9 +525,11 @@ public class ManagementPage extends BasePage {
 			 Object currentObject = managedObject.get(id);
 			 String[] rawString = currentObject.toString().split("~");
 			 Log.log( rawString);
+			 
 			 if(rawString.length >= index + 1) {
 				 rawString[index] = NULL_IMAGE;
 			 }
+			 
 			 String newValue = String.join("~", rawString);
 			 Log.log("new value: ",newValue);
 			 updateManagedObject(id, newValue);
@@ -653,143 +567,19 @@ public class ManagementPage extends BasePage {
 	 * create label for image preview
 	 * @return
 	 */
-	private JLabel createImagePreview() {
+	public JLabel createImagePreview() {
 		JLabel imagePreview = label("No Preview."); 
 		imagePreview.setSize(160, 160);
 		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
 		return imagePreview;
 	}
 	
-	/**
-	 * clear image in multiple image selection
-	 * @param id
-	 * @param index
-	 * @return
-	 */
-	private ActionListener buttonClearMultipleImageClick(final String elementId, final int index) {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try { 
-					multipleImagePreviews.get(elementId).get(index).setIcon(new ImageIcon());
-//					updateManagedObject(elementId, null);
-				} catch (Exception e2) { }
-				
-			}
-		};
+	 
+	public JLabel getImagePreviewLabelForMultipleImages(String elementId, int index) {
+		return multipleImagePreviews.get(elementId).get(index); 
 	}
-
-	/**
-	 * clear image in single image selection
-	 * @param elementId
-	 * @return
-	 */
-	private ActionListener buttonClearSingleImageClick(final String elementId) { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					//it means does not modify current value if in edit mode
-					singleImagePreviews.get(elementId).setIcon(new ImageIcon());
-					updateManagedObject(elementId, null);
-				} catch (Exception e2) { }
-				
-			}
-		};
-	}
+	 
 	
-	/**
-	 * when filechooser for multiple image clicked
-	 * @param jFileChooser
-	 * @param id
-	 * @param index
-	 * @return
-	 */
-	private ActionListener onChooseMultipleImageFileClick(final JFileChooser fileChooser,final  String elementId,final  int index) {
-		  
-			
-			return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int returnVal = fileChooser.showOpenDialog(parentPanel);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-
-					try { 
-						JLabel imagePreview = multipleImagePreviews.get(elementId).get(index); 
-						multipleImagePreviews.get(elementId).get(index).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
-						String base64 = StringUtil.getBase64Image(file); 
-						Object currentValue =  managedObject.get(elementId);
-						Log.log("currentValue: ",currentValue);
-						
-						if(null == currentValue) {
-							updateManagedObject(elementId, base64);
-						}else {
-							String[] rawValues = currentValue.toString().split("~");
-							String finalValue =  currentValue.toString();
-							if(rawValues.length >= index + 1) {
-								rawValues[index] = base64;
-								finalValue = String.join("~", rawValues);
-							}else {
-								finalValue +=( "~"+base64);
-							}
-							
-							updateManagedObject(elementId, finalValue);
-						}
-						
-						Log.log(elementId,":",managedObject.get(elementId));
-						
-//						updateManagedObject(elementId, base64);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					System.out.println("Open command cancelled by user.");
-				}
-			}
-			 
-		};
-	}
-
-	/**
-	 * when fileChooser for image clicked
-	 * @param fileChooser
-	 * @param imagePreview
-	 * @param elementId
-	 * @return
-	 */
-	private ActionListener onChooseSingleImageFileClick(final JFileChooser fileChooser, final String elementId) {
-		
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int returnVal = fileChooser.showOpenDialog(parentPanel);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-
-					try {
-//						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath()); 
-						JLabel imagePreview = singleImagePreviews.get(elementId);
-						singleImagePreviews.get(elementId).setIcon(ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight()));
-						String base64 = StringUtil.getBase64Image(file); 
-						updateManagedObject(elementId, base64);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					System.out.println("Open command cancelled by user.");
-				}
-
-			}
-		};
-	}
-
 	/**
 	 * CRUID DATA TABLE
 	 * @return
@@ -948,7 +738,7 @@ public class ManagementPage extends BasePage {
 			} else {
 			
 				JTextField filterField = textField("");
-				filterField.addKeyListener(filterFieldKeyListener(elementId));
+				filterField.addKeyListener(helper.filterFieldKeyListener(elementId));
 				
 				if(fieldsFilter.get(elementId) != null) {
 					filterField.setText(fieldsFilter.get(elementId).toString());
@@ -977,7 +767,7 @@ public class ManagementPage extends BasePage {
 	private JTextField buildDateFilter(String elementId, String mode) {
 		//DD
 		JTextField dateFilter = textField("");
-		dateFilter.addKeyListener(filterFieldKeyListener(elementId.concat("-"+mode)));
+		dateFilter.addKeyListener(helper.filterFieldKeyListener(elementId.concat("-"+mode)));
 		
 		if(fieldsFilter.get(elementId.concat("-"+mode)) != null) {
 			dateFilter.setText(fieldsFilter.get(elementId.concat("-"+mode)).toString());
@@ -996,8 +786,8 @@ public class ManagementPage extends BasePage {
 		button.addActionListener(new ActionListener() { 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				orderBy = elementId;
-				orderType = theOrderType;
+				setOrderBy(elementId);
+				setOrderType(theOrderType);
 				getHandler().getEntities();
 			}
 		});
@@ -1010,188 +800,22 @@ public class ManagementPage extends BasePage {
 		return button ;
 	}
 
-	/**
-	 * when filter field typed
-	 * @param key
-	 * @return
-	 */
-	private KeyListener filterFieldKeyListener(final String key) { 
-		return new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) { }
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String value = ((JTextField) e.getComponent()).getText();
-				fieldsFilter.put(key, value);
-				currentElementIdFocus = key;
-				
-				getHandler().getEntities();
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) { }
-		};
-	}
+	
 
-	/**
-	 * build dynamic combo box for CRUD form
-	 * @param element
-	 * @param elementId
-	 * @param fieldType
-	 * @return
-	 */
-	private JComboBox buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
-		String elementId = element.getId();
-		String optionItemName = element.getOptionItemName();
-		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
-		inputComponent.setSize(150, 20);
-		 
-		(inputComponent).getEditor().getEditorComponent()
-				.addKeyListener(dynamicComboBoxListener(  inputComponent, optionItemName, fieldType, elementId));
-		(inputComponent).addActionListener(comboBoxOnSelectListener(  inputComponent, optionItemName, fieldType, elementId));
-		
-		return inputComponent;
-	}
-
-	/**
-	 * build fixed combo box for CRUD form
-	 * @param element
-	 * @param elementId
-	 * @param fieldType
-	 * @return
-	 */
-	private JComboBox  buildFixedComboBox(EntityElement element,  Class fieldType) {
-		String optionItemName = element.getOptionItemName(); 
-		String elementId = element.getId();
-		/**
-		 * call API
-		 */
-		List<Map> objectList = getHandler().getAllEntity(fieldType);
+	public void setComboBoxValuesContainer(String elementId, List<Map> objectList) { 
 		comboBoxListContainer.put(elementId, objectList);
-
-		Object[] comboBoxValues = extractListOfSpecifiedField(objectList, optionItemName);
-		JComboBox inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
-		
-		inputComponent .addActionListener(comboBoxOnSelectListener( inputComponent, optionItemName, fieldType, elementId));
-		return inputComponent;
 	}
 
-	/**
-	 * when JDateChooser changed
-	 * @param inputComponent
-	 * @param elementId
-	 * @return
-	 */
-	private PropertyChangeListener dateChooserPropertyChangeListener(final JDateChooser inputComponent, final String elementId) {
-		 
-		return new PropertyChangeListener() {
-			
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				Date selectedDate = inputComponent.getDate(); 
-				String convertedDate = SIMPLE_DATE_FORMAT.format(selectedDate);
-				Log.log("selected date converted: ", convertedDate);
-				
-				updateManagedObject(elementId, convertedDate);
-			}
-		};
-	}
-
-	/**
-	 * when CRUD textArea has changed
-	 * @param inputComponent
-	 * @param elementId
-	 * @return
-	 */
-	private KeyListener textAreaActionListener(final JTextArea inputComponent, final String elementId) {
-		 
-		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) { }
-
-			@Override
-			public void keyPressed(KeyEvent e) { }
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String value = inputComponent.getText();
-				updateManagedObject(elementId, value);
-				
-			}
-			
-			 
-		};
-	}
-
-	/**
-	 * when CRUD jTextfield has changed
-	 * @param inputComponent
-	 * @param elementId
-	 * @return
-	 */
-	private KeyListener crudTextFieldActionListener(final JTextField inputComponent, final String elementId) {
-		 
-		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) { }
-
-			@Override
-			public void keyPressed(KeyEvent e) { }
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String value = inputComponent.getText();
-				updateManagedObject(elementId, value);
-				
-			}  
-		};
-	}
-
-	/**
-	 * when CRUD combo box selected
-	 * @param inputComponent
-	 * @param optionItemName
-	 * @param fieldType
-	 * @param elementId
-	 * @return
-	 */
-	private ActionListener comboBoxOnSelectListener(final JComboBox inputComponent, final String optionItemName, final Class<?> fieldType,
-			final String elementId) {
-		 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				 Object selectedValue = inputComponent.getSelectedItem();
-				 List<Map> rawList = comboBoxListContainer.get(elementId); 
-				 Map selectedObjectFromList = ManagementHandler.getMapFromList(optionItemName, selectedValue, rawList);
-				 
-				 if(null == selectedObjectFromList) {
-					 return ;
-				 }
-				 
-				 updateManagedObject(elementId, selectedObjectFromList);
-				 Log.log("managedObject: ",managedObject);
-			}
-
-			
-		};
-	}
+	
 	
 	/**
 	 * update managed entity
 	 * @param elementId
 	 * @param selectedObjectFromList
 	 */
-	private void updateManagedObject(String elementId, Object value) {
+	public void updateManagedObject(String elementId, Object value) {
 		if(null == managedObject) {
-			managedObject = new HashMap<>();
+			setManagedObject(new HashMap<String, Object>());
 		}
 		
 		Log.log("Update managed object(",elementId,"):",value);
@@ -1199,68 +823,13 @@ public class ManagementPage extends BasePage {
 		managedObject.put(elementId, value);
 	}
 	
-	
-	/**
-	 * when CRUD dynamic comboBox has changed
-	 * @param dynamicComboBox
-	 * @param optionItemName
-	 * @param fieldType
-	 * @return
-	 */
-	private KeyListener dynamicComboBoxListener(final JComboBox dynamicComboBox, final String optionItemName, final Class<?> fieldType, final String elementId) {
-
-		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-
-			}
-
-			@Override
-			public void keyReleased(KeyEvent event) {
-				
-				final String componentText = ((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).getText(); 
-				getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText, new MyCallback() {
-					
-					@Override
-					public void handle(Object... params) throws Exception { 
-						
-						HashMap shopApiResponse = (HashMap) params[0];
-						populateDynamicDropdown(shopApiResponse);
-					}
-
-					/**
-					 * populate items on comboBox
-					 * @param shopApiResponse
-					 */
-					private void populateDynamicDropdown(HashMap shopApiResponse) {
-						List  entities = (List) shopApiResponse.get("entities");
-						comboBoxListContainer.put(elementId, entities);
-						
-						dynamicComboBox.removeAllItems();
-						
-						for (Object object : entities) {
-							Map mapItem = (Map) object;
-							dynamicComboBox.addItem(mapItem.get(optionItemName));
-						}
-						dynamicComboBox.setSelectedItem(componentText);
-						((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).setSelectionStart(componentText.length());
-						((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).setSelectionEnd(componentText.length());
-						dynamicComboBox.showPopup();
-					}
-				});
-
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-
-			}
-		};
+	public List<Map> getComboBoxValues(String elementId){
+		return comboBoxListContainer.get(elementId); 
 	}
- 
-
-	private Object[] extractListOfSpecifiedField(List<Map> objectList, String optionItemName) {
+	
+	
+	
+	public static Object[] extractListOfSpecifiedField(List<Map> objectList, String optionItemName) {
 		Object[] result = new Object[objectList.size()];
 		for (int i = 0; i < objectList.size(); i++) {
 			Map item = objectList.get(i);
@@ -1269,7 +838,7 @@ public class ManagementPage extends BasePage {
 		return result;
 	} 
 
-	private ManagementHandler getHandler() {
+	public ManagementHandler getHandler() {
 		return (ManagementHandler) appHandler;
 	}
 
@@ -1288,7 +857,7 @@ public class ManagementPage extends BasePage {
 		Log.log("Callback update entity: ", response);
 		
 		getHandler().getEntities();
-		clearForm();
+		helper.doClearForm();
 
 		setEditMode(false);
 		
@@ -1328,7 +897,7 @@ public class ManagementPage extends BasePage {
 	 * @param i
 	 * @return
 	 */
-	private ActionListener navigationListener(final int i) { 
+	public ActionListener dataTableNavigationListener(final int i) { 
 		return new ActionListener() {
 			
 			@Override
@@ -1339,6 +908,9 @@ public class ManagementPage extends BasePage {
 		};
 	}
 	
+	/**
+	 * reset cursor to the last focus component
+	 */
 	private void updateColumnFilterFieldFocus() {
 		ThreadUtil.run(new Runnable() {
 			
@@ -1368,7 +940,7 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void handle(Object... params) throws Exception {
 				 Map entity = (Map) params[0];
-				 populateFormInputs(entity);
+				 helper.populateFormInputs(entity);
 				 setEditMode(true);
 				
 			} 
@@ -1376,106 +948,30 @@ public class ManagementPage extends BasePage {
 		};
 	}
 	
-	/**
-	 * populate form fields by given entity
-	 * @param entity
-	 */
-	private void populateFormInputs(Map entity) {
-		clearForm();
-		setManagedObject(entity);
-		Set<String> objectKeys = managedObject.keySet();
-		
-		for (String key : objectKeys) {
-			Object value = managedObject.get(key);
-			EntityElement entityElement = getEntityElement(key);
-			
-			if(null == entityElement) {
-				continue;
-			}
-			
-			String elementType = entityElement.getType();
-			
-			if(value == null) {
-				value = "";
-			}
-			boolean isImage = FormField.FIELD_TYPE_IMAGE.equals(elementType);
-			Component formField = formInputFields.get(key);
-			if(formField != null && !isImage) {
-			
-				if(formField instanceof JTextField)
-					try {
-						((JTextField ) formField).setText(value.toString());
-					}catch (Exception e) { }
-				
-				if(formField instanceof JTextArea)
-					try {
-						((JTextArea ) formField).setText(value.toString());
-					}catch (Exception e) { }
-				
-				if(formField instanceof JComboBox)
-					try {
-						Map valueMap = (Map) value;
-						EntityElement element = getEntityElement(key);
-						String optionItemName = element.getOptionItemName();
-						((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
-					} catch (Exception e) { }
-				
-			} else if(isImage && entityElement.isMultiple() == false) {
-				formField = singleImagePreviews.get(key);
-				final String imageName = value.toString();
-				final JLabel iconLabel =(JLabel) formField;
-				
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						Icon imageIcon = ComponentBuilder.imageIcon(UrlConstants.URL_IMAGE+imageName, 160, 160);
-						(iconLabel).setIcon(imageIcon );
-						
-					}
-				}); 
-				
-				
-			} else if(isImage && entityElement.isMultiple() == true) {
-				String[] rawValues = value.toString().split("~");
-				Log.log("rawValues.length:",entity);
-				String[] newValues = new String[rawValues.length];
-				int index = 0;
-				
-				for (String string : rawValues) {
-					String imageUrl  = UrlConstants.URL_IMAGE + string;
-					JScrollPane scrollPane = (JScrollPane)((JPanel)formInputFields.get(key)).getComponent(0); 
-					addNewImageSelectionField(entityElement, scrollPane);
-					
-					Icon icon = ComponentBuilder.imageIcon(imageUrl, 160, 160);
-					multipleImagePreviews.get(key).get(index).setIcon(icon );
-					
-					newValues[index] = "{ORIGINAL>>"+string+"}";
-					
-					index++;
-				}
-				
-				updateManagedObject(key, String.join("~", newValues)); 
-				
-			} else {
-				Log.log("key not managed: ",key);
-			}
-		}
-		
-		Log.log("::singleObjectPreviews:",singleImagePreviews);
-		
-		
+	public Object getManagedObjectValue(String key) {
+		return managedObject.get(key);
 	}
 	
+	public Set<String> managedObjectKeySet(){
+		return managedObject.keySet();
+	} 
+	
+	public void setIconOnMultipleImagePreviewLabel(String key, int index, Icon icon) { 
+		multipleImagePreviews.get(key).get(index).setIcon(icon );
+	}
+
+	public Component getSingleImagePreviewLabel(String key) { 
+		return singleImagePreviews.get(key); 
+	}
+
 	/**
 	 * get EntityElement by elementId
 	 * @param elementId
 	 * @return
 	 */
-	private EntityElement getEntityElement(String elementId) {
-		
-		List<EntityElement> elements = entityProperty.getElements();
-		for (EntityElement entityElement : elements) {
+	public EntityElement getEntityElement(String elementId) {
+		 
+		for (EntityElement entityElement : entityProperty.getElements()) {
 			if(entityElement.getId().equals(elementId)) {
 				return entityElement;
 			}
@@ -1483,6 +979,9 @@ public class ManagementPage extends BasePage {
 		return null;
 	}
 
+	/**
+	 * validate managedObject values
+	 */
 	public void validateEntity() {
 		if(null == managedObject) {
 			return;
@@ -1521,6 +1020,10 @@ public class ManagementPage extends BasePage {
 		
 		Log.log("entity validated");
 		Log.log("entity: ",managedObject);
+	}
+
+	public void putFilterValue(String key, String value) {
+		fieldsFilter.put(key, value);
 	}
 
 }
