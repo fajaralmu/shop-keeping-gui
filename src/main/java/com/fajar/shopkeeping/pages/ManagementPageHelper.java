@@ -276,9 +276,10 @@ public class ManagementPageHelper {
 		page.setComboBoxValuesContainer(elementId, objectList);
 
 		Object[] comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
-		JComboBox inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
-		
-		inputComponent .addActionListener(comboBoxOnSelectListener(optionItemName, fieldType, elementId));
+		ActionListener comboBoxActionListener  = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
+		Object defaultValue = objectList.get(0).get(optionItemName);
+		JComboBox inputComponent = ComponentBuilder.buildComboBox(defaultValue , comboBoxActionListener, comboBoxValues);
+		 
 		return inputComponent;
 	}
 	

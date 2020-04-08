@@ -289,21 +289,31 @@ public class ComponentBuilder {
 	 */
 	public static JComboBox buildEditableComboBox(Object defaultValue, KeyListener keyListener, ActionListener actionListener, Object... values) {
 		
-		JComboBox comboBox=  buildComboBox(defaultValue, values);
+		JComboBox comboBox=  buildComboBox(defaultValue, actionListener, values);
 		comboBox.setEditable(true);
 		comboBox.getEditor().getEditorComponent() .addKeyListener(keyListener);
-		comboBox.addActionListener(actionListener);
+//		comboBox.addActionListener(actionListener);
 		
 		return comboBox;
 	}
 	
 	/**
-	 * common comboBox
+	 * common comboBox without action listener
 	 * @param defaultValue
 	 * @param values
 	 * @return
 	 */
 	public static JComboBox buildComboBox(Object defaultValue, Object... values) {
+		return buildComboBox(defaultValue, null, values);
+	}
+	
+	/**
+	 * common comboBox with action listener
+	 * @param defaultValue
+	 * @param values
+	 * @return
+	 */
+	public static JComboBox buildComboBox(Object defaultValue, ActionListener actionListener, Object... values) {
 
 		ComboBoxModel model = new DefaultComboBoxModel<>();
 		JComboBox comboBox = new JComboBox();
@@ -322,6 +332,11 @@ public class ComponentBuilder {
 		}
 
 		comboBox.setSize(maxSize + 20, 20);
+		
+		if(null != actionListener) {
+			comboBox.addActionListener(actionListener);
+		}
+		
 		if(null != defaultValue) {
 			comboBox.setSelectedItem(defaultValue);
 		}
