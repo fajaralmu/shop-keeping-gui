@@ -549,7 +549,7 @@ public class ComponentBuilder {
 			imageIcon = new ImageIcon(newimg);  // transform it back
 		 
 			return imageIcon;
-		} catch (MalformedURLException e) {
+		} catch (Exception e) {
 			Log.log("Error creating image icon");
 			e.printStackTrace();
 		}
@@ -565,12 +565,16 @@ public class ComponentBuilder {
 	 */
 	public static ImageIcon imageIconFromFile(String fileName, int width, int height) {  
 		 
+		try {
 			ImageIcon imageIcon = new ImageIcon(fileName);
 			Image image = imageIcon.getImage(); // transform it 
 			Image newimg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
 			imageIcon = new ImageIcon(newimg);  // transform it back
 		 
 			return imageIcon;
+		}catch (Exception e) { 
+			return new ImageIcon();
+		}
 		 
 	}
 	

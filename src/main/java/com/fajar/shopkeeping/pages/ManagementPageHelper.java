@@ -399,22 +399,30 @@ public class ManagementPageHelper {
 			public void actionPerformed(ActionEvent e) {
 				int returnVal = fileChooser.showOpenDialog(page.getParentPanel());
 
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-
-					try {
+				if (returnVal == JFileChooser.APPROVE_OPTION) { 
 //						Dialogs.showInfoDialog("FILE PATH:", file.getCanonicalPath()); 
-						JLabel imagePreview = (JLabel) page.getSingleImagePreviewLabel(elementId);
+					ThreadUtil.run(new Runnable() {
 						
-						Icon icon = ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight());
-						page.setIconOnSingleImagePreview(elementId, icon );
+						@Override
+						public void run() {
+							
+							try {
+								final File file = fileChooser.getSelectedFile();
+								JLabel imagePreview = (JLabel) page.getSingleImagePreviewLabel(elementId);
+								
+								Icon icon = ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight());
+								page.setIconOnSingleImagePreview(elementId, icon );
+								
+								String base64 = StringUtil.getBase64Image(file); 
+								page.updateManagedObject(elementId, base64);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						}
+					});
 						
-						String base64 = StringUtil.getBase64Image(file); 
-						page.updateManagedObject(elementId, base64);
 						
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					
 				} else {
 					System.out.println("Open command cancelled by user.");
 				}
@@ -583,37 +591,44 @@ public class ManagementPageHelper {
 				int returnVal = fileChooser.showOpenDialog(page.getParentPanel());
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fileChooser.getSelectedFile();
-
-					try { 
-						JLabel imagePreview =  page.getImagePreviewLabelForMultipleImages(elementId, index);
-						Icon icon = ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight());
-						page.setIconOnMultipleImagePreviewLabel(elementId, index, icon );
+					
+					ThreadUtil.run(new Runnable() {
 						
-						String base64 = StringUtil.getBase64Image(file); 
-						Object currentValue =  page.getManagedObjectValue(elementId);
-						Log.log("currentValue: ",currentValue);
-						
-						if(null == currentValue) {
-							page.updateManagedObject(elementId, base64);
-						}else {
-							String[] rawValues = currentValue.toString().split("~");
-							String finalValue =  currentValue.toString();
-							if(rawValues.length >= index + 1) {
-								rawValues[index] = base64;
-								finalValue = String.join("~", rawValues);
-							}else {
-								finalValue +=( "~"+base64);
+						@Override
+						public void run() {
+							File file = fileChooser.getSelectedFile();
+		
+							try { 
+								JLabel imagePreview =  page.getImagePreviewLabelForMultipleImages(elementId, index);
+								Icon icon = ComponentBuilder.imageIconFromFile(file.getCanonicalPath(), imagePreview.getWidth(), imagePreview.getHeight());
+								page.setIconOnMultipleImagePreviewLabel(elementId, index, icon );
+								
+								String base64 = StringUtil.getBase64Image(file); 
+								Object currentValue =  page.getManagedObjectValue(elementId);
+								Log.log("currentValue: ",currentValue);
+								
+								if(null == currentValue) {
+									page.updateManagedObject(elementId, base64);
+								}else {
+									String[] rawValues = currentValue.toString().split("~");
+									String finalValue =  currentValue.toString();
+									if(rawValues.length >= index + 1) {
+										rawValues[index] = base64;
+										finalValue = String.join("~", rawValues);
+									}else {
+										finalValue +=( "~"+base64);
+									}
+									
+									page.updateManagedObject(elementId, finalValue);
+								}
+								
+								Log.log(elementId,":", page.getManagedObjectValue(elementId));
+								 
+							} catch (IOException e1) {
+								e1.printStackTrace();
 							}
-							
-							page.updateManagedObject(elementId, finalValue);
 						}
-						
-						Log.log(elementId,":", page.getManagedObjectValue(elementId));
-						 
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					});
 				} else {
 					System.out.println("Open command cancelled by user.");
 				}
