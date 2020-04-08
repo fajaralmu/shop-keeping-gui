@@ -251,12 +251,10 @@ public class ManagementPageHelper {
 	public JComboBox buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
 		String elementId = element.getId();
 		String optionItemName = element.getOptionItemName();
-		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", "type something..");
-		inputComponent.setSize(150, 20);
-		 
-		(inputComponent).getEditor().getEditorComponent()
-				.addKeyListener(dynamicComboBoxListener(  inputComponent, optionItemName, fieldType, elementId));
-		(inputComponent).addActionListener(comboBoxOnSelectListener(  inputComponent, optionItemName, fieldType, elementId));
+		KeyListener comboBoxKeyListener = dynamicComboBoxListener(optionItemName, fieldType, elementId);
+		ActionListener comboBoxActionListener = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
+		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("",comboBoxKeyListener, comboBoxActionListener, "type something.." );
+		inputComponent.setSize(150, 20); 
 		
 		return inputComponent;
 	}
@@ -280,7 +278,7 @@ public class ManagementPageHelper {
 		Object[] comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
 		JComboBox inputComponent = ComponentBuilder.buildComboBox(objectList.get(0).get(optionItemName), comboBoxValues);
 		
-		inputComponent .addActionListener(comboBoxOnSelectListener( inputComponent, optionItemName, fieldType, elementId));
+		inputComponent .addActionListener(comboBoxOnSelectListener(optionItemName, fieldType, elementId));
 		return inputComponent;
 	}
 	
@@ -511,14 +509,14 @@ public class ManagementPageHelper {
 	 * @param elementId
 	 * @return
 	 */
-	public ActionListener comboBoxOnSelectListener(final JComboBox inputComponent, final String optionItemName, final Class<?> fieldType,
+	public ActionListener comboBoxOnSelectListener(final String optionItemName, final Class<?> fieldType,
 			final String elementId) {
 		 
 		return new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				 final JComboBox inputComponent = (JComboBox) e.getSource();
 				 Object selectedValue = inputComponent.getSelectedItem();
 				 List<Map> rawList = page.getComboBoxValues(elementId);
 				 Map selectedObjectFromList = ManagementHandler.getMapFromList(optionItemName, selectedValue, rawList);
@@ -656,7 +654,7 @@ public class ManagementPageHelper {
 	 * @param fieldType
 	 * @return
 	 */
-	public KeyListener dynamicComboBoxListener(final JComboBox dynamicComboBox, final String optionItemName, final Class<?> fieldType, final String elementId) {
+	public KeyListener dynamicComboBoxListener(final String optionItemName, final Class<?> fieldType, final String elementId) {
 
 		return new KeyListener() {
 
@@ -668,7 +666,8 @@ public class ManagementPageHelper {
 			@Override
 			public void keyReleased(KeyEvent event) {
 				
-				final String componentText = ((JTextComponent) dynamicComboBox.getEditor().getEditorComponent()).getText(); 
+				final JComboBox dynamicComboBox = (JComboBox) ((Component)event.getSource()).getParent();
+				final String componentText = ((JTextComponent) (dynamicComboBox).getEditor().getEditorComponent()).getText(); 
 				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText, new MyCallback() {
 					
 					@Override
