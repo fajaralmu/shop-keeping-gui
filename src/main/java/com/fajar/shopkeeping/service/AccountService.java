@@ -59,7 +59,7 @@ public class AccountService extends BaseService{
 					callback.handle(response );
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error requesting app id: " + e.getMessage());
+					Dialogs.error("Error requesting app id: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -103,13 +103,13 @@ public class AccountService extends BaseService{
 					AppSession.setLoginKey(loginKey.get(0));
 					AppSession.setUser(responseUser);
 
-					Dialogs.showInfoDialog("Login Success!");
+					Dialogs.info("Login Success!");
 
 					success = true;
 				} catch (Exception e) {
 
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Login Error: " + e.getMessage());
+					Dialogs.error("Login Error: " + e.getMessage());
 				} finally {
 
 					Log.log("Login success: " + success);
@@ -153,13 +153,13 @@ public class AccountService extends BaseService{
 					}
   
 					AppSession.removeLoginKey(); 
-					Dialogs.showInfoDialog("Logout Success!");
+					Dialogs.info("Logout Success!");
 
 					success = true;
 				} catch (Exception e) {
 
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Logout Error: " + e.getMessage());
+					Dialogs.error("Logout Error: " + e.getMessage());
 				} finally {
 
 					Log.log("Logout success: " + success); 

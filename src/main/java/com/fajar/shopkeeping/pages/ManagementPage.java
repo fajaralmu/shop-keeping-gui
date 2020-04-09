@@ -871,9 +871,9 @@ public class ManagementPage extends BasePage {
 		Object code = response.get("code");
 		
 		if(code.equals("00")) {
-			Dialogs.showInfoDialog("Update success!");
+			Dialogs.info("Update success!");
 		}else {
-			Dialogs.showErrorDialog("Update failed!");
+			Dialogs.error("Update failed!");
 		}
 		Log.log("Callback update entity: ", response);
 		

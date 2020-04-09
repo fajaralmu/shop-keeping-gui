@@ -10,6 +10,7 @@ import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.BaseTransactionPage;
+import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 
 public class TransactionHandler extends MainHandler {
@@ -22,8 +23,7 @@ public class TransactionHandler extends MainHandler {
 
 	@Override
 	protected void init() {
-		super.init();  
-//		page = new SupplyTransactionPage();
+		super.init();   
 	}
  
 	/** populate dynamic comboBox items
@@ -50,14 +50,30 @@ public class TransactionHandler extends MainHandler {
 			@Override
 			public void handle(Object... params) throws Exception {
 				ShopApiResponse response = (ShopApiResponse) params[0];
-				getPage().callbackTransactionSupply(response);
+				getSupplyPage().callbackTransactionSupply(response);
 			}
 		};
 		transactionService.transactionSupply(productFlows, supplier, myCallback );
 	}
 	
-	private SupplyTransactionPage getPage() {
+	private SupplyTransactionPage getSupplyPage() {
 		return (SupplyTransactionPage) page;
 	}
+	
+	private SellingTransactionPage getSellingPage() {
+		return (SellingTransactionPage) page;
+	}
 	 
+	
+	public void getProductDetail(final String productCode) {
+		MyCallback callback = new MyCallback() {
+			
+			@Override
+			public void handle(Object... params) throws Exception {
+				ShopApiResponse response = (ShopApiResponse) params[0];
+				getSellingPage().callbackGetProductDetail(response);
+			}
+		};
+		transactionService.getProductDetail(productCode, callback );
+	}
 }

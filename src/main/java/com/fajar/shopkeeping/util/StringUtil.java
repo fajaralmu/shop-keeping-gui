@@ -84,7 +84,10 @@ public class StringUtil {
 		return " `".concat(str).concat("` ");
 	}
 
-	public static String beautifyNominal(Long Int) {
+	public static String beautifyNominal(Object Int) {
+		if(Int == null) {
+			return "0";
+		}
 		String[] rawNominal = Int.toString().split("\\.");
 		String nominal = rawNominal[0];
 		String hasil = "";

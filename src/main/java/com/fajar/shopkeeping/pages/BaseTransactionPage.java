@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -31,6 +32,7 @@ import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -38,6 +40,7 @@ import com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -81,7 +84,9 @@ public abstract class BaseTransactionPage extends BasePage{
 	public void initComponent() { 
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);   
-		
+		buttonSubmitCart = button("Submit To Cart");
+ 		buttonClearCart = button("Clear");
+ 		buttonSubmitTransaction = button("SUBMIT TRANSACTION");
 		
 		if(formPanel == null) {
 			formPanel = buildFormPanel();
@@ -101,9 +106,45 @@ public abstract class BaseTransactionPage extends BasePage{
 
 	} 
 	
+	protected abstract void submitToCart();
+	
 	protected abstract JPanel buildFormPanel();
 	
 	protected abstract JPanel buildProductListPanel();
+	
+	protected abstract void populateForm(ProductFlow productFlow, BaseEntity supplierOrCustomer);
+	
+	/**
+	 * clear inputs and set edit mode to FALSE
+	 * @param clearSupplierOrCustomer
+	 */
+	protected abstract void clearForm(boolean clearSupplierOrCustomer);
+	
+	protected void addProductFlow(ProductFlow productFlow) {
+		productFlows.add(productFlow);
+		
+	}
+	
+	protected boolean validateSelectedProduct() {
+		if(null == selectedProduct) {
+			Dialogs.error("Product must not be null!");
+			return false;
+		}
+		
+		ProductFlow existingProduct = getProductFlow(selectedProduct.getId());
+		
+		if(editMode == false && existingProduct != null) {
+			Dialogs.error("Product has been exist!");
+			return false;
+		}else if(editMode && existingProduct == null) {
+			Dialogs.error("Product dose not exist!");
+			return false;
+		} 
+		
+		Log.log("product is valid");
+		
+		return true;
+	}
 	
 	@Override
 	protected void constructMenu() {
@@ -129,6 +170,46 @@ public abstract class BaseTransactionPage extends BasePage{
 		return (TransactionHandler) appHandler;
 	}
 	
+	protected ActionListener buttonClearListener() {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						clearForm(false); 
+					}
+				});
+				
+			}
+		};
+	}
+	
+	protected ActionListener editProductFlow(final ProductFlow productFlow) { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				final ProductFlow selectedProductFlow = getProductFlow(productFlow.getProduct().getId());
+				if(selectedProductFlow == null) {
+					Dialogs.error("selected product does not exist");
+					return;
+				}
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						populateForm(selectedProductFlow, null);
+						setEditMode(true);
+					}
+				});
+				
+			}
+		};
+	} 
+
 	
 	protected ProductFlow getProductFlow(long productId) {
 		for (ProductFlow productFlow : productFlows) {
@@ -180,6 +261,26 @@ public abstract class BaseTransactionPage extends BasePage{
 	} 
 	
 	/**
+	 * button submit to cart listener
+	 * @return
+	 */
+	protected ActionListener buttonSubmitToCartListener() { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?"); 
+				if(confirm != 0) { 
+					return;
+				}
+				
+				submitToCart();
+			} 
+			
+		};
+	} 
+	
+	/**
 	 * when product dropDown selected
 	 * @return
 	 */
@@ -201,6 +302,12 @@ public abstract class BaseTransactionPage extends BasePage{
 		};
 	}
 	 
+	/**
+	 * when dynamic dropdown typed
+	 * @param dynamicComboBox
+	 * @param dropDownType
+	 * @param componentText
+	 */
 	protected void handleDropDownKeyReleased(final JComboBox dynamicComboBox, final DropDownType dropDownType,
 			final String componentText) {
 		
@@ -274,7 +381,11 @@ public abstract class BaseTransactionPage extends BasePage{
 		};
 	} 
 	
-	
+	/**
+	 * remove item from cart table
+	 * @param productFlow
+	 * @return
+	 */
 	protected ActionListener buttonRemoveListener(final ProductFlow productFlow) {
 		return new ActionListener() {
 			
@@ -322,4 +433,38 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected static enum DropDownType{
 		SUPPLIER, PRODUCT, CUSTOMER
 	}
+	
+	/**
+	 * set label text to ""
+	 * @param label
+	 */
+	protected static void clearLabel(JLabel label) {
+		label.setText("");
+	}
+	
+	/**
+	 * set date chooser to now
+	 * @param dateChooser
+	 */
+	protected static void clearDateChooser(JDateChooser dateChooser) {
+		dateChooser.setDate(new Date());
+	}
+	
+	/**
+	 * set value to ""
+	 * @param textField
+	 */
+	protected static void clearTextField(JTextField textField) {
+		textField.setText("");
+	}
+	
+	/**
+	 * remove all items and set selected value to "";
+	 * @param comboBox
+	 */
+	protected static void clearComboBox(JComboBox comboBox) {
+		comboBox.removeAllItems();
+		comboBox.setSelectedItem("");
+	}
+
 }

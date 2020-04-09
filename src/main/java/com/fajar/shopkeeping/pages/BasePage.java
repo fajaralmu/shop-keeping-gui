@@ -34,6 +34,7 @@ import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.toedter.calendar.JDateChooser;
@@ -425,7 +426,7 @@ public abstract class BasePage {
 	protected KeyListener textFieldKeyListener(final JTextField inputComponent, final String fieldName) {
 		
 		try {
-			final Field field = this.getClass().getDeclaredField(fieldName);
+			final Field field = EntityUtil.getDeclaredField(getClass(), fieldName);
 			final Object origin = this;
 			final Class fieldType = field.getType();
 			field.setAccessible(true);
@@ -638,6 +639,19 @@ public abstract class BasePage {
 		}
 	}
 	
+	public static void setText(JTextField textField, Object text) {
+		if(null == text) {
+			text = "";
+		}
+		textField.setText(text.toString());
+	}
+	
+	public static void setText(JLabel label, Object text) {
+		if(null == text) {
+			text = "";
+		}
+		label.setText(text.toString());
+	}
 	
 	public static JComboBox getComboBox(KeyEvent event) {
 		return (JComboBox) ((Component)event.getSource()).getParent();

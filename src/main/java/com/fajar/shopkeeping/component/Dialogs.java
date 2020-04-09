@@ -2,6 +2,8 @@ package com.fajar.shopkeeping.component;
 
 import javax.swing.JOptionPane;
 
+import com.fajar.shopkeeping.util.Log;
+
 public class Dialogs {
 	private static void endLoading() {
 		if (Loadings.isVisible()) {
@@ -9,7 +11,7 @@ public class Dialogs {
 		}
 	}
 
-	public static void showInfoDialog(Object... messages) {
+	public static void info(Object... messages) {
 		endLoading();
 		StringBuilder sb = new StringBuilder();
 		for (Object string : messages) {
@@ -18,10 +20,11 @@ public class Dialogs {
 			}
 			sb.append(string.toString());
 		}
+		Log.log("INFO: ", sb.toString());
 		JOptionPane.showMessageDialog(null, sb.toString());
 	}
 
-	public static void showErrorDialog(Object... messages) {
+	public static void error(Object... messages) {
 		endLoading();
 		StringBuilder sb = new StringBuilder();
 		for (Object string : messages) {
@@ -30,6 +33,7 @@ public class Dialogs {
 			}
 			sb.append(string.toString());
 		}
+		Log.log("ERROR: ",sb.toString());
 		JOptionPane.showMessageDialog(null, sb.toString());
 	}
 

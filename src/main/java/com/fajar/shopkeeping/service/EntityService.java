@@ -45,7 +45,7 @@ public class EntityService extends BaseService {
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+					Dialogs.error("Error getEntityList: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -87,7 +87,7 @@ public class EntityService extends BaseService {
 					callback.handle(theEntity);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+					Dialogs.error("Error getEntityList: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -115,7 +115,7 @@ public class EntityService extends BaseService {
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+					Dialogs.error("Error getEntityList: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -143,7 +143,7 @@ public class EntityService extends BaseService {
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getEntityList: " + e.getMessage());
+					Dialogs.error("Error getEntityList: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}

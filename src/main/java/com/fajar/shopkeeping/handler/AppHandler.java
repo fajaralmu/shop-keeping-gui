@@ -83,7 +83,7 @@ public class AppHandler {
 			getAppId();
 		} catch (Exception e) {
 			e.printStackTrace();
-			Dialogs.showErrorDialog("Error Occured: " + e.getMessage());
+			Dialogs.error("Error Occured: " + e.getMessage());
 			return;
 		}
 

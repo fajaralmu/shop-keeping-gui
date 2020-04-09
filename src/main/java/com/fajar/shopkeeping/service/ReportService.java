@@ -56,7 +56,7 @@ public class ReportService extends BaseService{
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getMonthlyCashflowDetail: " + e.getMessage());
+					Dialogs.error("Error getMonthlyCashflowDetail: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -85,7 +85,7 @@ public class ReportService extends BaseService{
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getDailyCashflowDetail: " + e.getMessage());
+					Dialogs.error("Error getDailyCashflowDetail: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}
@@ -117,7 +117,7 @@ public class ReportService extends BaseService{
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.showErrorDialog("Error getPeriodicCashflow: " + e.getMessage());
+					Dialogs.error("Error getPeriodicCashflow: " + e.getMessage());
 				} finally {
 					Loadings.end();
 				}

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
@@ -96,51 +97,8 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
 	}
+	  
 	 
-
-	private ActionListener buttonClearListener() {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						clearForm(false);
-						setEditMode(false);
-					}
-				});
-				
-			}
-		};
-	}
-	 
-	private ActionListener editProductFlow(final ProductFlow productFlow) { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				final ProductFlow selectedProductFlow = getProductFlow(productFlow.getProduct().getId());
-				if(selectedProductFlow == null) {
-					Dialogs.showErrorDialog("selected product does not exist");
-					return;
-				}
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						populateForm(selectedProductFlow, null);
-						setEditMode(true);
-					}
-				});
-				
-			}
-		};
-	} 
-
-	
-	
 	/**
 	 * transaction fields
 	 * @return
@@ -161,11 +119,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
  		inputExpiredDateField = dateChooser(new Date());
  		
  		labelProductUnit = label("unit", LEFT);
- 		labelProductUnit.setSize(200, 20);
- 		
- 		buttonSubmitCart = button("Submit To Cart");
- 		buttonClearCart = button("Clear");
- 		buttonSubmitTransaction = button("SUBMIT TRANSACTION");
+ 		labelProductUnit.setSize(200, 20); 
  		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
@@ -185,7 +139,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 	 * clear input form
 	 * @param clearSupplier
 	 */
-	private void clearForm(boolean clearSupplier) {
+	protected void clearForm(boolean clearSupplier) {
 		
 		selectedProduct = null;
 		managedProductFlow = null;
@@ -204,9 +158,11 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			clearComboBox(supplierComboBox);
 		}
 		
+		setEditMode(false);
+		
 	}
 	
-	private void populateForm(ProductFlow productFlow, Supplier supplier) {
+	protected void populateForm(ProductFlow productFlow, BaseEntity supplierOrCustomer) {
 		
 		managedProductFlow = productFlow;
 		selectedProduct = productFlow.getProduct();
@@ -221,41 +177,13 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		inputUnitPriceField.setText(String.valueOf(unitPrice));
 		
 
-		if(supplier != null) {
-			supplierComboBox.setSelectedItem(supplier.getName());
+		if(supplierOrCustomer != null) {
+			supplierComboBox.setSelectedItem(((Supplier)supplierOrCustomer).getName());
 		}
 		
 	}
 	
-	private static void clearLabel(JLabel label) {
-		label.setText("");
-	}
 	
-	/**
-	 * set date chooser to now
-	 * @param dateChooser
-	 */
-	private static void clearDateChooser(JDateChooser dateChooser) {
-		dateChooser.setDate(new Date());
-	}
-	
-	/**
-	 * set value to ""
-	 * @param textField
-	 */
-	private static void clearTextField(JTextField textField) {
-		textField.setText("");
-	}
-	
-	/**
-	 * remove all items and set selected value to "";
-	 * @param comboBox
-	 */
-	private static void clearComboBox(JComboBox comboBox) {
-		comboBox.removeAllItems();
-		comboBox.setSelectedItem("");
-	}
-
 	
 	
 	private void setSelectetSupplierByName(String string) {
@@ -320,12 +248,13 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		
 		 addActionListener(buttonClearCart, buttonClearListener());
 		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
+		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
 		 
 		 //fields  
 		 addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	 
 		 addKeyListener(inputUnitPriceField, textFieldKeyListener(inputUnitPriceField, "unitPrice"), false);
 		 addActionListener(inputExpiredDateField, dateChooserListener(inputExpiredDateField, "expiryDate")); 
-		 addActionListener(buttonSubmitCart, buttonSubmitListener());
+		 
 	}
 	
 	private ActionListener submitTransactionListener() { 
@@ -333,51 +262,27 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit the Transaction?"); 
+				if(confirm != 0) { 
+					return;
+				}
 				getHandler().transactionSupply(productFlows, selectedSupplier);
 				
 			}
 		};
 	}
-
-	/**
-	 * button submit to cart listener
-	 * @return
-	 */
-	private ActionListener buttonSubmitListener() { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?"); 
-				if(confirm != 0) { 
-					return;
-				}
-				
-				submitToCart();
-			} 
-			
-		};
-	} 
+ 
 
 	/**
 	 * submit current data to cart
 	 */
-	private void submitToCart() { 
+	protected void submitToCart() { 
 		
-		if(null == selectedProduct) {
-			Dialogs.showErrorDialog("Product must not be null!");
+		boolean productValid = validateSelectedProduct();
+		
+		if(productValid == false) {
 			return;
 		}
-		
-		ProductFlow existingProduct = getProductFlow(selectedProduct.getId());
-		
-		if(editMode == false && existingProduct != null) {
-			Dialogs.showErrorDialog("Product has been exist!");
-			return;
-		}else if(editMode && existingProduct == null) {
-			Dialogs.showErrorDialog("Product dose not exist!");
-			return;
-		} 
 		
 		ProductFlow productFlow = new ProductFlow();
 		productFlow.setProduct(selectedProduct);
@@ -389,19 +294,19 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			removeProductFlow(selectedProduct.getId()); 
 		}
 		
-		productFlows.add(productFlow);
+		addProductFlow(productFlow);
 		
 		clearForm(false);
 		Log.log("product flow: ", productFlow);
 		refresh();
 		
-	} 
-	
+	}  
+
 	public void callbackTransactionSupply(ShopApiResponse response) {
 		Transaction transaction = response.getTransaction();
 		String tranCode = transaction.getCode();
 		
-		Dialogs.showInfoDialog("Success: "+tranCode);
+		Dialogs.info("Success: "+tranCode);
 		
 		clearProductFlows();
 		clearForm(true);
