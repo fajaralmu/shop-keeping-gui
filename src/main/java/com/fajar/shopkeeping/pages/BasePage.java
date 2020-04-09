@@ -29,6 +29,7 @@ import javax.swing.text.JTextComponent;
 
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.handler.BlankActionListener;
@@ -450,22 +451,23 @@ public abstract class BasePage {
 					/**
 					 * check type of field
 					 */
-					if(MapUtil.objectEquals(fieldType, int.class, Integer.class)) {
-						value = Integer.valueOf(value.toString());
-					}
-					if(MapUtil.objectEquals(fieldType, double.class, Double.class)) {
-						value = Double.valueOf(value.toString());
-					}
-					if(MapUtil.objectEquals(fieldType, long.class, Long.class)) {
-						value = Long.valueOf(value.toString());
-					}
-					
 					try {
+						if(MapUtil.objectEquals(fieldType, int.class, Integer.class)) {
+							value = Integer.valueOf(value.toString());
+						}
+						if(MapUtil.objectEquals(fieldType, double.class, Double.class)) {
+							value = Double.valueOf(value.toString());
+						}
+						if(MapUtil.objectEquals(fieldType, long.class, Long.class)) {
+							value = Long.valueOf(value.toString());
+						} 
+					
 						field.set(origin, value );
 						log(field.getName(), ":" , value);
 					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						log("Error setting value for field: ",field.getName()," the value is :",value);
+						Dialogs.error("Error setting value for field: ",field.getName()," the value is :",value);
 						e1.printStackTrace();
+						inputComponent.setText("");
 					} 
 					
 				}  
