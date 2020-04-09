@@ -59,7 +59,9 @@ import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.toedter.calendar.JDateChooser;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 @Data
 public class ManagementPage extends BasePage {
@@ -107,7 +109,8 @@ public class ManagementPage extends BasePage {
 	
 	private final JLabel labelTotalData = label("total data");
 
-	private int selectedPage = 0;
+	@Setter(value = AccessLevel.NONE)
+	private int selectedPage = 0; //STARTS FROM 0
 	private int selectedLimit = 10;
 	private int totalData = 0; 
 	
@@ -301,7 +304,10 @@ public class ManagementPage extends BasePage {
 
 	}
 	
-	
+	public void setSelectedPage(int selectedPage) {
+		this.selectedPage = selectedPage;
+		inputPage.setText(String.valueOf(selectedPage));
+	}
 	
 	/**
 	 * keys of single image iconed JLabels
