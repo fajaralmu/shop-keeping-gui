@@ -106,6 +106,8 @@ public abstract class BaseTransactionPage extends BasePage{
 
 	} 
 	
+	protected abstract ActionListener submitTransactionListener();
+	
 	protected abstract void submitToCart();
 	
 	protected abstract JPanel buildFormPanel();
@@ -120,6 +122,10 @@ public abstract class BaseTransactionPage extends BasePage{
 	 */
 	protected abstract void clearForm(boolean clearSupplierOrCustomer);
 	
+	/**
+	 * add product flow to list
+	 * @param productFlow
+	 */
 	protected void addProductFlow(ProductFlow productFlow) {
 		productFlows.add(productFlow);
 		
@@ -136,6 +142,7 @@ public abstract class BaseTransactionPage extends BasePage{
 		if(editMode == false && existingProduct != null) {
 			Dialogs.error("Product has been exist!");
 			return false;
+			
 		}else if(editMode && existingProduct == null) {
 			Dialogs.error("Product dose not exist!");
 			return false;
@@ -170,6 +177,10 @@ public abstract class BaseTransactionPage extends BasePage{
 		return (TransactionHandler) appHandler;
 	}
 	
+	/**
+	 * when button clear form is clicked
+	 * @return
+	 */
 	protected ActionListener buttonClearListener() {
 		return new ActionListener() {
 			
@@ -187,6 +198,11 @@ public abstract class BaseTransactionPage extends BasePage{
 		};
 	}
 	
+	/**
+	 * when button edit in the product list table is clicked
+	 * @param productFlow
+	 * @return
+	 */
 	protected ActionListener editProductFlow(final ProductFlow productFlow) { 
 		return new ActionListener() {
 			
@@ -210,7 +226,11 @@ public abstract class BaseTransactionPage extends BasePage{
 		};
 	} 
 
-	
+	/**
+	 * get product flow having product.id equals given productId
+	 * @param productId
+	 * @return
+	 */
 	protected ProductFlow getProductFlow(long productId) {
 		for (ProductFlow productFlow : productFlows) {
 			if(productFlow.getProduct().getId().equals(productId)) {
@@ -412,6 +432,10 @@ public abstract class BaseTransactionPage extends BasePage{
 		};
 	}
 	
+	/**
+	 * remove product flow having product.id equals given productId
+	 * @param productId
+	 */
 	protected void removeProductFlow(long productId) {
 		
 		for (int i = 0; i< productFlows.size(); i++) {

@@ -36,5 +36,11 @@ public class Dialogs {
 		Log.log("ERROR: ",sb.toString());
 		JOptionPane.showMessageDialog(null, sb.toString());
 	}
+	
+	public static int confirm(String message) {
+		int confirm = JOptionPane.showConfirmDialog(null, message); 
+		 
+		return confirm;
+	}
 
 }

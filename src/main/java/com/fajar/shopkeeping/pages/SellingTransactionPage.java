@@ -27,6 +27,7 @@ import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -54,7 +55,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	@Override
 	protected void initEvent() {
 		 addActionListener(buttonClearCart, buttonClearListener());
-//		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
+		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
 		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
 		
 		//fields  
@@ -62,6 +63,21 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		super.initEvent();
 	} 
 	
+	@Override
+	protected ActionListener submitTransactionListener() { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
+				if(confirm != 0) { 
+					return;
+				}
+				getHandler().transactionSell(getProductFlows(), getSelectedCustomer());
+			}
+		};
+	}
+
 	/**
 	 * submit current data to cart
 	 */
@@ -277,6 +293,22 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 			e.printStackTrace();
 			Log.log("Error set selected product:", e.getMessage());
 		}
-	} 
+	}
+
+	 
+	/**
+	 * handle response when selling transaction has been performed
+	 * @param response
+	 */
+	public void callbackTransactionSell(ShopApiResponse response) {
+		Transaction transaction = response.getTransaction();
+		String tranCode = transaction.getCode();
+		
+		Dialogs.info("Success: "+tranCode);
+		
+		clearProductFlows();
+		clearForm(true);
+		refresh();
+	}
 
 }

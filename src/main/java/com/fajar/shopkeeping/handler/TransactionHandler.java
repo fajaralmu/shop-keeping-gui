@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.Customer;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -75,5 +76,17 @@ public class TransactionHandler extends MainHandler {
 			}
 		};
 		transactionService.getProductDetail(productCode, callback );
+	}
+	
+	public void transactionSell(List<ProductFlow> productFlows, Customer customer) {
+		MyCallback myCallback = new MyCallback() {
+			
+			@Override
+			public void handle(Object... params) throws Exception {
+				ShopApiResponse response = (ShopApiResponse) params[0];
+				getSellingPage().callbackTransactionSell(response);
+			}
+		};
+		transactionService.transactionSell(productFlows, customer, myCallback);
 	}
 }

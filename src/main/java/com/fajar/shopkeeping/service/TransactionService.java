@@ -14,6 +14,7 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
+import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
@@ -71,6 +72,32 @@ public class TransactionService extends BaseService{
 		});
 	}
 	
+	public void transactionSell(final List<ProductFlow> productFlows, final Customer customer, final MyCallback myCallback) {
+		Loadings.start();
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					ShopApiResponse response = callTransactionSell(productFlows, customer);
+					
+					if("00".equals(response.getCode()) == false) {
+						throw new InvalidActivityException(response.getCode());
+					}
+					
+					myCallback.handle(response);
+					Dialogs.error("Transaction Success!");
+
+				} catch (Exception e) {
+					Dialogs.error("Error performing transaction :" +e.getMessage());
+				} finally {
+					Loadings.end();
+				}
+				
+			}
+		});
+	}
+	
 	
 	public void getProductDetail(final String productCode, final MyCallback callback) {
 		
@@ -92,6 +119,11 @@ public class TransactionService extends BaseService{
 		});
 	}
 	
+	/**
+	 * get product detail json parsed from hashmap
+	 * @param productCode
+	 * @return
+	 */
 	private ShopApiResponse getProductDetail(String productCode) {
 
 		try {
@@ -127,6 +159,21 @@ public class TransactionService extends BaseService{
 			ShopApiRequest shopApiRequest = ShopApiRequest.builder().productFlows(productFlows).supplier(supplier).build();
 	
 			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_TRAN_SUPPLY,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			return response.getBody();
+			
+		}catch (Exception e) { 
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	private ShopApiResponse callTransactionSell(List<ProductFlow> productFlows, Customer customer) {
+		
+		try {
+			ShopApiRequest shopApiRequest = ShopApiRequest.builder().productFlows(productFlows).customer(customer).build();
+	
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_TRAN_SELL_V2,
 					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
 			return response.getBody();
 			

@@ -19,6 +19,7 @@ public class WebServiceConstants {
 	
 	//TRANSACTION
 	public static final String URL_TRAN_SUPPLY = WS_HOST + "api/transaction/supply";
+	public static final String URL_TRAN_SELL_V2 = WS_HOST + "api/transaction/purchasev2";
 	public static final String URL_PUBLIC_GET = WS_HOST + "api/public/get";
 
 }

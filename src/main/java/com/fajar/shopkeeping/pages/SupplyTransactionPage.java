@@ -15,7 +15,6 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -31,7 +30,6 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
-import com.fajar.shopkeeping.util.ThreadUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -68,21 +66,19 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		int colSize = 7;
 		int columnWidth = 100;
 		Component[] rowComponents = new Component[1 + productFlows.size()];
-		rowComponents[0] = rowPanelHeader(colSize, columnWidth, "No", "Flow Id", "Product", "Quantity", "Price @unit", "Exp Date", "Option");
+		rowComponents[0] = rowPanelHeader(colSize, columnWidth, 
+				"No", "Flow Id", "Product", "Quantity", "Price @unit", "Exp Date", "Option");
 		
 		for (int i = 0; i < productFlows.size(); i++) {
 			ProductFlow productFlow = productFlows.get(i);
 			
-			Date expDate = productFlow.getExpiryDate() == null ? new Date() : productFlow.getExpiryDate(); 
+			Date expDate 			= productFlow.getExpiryDate() == null ? new Date() : productFlow.getExpiryDate();  
+			JButton buttonEdit 		= button("edit", 100, editProductFlow(productFlow));
+			JButton buttonRemove 	= button("remove", 100, buttonRemoveListener(productFlow)); 
+			JPanel buttonField 		= ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove); 
+			String dateString 		= DateUtil.parseDate(expDate, "dd-MM-yyyy");
 			
-			JButton buttonEdit = button("edit", 100, editProductFlow(productFlow));
-			JButton buttonRemove = button("remove", 100, buttonRemoveListener(productFlow));
-			
-			JPanel buttonField = ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove);
-			
-			String dateString = DateUtil.parseDate(expDate, "dd-MM-yyyy");
-			
-			rowComponents[i + 1] = rowPanel(colSize, columnWidth, 
+			rowComponents[i + 1] 	= rowPanel(colSize, columnWidth, 
 					(i+1),
 					0,
 					productFlow.getProduct().getName(),
@@ -171,19 +167,18 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		unitPrice = productFlow.getPrice();
 		
 		productComboBox.setSelectedItem(productFlow.getProduct().getName());
-		labelProductUnit.setText(selectedProduct.getUnit().getName());
 		inputExpiredDateField.setDate(expiryDate);
 		inputQtyField.setText(String.valueOf(quantity));
 		inputUnitPriceField.setText(String.valueOf(unitPrice));
+		
+		labelProductUnit.setText(selectedProduct.getUnit().getName()); 
 		
 
 		if(supplierOrCustomer != null) {
 			supplierComboBox.setSelectedItem(((Supplier)supplierOrCustomer).getName());
 		}
 		
-	}
-	
-	
+	} 
 	
 	
 	private void setSelectetSupplierByName(String string) {
@@ -238,9 +233,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 					break;
 			} 
 		 }
-	}
-	
-	
+	} 
 
 	@Override
 	protected void initEvent() {
@@ -257,12 +250,13 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		 
 	}
 	
-	private ActionListener submitTransactionListener() { 
+	@Override
+	protected ActionListener submitTransactionListener() { 
 		return new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit the Transaction?"); 
+				int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
 				if(confirm != 0) { 
 					return;
 				}
@@ -302,6 +296,10 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		
 	}  
 
+	/**
+	 * handle response when supply transaction has been performed
+	 * @param response
+	 */
 	public void callbackTransactionSupply(ShopApiResponse response) {
 		Transaction transaction = response.getTransaction();
 		String tranCode = transaction.getCode();
