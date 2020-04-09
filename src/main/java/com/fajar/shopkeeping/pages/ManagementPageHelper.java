@@ -10,6 +10,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
+import com.fajar.shopkeeping.util.ComponentUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
@@ -48,6 +50,60 @@ public class ManagementPageHelper {
 		this.page = managementPage;
 	}
 	
+	public  Component[] generateDataTableNavigationButtonsV2() {
+		if(page.getSelectedLimit() == 0) {
+			return new Component[] {};
+		}
+		
+		/* DISPLAYED BUTTONS */
+		 
+		List<Component> navButtons = new ArrayList<Component>();
+		List<Integer> displayed_buttons = new ArrayList<Integer> ();
+		int buttonCount =  page.calculateTotalPage();
+		int currentPage = page.getSelectedPage();
+		int min = currentPage - 2;
+		int max = currentPage + 2;
+		for (int i = min; i <= max; i++) {
+			displayed_buttons.add(i);
+		}
+		boolean firstSeparated = false;
+		boolean lastSeparated = false;
+
+		for (int i = 0; i < buttonCount; i++) {
+			int buttonValue = i * 1 + 1;
+			boolean included = false;
+			for (int j = 0; j < displayed_buttons.size(); j++) {
+				if ( displayed_buttons.get(j) == i && !included) {
+					included = true;
+				}
+			}
+			if (!lastSeparated && currentPage < i - 2
+					&& (i * 1 + 1) == (buttonCount - 1)) {
+				// console.log("btn id",btn.id,"MAX",max,"LAST",(jumlahTombol-1));
+				lastSeparated = true; 
+
+			}
+			if (!included && i != 0 && !firstSeparated) {
+				firstSeparated = true; 
+
+			}
+			if (!included && i != 0 && i != (buttonCount - 1)) {
+				continue;
+			}
+			
+			boolean active = i == page.getSelectedPage();
+			JButton button =  createNavButton(i+1, i, active);
+			 
+			navButtons.add(button);
+		}
+
+//		let nextPage = currentPage == buttonCount - 1 ? currentPage : currentPage + 1;
+		
+		return ComponentUtil.toArrayOfComponent(navButtons);
+	}
+	
+	
+	
 	/**
 	 * generate array of navigation buttons for data table
 	 * @return
@@ -58,20 +114,31 @@ public class ManagementPageHelper {
 			return new Component[] {};
 		}
 		page.getLabelTotalData().setText("Total: "+page.getTotalData());
-		int totalPage =  (page.getTotalData()) / ( page.getSelectedLimit());
-		if(page.getTotalData() % page.getSelectedLimit() != 0) {
-			totalPage ++;
-		}
+		
+		int totalPage =  page.calculateTotalPage();
+		
 		Component[] navigationButtons = new Component[totalPage ];
 		
 		for (int i = 0; i < totalPage; i++) {
-			JButton button = ComponentBuilder.button(i+1, 50, 20); 
-			button.addActionListener(dataTableNavigationListener(i));
-			button.setBackground(i == page.getSelectedPage() ? Color.orange : Color.yellow);
 			
+			boolean active = i == page.getSelectedPage();
+			JButton button = createNavButton(i+1, i, active);
+//			ComponentBuilder.button(i+1, 50, 20); 
+//			button.addActionListener(dataTableNavigationListener(i));
+//			button.setBackground(i == page.getSelectedPage() ? Color.orange : Color.yellow);
+//			
 			navigationButtons[i] = button; 
 		}
 		return navigationButtons;
+	}
+	
+	
+	private JButton createNavButton(Object text, int page, boolean active) {
+		JButton button = ComponentBuilder.button(text, 70, 20); 
+		button.addActionListener(dataTableNavigationListener(page));
+		button.setBackground(active ? Color.orange : Color.yellow);
+		
+		return button;
 	}
 	
 	

@@ -5,6 +5,7 @@ import static com.fajar.shopkeeping.component.ComponentBuilder.buildVerticallyIn
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
+import static com.fajar.shopkeeping.util.ComponentUtil.toArrayOfComponent;
 import static com.fajar.shopkeeping.util.EntityUtil.getDeclaredField;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 
@@ -189,7 +190,7 @@ public class ManagementPage extends BasePage {
 			return new JPanel();
 		} 
 		
-		Component[] navigationButtons = helper.generateDataTableNavigationButtons();
+		Component[] navigationButtons = helper.generateDataTableNavigationButtonsV2();
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
 		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
@@ -211,8 +212,8 @@ public class ManagementPage extends BasePage {
 	protected void initEvent() {
 		 
 		addActionListener(buttonSubmit, getHandler().submit()); 
-		addKeyListener(inputPage, textFieldKeyListener(inputPage, "selectedPage"));
-		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit")); 
+		addKeyListener(inputPage, textFieldKeyListener(inputPage, "selectedPage"), false);
+		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit"), false); 
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
 		addActionListener(buttonRefresh, buttonRefreshListener()); 
 		addActionListener(buttonClear, clearListener());
@@ -1046,6 +1047,15 @@ public class ManagementPage extends BasePage {
 
 	public void putFilterValue(String key, String value) {
 		fieldsFilter.put(key, value);
+	}
+	
+	public int calculateTotalPage() {
+		int totalPage =  (getTotalData()) / ( getSelectedLimit());
+		if(getTotalData() % getSelectedLimit() != 0) {
+			totalPage ++;
+		}
+		
+		return totalPage;
 	}
 
 }

@@ -571,14 +571,7 @@ public abstract class BasePage {
 
 	}
 	
-	protected Component[] toArrayOfComponent(List<Component> formComponents) {
-
-		Component[] components = new Component[formComponents.size()];
-		for (int i = 0; i < formComponents.size(); i++) {
-			components[i] = formComponents.get(i);
-		}
-		return components;
-	}
+	
 	
 	protected Component[] toArrayOfComponentAdditionalComponentAfter(List<Component> formComponents, Component...additionalComponents) {
 
