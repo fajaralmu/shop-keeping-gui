@@ -21,6 +21,11 @@ public class MainHandler {
 	public MainHandler() {
 		init();
 	}
+	
+	public MainHandler(BasePage page) {
+		this.page = page;
+		init();
+	}
 
 	protected void init() {  }
 

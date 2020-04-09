@@ -7,4 +7,6 @@ public class PageConstants {
 	public static final int PAGE_PERIODIC_REPORT = 4;
 	public static final int PAGE_MANAGEMENT = 5;
 	public static final int PAGE_TRAN_SUPPLY = 6;
+	public static final int PAGE_TRAN_SELLING = 7;
+
 }

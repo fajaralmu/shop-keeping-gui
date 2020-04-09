@@ -43,7 +43,7 @@ import lombok.Data;
 import lombok.Setter;
 
 @Data
-public class BasePage {
+public abstract class BasePage {
 	
 	public static final int BASE_HEIGHT = 700;
 	public static final int BASE_WIDTH = 800; 
@@ -106,9 +106,9 @@ public class BasePage {
 		
 	}
 
-	protected void initEvent() { 
-
-	}
+	protected void initEvent() {
+		
+	} 
 
 	/**
 	 * set the handler of the page
@@ -173,9 +173,7 @@ public class BasePage {
 		};
 	}
 
-	public void initComponent() {
-		System.out.println("METHOD NOT IMPLEMENTED");
-	}
+	public abstract void initComponent();
 
 	public void show() {
 		System.out.println("Show: " + title);

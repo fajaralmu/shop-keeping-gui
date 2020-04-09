@@ -75,7 +75,8 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemProductFlow;
 	
 	private JMenuItem menuItemTransactionSupply;
-
+	private JMenuItem menuItemTransactionSelling;
+	
 	private ShopApiResponse responseTodayCashflow;
 
 	public DashboardPage() {
@@ -138,6 +139,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemCostType(new JMenuItem("Cost Type"));
 		setMenuItemTransactionSupply(new JMenuItem("Supply"));
 		setMenuItemProductFlow(new JMenuItem("Product Flow"));
+		setMenuItemTransactionSelling(new JMenuItem("Selling"));
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct);
@@ -155,7 +157,8 @@ public class DashboardPage extends BasePage {
 		accountMenu.add(menuItemLogout);
 		
 		JMenu transactionMenu = new JMenu("Transaction");
-		transactionMenu.add(menuItemTransactionSupply); 
+		transactionMenu.add(menuItemTransactionSupply);
+		transactionMenu.add(menuItemTransactionSelling);
 		transactionMenu.add(menuItemTransaction); 
 		transactionMenu.add(menuItemProductFlow);
 		
@@ -331,11 +334,7 @@ public class DashboardPage extends BasePage {
 
 		return buildPanelV2(panelRequest, panelCashflow, panelCostflow);
 	}
-
-	
-	
-	
-
+ 
 	/**
 	 * build panel for select period
 	 * @return
@@ -362,9 +361,7 @@ public class DashboardPage extends BasePage {
 					BLANK_LABEL);
 		 
 		return panel;
-	}
-
-	
+	} 
 
 	private PanelRequest mainPanelRequest() {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 700, 10, Color.WHITE);
@@ -379,7 +376,7 @@ public class DashboardPage extends BasePage {
 
 	@Override
 	protected void initEvent() {
-		super.initEvent();
+		
 		
 		/**
 		 * menus
@@ -392,18 +389,21 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemSupplier, getHandler().managementNavigationListener(Supplier.class));
 		addActionListener(menuItemCategory, getHandler().managementNavigationListener(Category.class));
 		addActionListener(menuItemCustomer, getHandler().managementNavigationListener(Customer.class));
-		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
 		addActionListener(menuItemCostFlow, getHandler().managementNavigationListener(CostFlow.class)); 
 		addActionListener(menuItemCostType, getHandler().managementNavigationListener(Cost.class)); 
 		
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
+		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
 		addActionListener(menuItemProductFlow, getHandler().managementNavigationListener(ProductFlow.class));
+		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
 		
 		addActionListener(comboBoxMonth, comboBoxListener(comboBoxMonth,"selectedMonth"));  
 		addActionListener(comboBoxYear, comboBoxListener(comboBoxYear,"selectedYear")); 
+		
+		super.initEvent();
 	}
 
 	private DashboardHandler getHandler() {

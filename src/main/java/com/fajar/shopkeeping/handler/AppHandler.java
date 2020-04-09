@@ -6,6 +6,8 @@ import java.util.Map;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.pages.SellingTransactionPage;
+import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
@@ -34,9 +36,7 @@ public class AppHandler {
 
 	private AppHandler() {
 		init();
-	}
-
-	
+	} 
 
 	private void init() {
 		handlers.put(PAGE_LAUNCHER, new LauncherHandler());
@@ -44,8 +44,9 @@ public class AppHandler {
 		handlers.put(PAGE_DASHBOARD, new DashboardHandler());
 		handlers.put(PAGE_PERIODIC_REPORT, new PeriodicReportHandler());
 		handlers.put(PAGE_MANAGEMENT, new ManagementHandler());
-		handlers.put(PAGE_TRAN_SUPPLY, new TransactionHandler());
-
+		handlers.put(PAGE_TRAN_SUPPLY, new TransactionHandler(new SupplyTransactionPage()));
+		handlers.put(PAGE_TRAN_SELLING, new TransactionHandler(new SellingTransactionPage()));
+		
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}
 

@@ -9,18 +9,21 @@ import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.pages.BaseTransactionPage;
 import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 
 public class TransactionHandler extends MainHandler {
 
-	public TransactionHandler() {
-		super();
+	
+	
+	public TransactionHandler(BaseTransactionPage transactionPage) {
+		super(transactionPage);
 	}
 
 	@Override
 	protected void init() {
 		super.init();  
-		page = new SupplyTransactionPage();
+//		page = new SupplyTransactionPage();
 	}
  
 	/** populate dynamic comboBox items

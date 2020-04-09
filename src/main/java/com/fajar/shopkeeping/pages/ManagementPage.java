@@ -209,7 +209,7 @@ public class ManagementPage extends BasePage {
 
 	@Override
 	protected void initEvent() {
-		super.initEvent();
+		 
 		addActionListener(buttonSubmit, getHandler().submit()); 
 		addKeyListener(inputPage, textFieldKeyListener(inputPage, "selectedPage"));
 		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit")); 
@@ -218,7 +218,7 @@ public class ManagementPage extends BasePage {
 		addActionListener(buttonClear, clearListener());
 		
 		addActionListener(menuBack, pageNavigation(PageConstants.PAGE_DASHBOARD));
-		
+		super.initEvent();
 	} 
 	
 	@Override
