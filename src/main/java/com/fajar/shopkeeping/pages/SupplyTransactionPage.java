@@ -79,7 +79,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			
 			JPanel buttonField = ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove);
 			
-			String dateString = DateUtil.parseDate(expDate, "dd-MM-yyyyy");
+			String dateString = DateUtil.parseDate(expDate, "dd-MM-yyyy");
 			
 			rowComponents[i + 1] = rowPanel(colSize, columnWidth, 
 					(i+1),
@@ -115,9 +115,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			}
 		};
 	}
-	
-	
-	
+	 
 	private ActionListener editProductFlow(final ProductFlow productFlow) { 
 		return new ActionListener() {
 			
@@ -141,15 +139,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		};
 	} 
 
-	private ProductFlow getProductFlow(long productId) {
-		for (ProductFlow productFlow : productFlows) {
-			if(productFlow.getProduct().getId().equals(productId)) {
-				return productFlow;
-			}
-		}
-		
-		return null;
-	}
+	
 	
 	/**
 	 * transaction fields

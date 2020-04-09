@@ -128,6 +128,17 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected TransactionHandler getHandler() {
 		return (TransactionHandler) appHandler;
 	}
+	
+	
+	protected ProductFlow getProductFlow(long productId) {
+		for (ProductFlow productFlow : productFlows) {
+			if(productFlow.getProduct().getId().equals(productId)) {
+				return productFlow;
+			}
+		}
+		
+		return null;
+	}
 	 
 	
 	
@@ -193,10 +204,16 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected void handleDropDownKeyReleased(final JComboBox dynamicComboBox, final DropDownType dropDownType,
 			final String componentText) {
 		
-		boolean typeProduct = dropDownType.equals(PRODUCT) ;
-		boolean typeCustomer = dropDownType.equals(CUSTOMER);
+		boolean typeCustomer = dropDownType.equals(CUSTOMER) ;
+		boolean typeSupplier = dropDownType.equals(SUPPLIER);
 		
-		Class entityClass = typeProduct ? ( typeCustomer ? Customer.class: Product.class ) : Supplier.class;
+		Class entityClass = Product.class;
+		
+		if(typeSupplier) {
+			entityClass = Supplier.class;
+		}else if(typeCustomer) {
+			entityClass = Customer.class;
+		}
 		
 		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new MyCallback() {
 			
