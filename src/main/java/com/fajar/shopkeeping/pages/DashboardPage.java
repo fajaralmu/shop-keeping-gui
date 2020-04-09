@@ -131,7 +131,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemSupplier(new JMenuItem("Supplier"));
 		setMenuItemCustomer(new JMenuItem("Customer"));
 		setMenuItemCategory(new JMenuItem("Category"));
-		setMenuItemTransaction(new JMenuItem("Transction"));
+		setMenuItemTransaction(new JMenuItem("List Transction"));
 		setMenuItemCostFlow(new JMenuItem("Cost Flow"));
 		setMenuItemCostType(new JMenuItem("Cost Type"));
 		setMenuItemTransactionSupply(new JMenuItem("Supply"));
@@ -141,7 +141,6 @@ public class DashboardPage extends BasePage {
         
         managementMenu.add(menuItemSupplier);
         managementMenu.add(menuItemCustomer);
-        managementMenu.add(menuItemTransaction); 
         managementMenu.add(menuItemCostFlow);
         
         JMenu settingMenu = new JMenu("Setting");
@@ -153,8 +152,9 @@ public class DashboardPage extends BasePage {
 		accountMenu.add(menuItemLogout);
 		
 		JMenu transactionMenu = new JMenu("Transaction");
-		transactionMenu.add(menuItemTransactionSupply);
-        
+		transactionMenu.add(menuItemTransactionSupply); 
+		transactionMenu.add(menuItemTransaction); 
+		
 		menuBar.add(accountMenu ); 
 		menuBar.add(settingMenu);
         menuBar.add(managementMenu); 

@@ -31,6 +31,7 @@ import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
+import com.fajar.entity.Transaction;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -69,6 +70,7 @@ public class SupplyTransactionPage extends BasePage {
 	
 	private JButton buttonSubmitCart;
 	private JButton buttonClearCart;
+	private JButton buttonSubmitTransaction;
 	
 	private List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 
 	private final List<Product> productDropdownValues = new ArrayList<Product>();
@@ -277,6 +279,7 @@ public class SupplyTransactionPage extends BasePage {
  		
  		buttonSubmitCart = button("Submit To Cart");
  		buttonClearCart = button("Clear");
+ 		buttonSubmitTransaction = button("SUBMIT TRANSACTION");
  		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
@@ -286,7 +289,8 @@ public class SupplyTransactionPage extends BasePage {
 				label("Unit", LEFT), labelProductUnit,
 				label("Unit Price", LEFT), inputUnitPriceField,
 				label("Expired Date", LEFT), inputExpiredDateField,
-				buttonSubmitCart, buttonClearCart
+				buttonSubmitCart, buttonClearCart,
+				buttonSubmitTransaction, null
 				);
 		return panel ;
 	}
@@ -525,6 +529,7 @@ public class SupplyTransactionPage extends BasePage {
 		
 		 addActionListener(menuBack, getHandler().navigationListener(PageConstants.PAGE_DASHBOARD));
 		 addActionListener(buttonClearCart, buttonClearListener());
+		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
 		 
 		 //fields  
 		 addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	 
@@ -533,6 +538,17 @@ public class SupplyTransactionPage extends BasePage {
 		 addActionListener(buttonSubmitCart, buttonSubmitListener());
 	}
 	
+	private ActionListener submitTransactionListener() { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getHandler().transactionSupply(productFlows, selectedSupplier);
+				
+			}
+		};
+	}
+
 	/**
 	 * button submit to cart listener
 	 * @return
@@ -604,6 +620,21 @@ public class SupplyTransactionPage extends BasePage {
 	
 	static enum DropDownType{
 		SUPPLIER, PRODUCT
+	}
+
+	private void clearProductFlows() {
+		productFlows.clear();
+	}
+	
+	public void callbackTransactionSupply(ShopApiResponse response) {
+		Transaction transaction = response.getTransaction();
+		String tranCode = transaction.getCode();
+		
+		Dialogs.showInfoDialog("Success: "+tranCode);
+		
+		clearProductFlows();
+		clearForm(true);
+		refresh();
 	}
 
 }

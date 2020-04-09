@@ -7,6 +7,7 @@ import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.EntityService;
 import com.fajar.shopkeeping.service.ReportService;
+import com.fajar.shopkeeping.service.TransactionService;
 
 public class MainHandler {
 
@@ -15,6 +16,7 @@ public class MainHandler {
 	protected final AccountService accountService = AccountService.getInstance();
 	protected final ReportService reportService = ReportService.getInstance();
 	protected final EntityService entityService = EntityService.getInstance();
+	protected final TransactionService transactionService = TransactionService.getInstance();
 
 	public MainHandler() {
 		init();

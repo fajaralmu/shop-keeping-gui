@@ -16,4 +16,8 @@ public class WebServiceConstants {
 	public static final String URL_ENTITY_GET = WS_HOST + "api/entity/get";
 	public static final String URL_ENTITY_ADD = WS_HOST + "api/entity/add";
 	public static final String URL_ENTITY_UPDATE = WS_HOST + "api/entity/update";
+	
+	//TRANSACTION
+	public static final String URL_TRAN_SUPPLY = WS_HOST + "api/transaction/supply";
+
 }

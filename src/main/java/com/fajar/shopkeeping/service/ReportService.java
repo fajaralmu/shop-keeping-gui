@@ -20,6 +20,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 
 public class ReportService extends BaseService{ 
 
@@ -45,7 +46,7 @@ public class ReportService extends BaseService{
 	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback callback) {
 		Loadings.start();
 
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.run(new Runnable() {
 
 			public void run() {
 
@@ -60,8 +61,7 @@ public class ReportService extends BaseService{
 					Loadings.end();
 				}
 			} 
-		});
-		thread.start();
+		}); 
 	}
 
 	/**
