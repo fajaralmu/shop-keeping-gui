@@ -579,10 +579,15 @@ public class SupplyTransactionPage extends BasePage {
 			return;
 		}
 		
-		if(editMode == false && getProductFlow(selectedProduct.getId()) != null) {
+		ProductFlow existingProduct = getProductFlow(selectedProduct.getId());
+		
+		if(editMode == false && existingProduct != null) {
 			Dialogs.showErrorDialog("Product has been exist!");
 			return;
-		}
+		}else if(editMode && existingProduct == null) {
+			Dialogs.showErrorDialog("Product dose not exist!");
+			return;
+		} 
 		
 		ProductFlow productFlow = new ProductFlow();
 		productFlow.setProduct(selectedProduct);
@@ -619,7 +624,7 @@ public class SupplyTransactionPage extends BasePage {
 	}
 	
 	static enum DropDownType{
-		SUPPLIER, PRODUCT
+		SUPPLIER, PRODUCT, CUSTOMER
 	}
 
 	private void clearProductFlows() {

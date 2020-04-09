@@ -25,6 +25,7 @@ import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
+import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
@@ -71,6 +72,7 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemTransaction;
 	private JMenuItem menuItemCostFlow;
 	private JMenuItem menuItemCostType;
+	private JMenuItem menuItemProductFlow;
 	
 	private JMenuItem menuItemTransactionSupply;
 
@@ -135,6 +137,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemCostFlow(new JMenuItem("Cost Flow"));
 		setMenuItemCostType(new JMenuItem("Cost Type"));
 		setMenuItemTransactionSupply(new JMenuItem("Supply"));
+		setMenuItemProductFlow(new JMenuItem("Product Flow"));
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct);
@@ -154,6 +157,7 @@ public class DashboardPage extends BasePage {
 		JMenu transactionMenu = new JMenu("Transaction");
 		transactionMenu.add(menuItemTransactionSupply); 
 		transactionMenu.add(menuItemTransaction); 
+		transactionMenu.add(menuItemProductFlow);
 		
 		menuBar.add(accountMenu ); 
 		menuBar.add(settingMenu);
@@ -393,7 +397,8 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemCostType, getHandler().managementNavigationListener(Cost.class)); 
 		
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
-
+		addActionListener(menuItemProductFlow, getHandler().managementNavigationListener(ProductFlow.class));
+		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
 		
