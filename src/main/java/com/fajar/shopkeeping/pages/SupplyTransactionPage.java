@@ -1,6 +1,8 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
+import static com.fajar.shopkeeping.pages.SupplyTransactionPage.DropDownType.PRODUCT;
+import static com.fajar.shopkeeping.pages.SupplyTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
 
 import java.awt.Color;
@@ -38,6 +40,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.ThreadUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -51,7 +54,7 @@ public class SupplyTransactionPage extends BasePage {
 	
 	private long supplierId;
 	private int quantity;
-	private int unitPrice;
+	private long unitPrice;
 	private Date expiryDate = new Date();
 	private Product selectedProduct;
 	private Supplier selectedSupplier;
@@ -71,6 +74,8 @@ public class SupplyTransactionPage extends BasePage {
 	private final List<Product> productDropdownValues = new ArrayList<Product>();
 	private final List<Supplier> supplierDropdownValues = new ArrayList<Supplier>();
 	private ProductFlow managedProductFlow;
+	
+	private boolean editMode = false;
 	 
 
 	public SupplyTransactionPage() {
@@ -115,6 +120,10 @@ public class SupplyTransactionPage extends BasePage {
 		menuBar.add(menu ); 
 	}
 
+	/**
+	 * build table
+	 * @return
+	 */
 	private JPanel buildProductListPanel() {
 		 
 		if(null == productFlows) {
@@ -132,6 +141,11 @@ public class SupplyTransactionPage extends BasePage {
 			
 			Date expDate = productFlow.getExpiryDate() == null ? new Date() : productFlow.getExpiryDate(); 
 			
+			JButton buttonEdit = button("edit", 100, editProductFlow(productFlow));
+			JButton buttonRemove = button("remove", 100, buttonRemoveListener(productFlow));
+			
+			JPanel buttonField = ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove);
+			
 			String dateString = DateUtil.parseDate(expDate, "dd-MM-yyyyy");
 			
 			rowComponents[i + 1] = rowPanel(colSize, columnWidth, 
@@ -141,7 +155,7 @@ public class SupplyTransactionPage extends BasePage {
 					productFlow.getCount(),
 					productFlow.getPrice(),
 					dateString,
-					"-");
+					buttonField);
 		}
 		 
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 300);
@@ -149,7 +163,75 @@ public class SupplyTransactionPage extends BasePage {
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
 	}
+	 
+
+	private ActionListener buttonClearListener() {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						clearForm(false);
+						setEditMode(false);
+					}
+				});
+				
+			}
+		};
+	}
 	
+	private ActionListener buttonRemoveListener(final ProductFlow productFlow) {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "Remove "+productFlow.getProduct().getName()+"?");
+				
+				if(confirm != 0) { 
+					return;
+				}
+				
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						long productId = productFlow.getProduct().getId();
+						removeProductFlow(productId);
+						refresh();
+						
+					}
+				});
+				
+			}
+		};
+	}
+	
+	private ActionListener editProductFlow(final ProductFlow productFlow) { 
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				final ProductFlow selectedProductFlow = getProductFlow(productFlow.getProduct().getId());
+				if(selectedProductFlow == null) {
+					Dialogs.showErrorDialog("selected product does not exist");
+					return;
+				}
+				ThreadUtil.run(new Runnable() {
+					
+					@Override
+					public void run() {
+						populateForm(selectedProductFlow, null);
+						setEditMode(true);
+					}
+				});
+				
+			}
+		};
+	}
+
 	@Override
 	public void refresh() {
 		if(!refreshing) {
@@ -161,18 +243,31 @@ public class SupplyTransactionPage extends BasePage {
 		}
 	} 
 
+	private ProductFlow getProductFlow(long productId) {
+		for (ProductFlow productFlow : productFlows) {
+			if(productFlow.getProduct().getId().equals(productId)) {
+				return productFlow;
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * transaction fields
 	 * @return
 	 */
 	private JPanel buildFormPanel() {
-		ActionListener actionListener = dynamicDropdownActionListener(DropDownType.SUPPLIER);
-		KeyListener keyListener = dynamicDropdownFieldKeyListener(DropDownType.SUPPLIER); 
+		//supplier
+		ActionListener actionListener = dynamicDropdownActionListener(SUPPLIER);
+		KeyListener keyListener = dynamicDropdownFieldKeyListener(SUPPLIER); 
 		supplierComboBox = ComponentBuilder.buildEditableComboBox("", keyListener, actionListener, "type supplier name..");
 		
-		ActionListener actionListenerProduct = dynamicDropdownActionListener(DropDownType.PRODUCT);
-		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(DropDownType.PRODUCT); 
+		//product
+		ActionListener actionListenerProduct = dynamicDropdownActionListener(PRODUCT);
+		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
+		
 		inputQtyField = numberField("0");
 		inputUnitPriceField = numberField("0");
  		inputExpiredDateField = dateChooser(new Date());
@@ -180,7 +275,7 @@ public class SupplyTransactionPage extends BasePage {
  		labelProductUnit = label("unit", LEFT);
  		labelProductUnit.setSize(200, 20);
  		
- 		buttonSubmitCart = button("Submit");
+ 		buttonSubmitCart = button("Submit To Cart");
  		buttonClearCart = button("Clear");
  		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
@@ -194,6 +289,82 @@ public class SupplyTransactionPage extends BasePage {
 				buttonSubmitCart, buttonClearCart
 				);
 		return panel ;
+	}
+	
+	/**
+	 * clear input form
+	 * @param clearSupplier
+	 */
+	private void clearForm(boolean clearSupplier) {
+		
+		selectedProduct = null;
+		managedProductFlow = null;
+		quantity = 0;
+		unitPrice = 0;
+		expiryDate = new Date();
+		
+
+		clearComboBox(productComboBox);
+		clearTextField(inputQtyField);
+		clearTextField(inputUnitPriceField);
+		clearDateChooser(inputExpiredDateField);
+		clearLabel(labelProductUnit);
+		
+		if(clearSupplier) {
+			selectedSupplier = null;
+			clearComboBox(supplierComboBox);
+		}
+		
+	}
+	
+	private void populateForm(ProductFlow productFlow, Supplier supplier) {
+		
+		managedProductFlow = productFlow;
+		selectedProduct = productFlow.getProduct();
+		quantity = productFlow.getCount();
+		expiryDate = productFlow.getExpiryDate() == null ?new Date(): productFlow.getExpiryDate();
+		unitPrice = productFlow.getPrice();
+		
+		productComboBox.setSelectedItem(productFlow.getProduct().getName());
+		labelProductUnit.setText(selectedProduct.getUnit().getName());
+		inputExpiredDateField.setDate(expiryDate);
+		inputQtyField.setText(String.valueOf(quantity));
+		inputUnitPriceField.setText(String.valueOf(unitPrice));
+		
+
+		if(supplier != null) {
+			supplierComboBox.setSelectedItem(supplier.getName());
+		}
+		
+	}
+	
+	private static void clearLabel(JLabel label) {
+		label.setText("");
+	}
+	
+	/**
+	 * set date chooser to now
+	 * @param dateChooser
+	 */
+	private static void clearDateChooser(JDateChooser dateChooser) {
+		dateChooser.setDate(new Date());
+	}
+	
+	/**
+	 * set value to ""
+	 * @param textField
+	 */
+	private static void clearTextField(JTextField textField) {
+		textField.setText("");
+	}
+	
+	/**
+	 * remove all items and set selected value to "";
+	 * @param comboBox
+	 */
+	private static void clearComboBox(JComboBox comboBox) {
+		comboBox.removeAllItems();
+		comboBox.setSelectedItem("");
 	}
 
 	/**
@@ -215,7 +386,7 @@ public class SupplyTransactionPage extends BasePage {
 				final String componentText = getComboBoxText(dynamicComboBox);
 				Log.log("typed: ",componentText);
 				
-				Class entityClass = dropDownType.equals(DropDownType.PRODUCT) ? Product.class : Supplier.class;
+				Class entityClass = dropDownType.equals(PRODUCT) ? Product.class : Supplier.class;
 				
 				getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new MyCallback() {
 					
@@ -224,7 +395,7 @@ public class SupplyTransactionPage extends BasePage {
 						ShopApiResponse response = (ShopApiResponse) params[0];
 						Log.log("entities: ", response.getEntities()); 
 						
-						if(dropDownType.equals(DropDownType.PRODUCT)) {	
+						if(dropDownType.equals(PRODUCT)) {	
 							
 							productDropdownValues.clear();
 							for(BaseEntity product:response.getEntities()) {
@@ -233,7 +404,7 @@ public class SupplyTransactionPage extends BasePage {
 							
 							populateDropdown(componentText, productDropdownValues, "name", dynamicComboBox);
 							
-						}else if(dropDownType.equals(DropDownType.SUPPLIER)) {
+						}else if(dropDownType.equals(SUPPLIER)) {
 							
 							supplierDropdownValues.clear();
 							for(BaseEntity product:response.getEntities()) {
@@ -256,6 +427,13 @@ public class SupplyTransactionPage extends BasePage {
 		};
 	}
 	
+	/**
+	 * fill comboBox with values
+	 * @param componentText
+	 * @param objects
+	 * @param fieldName
+	 * @param dynamicComboBox
+	 */
 	private static void populateDropdown(String componentText, List objects, String fieldName, JComboBox dynamicComboBox) {
 		dynamicComboBox.removeAllItems();
 		
@@ -283,6 +461,10 @@ public class SupplyTransactionPage extends BasePage {
 		}
 	}
 	
+	/**
+	 * set selected supplier 
+	 * @param supplier
+	 */
 	private void setSelectedSupplier(Supplier supplier) { 
 		selectedSupplier = supplier;
 		Log.log("selectedSupplier: ",selectedSupplier);
@@ -342,6 +524,7 @@ public class SupplyTransactionPage extends BasePage {
 		super.initEvent();
 		
 		 addActionListener(menuBack, getHandler().navigationListener(PageConstants.PAGE_DASHBOARD));
+		 addActionListener(buttonClearCart, buttonClearListener());
 		 
 		 //fields  
 		 addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	 
@@ -359,8 +542,7 @@ public class SupplyTransactionPage extends BasePage {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?");
-				
+				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?"); 
 				if(confirm != 0) { 
 					return;
 				}
@@ -369,15 +551,20 @@ public class SupplyTransactionPage extends BasePage {
 			} 
 			
 		};
-	}
+	} 
 
 	/**
 	 * submit current data to cart
 	 */
-	private void submitToCart() {
-		 
+	private void submitToCart() { 
+		
 		if(null == selectedProduct) {
 			Dialogs.showErrorDialog("Product must not be null!");
+			return;
+		}
+		
+		if(editMode == false && getProductFlow(selectedProduct.getId()) != null) {
+			Dialogs.showErrorDialog("Product has been exist!");
 			return;
 		}
 		
@@ -385,13 +572,30 @@ public class SupplyTransactionPage extends BasePage {
 		productFlow.setProduct(selectedProduct);
 		productFlow.setCount(quantity);
 		productFlow.setPrice(unitPrice);
-		productFlow.setExpiryDate(expiryDate);
+		productFlow.setExpiryDate(expiryDate); 
+			
+		if (editMode) {
+			removeProductFlow(selectedProduct.getId()); 
+		}
 		
 		productFlows.add(productFlow);
 		
+		clearForm(false);
 		Log.log("product flow: ", productFlow);
 		refresh();
 		
+	}
+	
+	private void removeProductFlow(long productId) {
+		
+		for (int i = 0; i< productFlows.size(); i++) {
+			ProductFlow productFlow  = productFlows.get(i);
+			
+			if(productFlow.getProduct().getId().equals(productId)) {
+				productFlows.remove(i);
+				break;
+			}
+		}
 	}
 	
 	private TransactionHandler getHandler() {
