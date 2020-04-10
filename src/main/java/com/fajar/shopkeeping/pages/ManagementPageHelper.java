@@ -806,7 +806,7 @@ public class ManagementPageHelper {
 				
 				page.putFilterValue(key, value);
 				page.setCurrentElementIdFocus(key); 
-				page.getHandler().getEntities();
+//				page.getHandler().getEntities();
 				
 			}
 			

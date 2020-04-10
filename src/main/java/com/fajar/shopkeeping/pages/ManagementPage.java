@@ -80,7 +80,8 @@ public class ManagementPage extends BasePage {
 
 	private final JButton buttonSubmit = button("Submit");
 	private final JButton buttonClear = button("Clear");
-	private final JButton buttonFilterEntity = button("Go");
+	private final JButton buttonFilterEntity = button("SEARCH");
+	private final JButton buttonClearDataTableFilter = button("Clear");
 	private final JButton buttonRefresh = button("Refresh");
 
 	private Class<? extends BaseEntity> entityClass;
@@ -194,7 +195,7 @@ public class ManagementPage extends BasePage {
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
 		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
-		JPanel panelPageLimit = buildInlineComponent(60, label("page"), inputPage, label("limit"), inputLimit, buttonFilterEntity, labelTotalData);
+		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, label("input page"), inputPage);
 		return buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
 	}
 
@@ -217,6 +218,7 @@ public class ManagementPage extends BasePage {
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
 		addActionListener(buttonRefresh, buttonRefreshListener()); 
 		addActionListener(buttonClear, clearListener());
+		addActionListener(buttonClearDataTableFilter, clearDataTableFilterListener());
 		
 		addActionListener(menuBack, pageNavigation(PageConstants.PAGE_DASHBOARD));
 		super.initEvent();
@@ -553,7 +555,7 @@ public class ManagementPage extends BasePage {
 		// TODO multipleImagePreviews.get(id).remove(index);
 		Log.log("removeMultipleImageContainerItem[",elementId,"] at", index);
 		try {
-			 Object currentObject = managedObject.get(elementId);
+			 Object currentObject = getManagedObjectValue(elementId);
 			 String[] rawString = currentObject.toString().split("~");
 			 Log.log( rawString);
 			 
@@ -615,7 +617,7 @@ public class ManagementPage extends BasePage {
 	 * CRUID DATA TABLE
 	 * @return
 	 */
-	private JPanel buildListPanel() {
+	private JPanel buildDataTablePanel() {
 		
 		List<BaseEntity> entities = entityList;
 		List<Component> listComponents = new ArrayList<>();
@@ -772,6 +774,26 @@ public class ManagementPage extends BasePage {
 		return header;
 	}
 	
+	private ActionListener clearDataTableFilterListener() {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clearDataTableFilter();
+				
+			}
+		};
+	}
+	
+	private void clearDataTableFilter() {
+		Set<String> keys = columnFilterTextFields.keySet();
+		for (String string : keys) {
+			columnFilterTextFields.get(string).setText("");
+		}
+		fieldsFilter.clear();
+		getHandler().getEntities();
+	}
+	
 	/**
 	 * create date filter column field
 	 * @param elementId
@@ -911,7 +933,7 @@ public class ManagementPage extends BasePage {
 				
 				setEntityList(response.getEntities());
 				setTotalData(response.getTotalData());  
-				setListPanel(buildListPanel()); 
+				setListPanel(buildDataTablePanel()); 
 				refresh();
 				updateColumnFilterFieldFocus();
 				validateNavigationPanel();
