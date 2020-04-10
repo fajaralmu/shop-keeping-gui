@@ -49,7 +49,7 @@ public abstract class BasePage {
 	
 	public static final int BASE_HEIGHT = 700;
 	public static final int BASE_WIDTH = 800; 
-	protected static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static final JLabel BLANK_LABEL = label("");
 

@@ -22,15 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -42,10 +39,10 @@ import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
-import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
-import com.fajar.shopkeeping.component.MyInfoLabel;
+import com.fajar.shopkeeping.component.formfields.CommonFormFieldHelper;
+import com.fajar.shopkeeping.component.formfields.ImageFormFieldHelper;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -116,14 +113,16 @@ public class ManagementPage extends BasePage {
 	private int selectedLimit = 10;
 	private int totalData = 0; 
 	
-	private final ManagementPageHelper helper;
+	private final CommonFormFieldHelper helper;
+	private final ImageFormFieldHelper imageHelper;
 	
 	Component actionButtons = buildInlineComponent(90, buttonSubmit, buttonClear, buttonRefresh); 
 	
 	
 	public ManagementPage() {
 		super("Management", BASE_WIDTH + 400, BASE_HEIGHT);
-		helper = new ManagementPageHelper(this);
+		helper = new CommonFormFieldHelper(this);
+		imageHelper = new ImageFormFieldHelper(this);
 	}
 
 	@Override
@@ -418,7 +417,7 @@ public class ManagementPage extends BasePage {
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_IMAGE)) {
 				skipFormField = true;
-				inputComponent = helper.buildImageField(element, fieldType, element.isMultiple());
+				inputComponent = getImageHelper().buildImageField(element, fieldType, element.isMultiple());
 				
 			} else {
 				inputComponent = textField(elementId);
@@ -448,165 +447,19 @@ public class ManagementPage extends BasePage {
 		singleImagePreviews.put(elementId, imagePreview);
 		
 	}
- 
-	
-	/**
-	 * remove all file chooser buttons in multiple image selection fields
-	 * @param imageSelectionScrollPane
-	 */
-	public void removeAllImageSelectionField(JScrollPane imageSelectionScrollPane) {
-		
-		try {
-			JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
-			JPanel imageSelectionPanel = (JPanel) panel.getComponent(0);  
-			imageSelectionPanel.removeAll();
-			
-			Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(), 200);// - componentToRemove.getHeight() );
-			imageSelectionPanel.setSize(newDimension); 
-			JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
-			
-			updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
-	}
-	
-	/**
-	 * add image selection field in scrollable panel
-	 * @param element
-	 * @param imageSelectionScrollPane
-	 */
-	public void addNewImageSelectionField(EntityElement element, JScrollPane imageSelectionScrollPane) {
-		Log.log("addNewImageSelectionField");
-		
-		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
-		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
-		
-		if(imageSelectionPanel.getComponentCount() > 0 && imageSelectionPanel.getComponent(0) instanceof MyInfoLabel) {
-			imageSelectionPanel.removeAll();
-			Log.log("REMOVE ALL");
-		}
-		
-		int index = imageSelectionPanel.getComponentCount();
-		
-		JLabel imagePreview = createImagePreview(); 
-		
-		JButton buttonChoose = button("choose file ("+index+")", 160, helper.onChooseMultipleImageFileClick(new JFileChooser(), element.getId(), index));  
-		JButton buttonClear = button("clear", 160, helper.buttonClearMultipleImageClick(element.getId(), index)); 
-		JButton buttonRemove = button("remove" , 160, helper.removeImageSelectionListener(element, index, imageSelectionScrollPane));
-		
-		int componentCount = imageSelectionPanel.getComponentCount();
-		
-		JPanel newImageSelection = buildVerticallyInlineComponent(200, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
-		newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
-		
-		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight() + newImageSelection.getHeight() );
-		imageSelectionPanel.setSize(newDimension);
-		imageSelectionPanel.add(newImageSelection);  
-		JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
-		
-		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
-		
-		addMultipleImageContainer(element.getId(), imagePreview);
-		
-	} 
-	 
-	/**
-	 * do remove input fields for upload image
-	 * @param index
-	 * @param imageSelectionScrollPane
-	 */
-	public void removeImageSelectionItem(EntityElement element, int index, JScrollPane imageSelectionScrollPane) {
-		Log.log("removeImageSelectionItem");
-		
-		JPanel panel = (JPanel)  imageSelectionScrollPane.getViewport().getView(); 
-		JPanel imageSelectionPanel = (JPanel) panel.getComponent(0); 
-		
-		if(imageSelectionPanel.getComponentCount() > 0 && imageSelectionPanel.getComponent(0) instanceof MyInfoLabel) {
-			imageSelectionPanel.removeAll();
-			Log.log("REMOVE ALL");
-			return;
-		}
-		
-		JPanel componentToRemove = (JPanel) imageSelectionPanel.getComponent(index);
-		
-		JLabel removedInfo = label("removed at:"+index);
-		removedInfo.setBackground(Color.gray);
-		ComponentModifier.updatePosition(removedInfo, componentToRemove);
-		imageSelectionPanel.remove(index);
-		imageSelectionPanel.add(removedInfo, index); 
-		 	
-		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight());// - componentToRemove.getHeight() );
-		imageSelectionPanel.setSize(newDimension); 
-		JPanel wrapperPanel  = buildInlineComponent(imageSelectionPanel.getWidth() + 5, imageSelectionPanel);  
-		
-		updateScrollPane(imageSelectionScrollPane, wrapperPanel, newDimension);
-		
-		removeMultipleImageContainerItem(element.getId(), index);
-		
-	}
-	
-	/**
-	 * remove value (in specified field & index) from managed object
-	 * @param elementId
-	 * @param index
-	 */
-	private void removeMultipleImageContainerItem(String elementId, int index) {
-		// TODO multipleImagePreviews.get(id).remove(index);
-		Log.log("removeMultipleImageContainerItem[",elementId,"] at", index);
-		try {
-			 Object currentObject = getManagedObjectValue(elementId);
-			 String[] rawString = currentObject.toString().split("~");
-			 Log.log( rawString);
-			 
-			 if(rawString.length >= index + 1) {
-				 rawString[index] = NULL_IMAGE;
-			 }
-			 
-			 String newValue = String.join("~", rawString);
-			 Log.log("new value: ",newValue);
-			 updateManagedObject(elementId, newValue);
-		}catch (Exception e) { 
-		}
-	}
-
-	/**
-	 * update scrollable content
-	 * @param scrollPane
-	 * @param component
-	 * @param newDimension
-	 */
-	private static void updateScrollPane(JScrollPane scrollPane, Component component, Dimension newDimension) {
-		component.setPreferredSize(newDimension);
-		component.setSize(newDimension);
-		scrollPane.setViewportView(component);
-		scrollPane.validate(); 
-	}
-	
+  
 	/**
 	 * add new multiple image previews label(image icon)
 	 * @param id
 	 * @param imagePreview
 	 */
-	private void addMultipleImageContainer(String id, JLabel imagePreview) {
+	public void addMultipleImageContainer(String id, JLabel imagePreview) {
 		if(multipleImagePreviews.get(id) == null) {
 			multipleImagePreviews.put(id, new ArrayList<JLabel>());
 		}
 		multipleImagePreviews.get(id).add(imagePreview );
 		
-	}
-	
-	/**
-	 * create label for image preview
-	 * @return
-	 */
-	public JLabel createImagePreview() {
-		JLabel imagePreview = label("No Preview."); 
-		imagePreview.setSize(160, 160);
-		imagePreview.setBorder(BorderFactory.createLineBorder(Color.BLACK)); 
-		return imagePreview;
-	}
-	
+	} 
 	 
 	public JLabel getImagePreviewLabelForMultipleImages(String elementId, int index) {
 		return multipleImagePreviews.get(elementId).get(index); 

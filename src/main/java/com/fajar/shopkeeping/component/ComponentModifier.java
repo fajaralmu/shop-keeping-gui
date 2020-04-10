@@ -1,6 +1,9 @@
 package com.fajar.shopkeeping.component;
 
 import java.awt.Component;
+import java.awt.Dimension;
+
+import javax.swing.JScrollPane;
 
 public class ComponentModifier {
 
@@ -21,6 +24,19 @@ public class ComponentModifier {
 	 */
 	public static void updatePosition(Component toBeModifiedComponent, Component refferenceComponent) {
 		toBeModifiedComponent.setBounds(refferenceComponent.getX(), refferenceComponent.getY(), toBeModifiedComponent.getWidth(), toBeModifiedComponent.getHeight());
+	}
+	
+	/**
+	 * update scrollable content
+	 * @param scrollPane
+	 * @param component
+	 * @param newDimension
+	 */
+	public static void updateScrollPane(JScrollPane scrollPane, Component component, Dimension newDimension) {
+		component.setPreferredSize(newDimension);
+		component.setSize(newDimension);
+		scrollPane.setViewportView(component);
+		scrollPane.validate(); 
 	}
 	
 }

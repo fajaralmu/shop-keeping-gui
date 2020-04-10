@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.pages;
+package com.fajar.shopkeeping.component.formfields;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -27,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.annotation.FormField;
@@ -36,17 +35,18 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
+import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.ComponentUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.toedter.calendar.JDateChooser;
 
-public class ManagementPageHelper {
+public class CommonFormFieldHelper {
 	
 	private final ManagementPage page;
 	
-	public ManagementPageHelper(ManagementPage managementPage) {
+	public CommonFormFieldHelper(ManagementPage managementPage) {
 		this.page = managementPage;
 	}
 	
@@ -172,7 +172,7 @@ public class ManagementPageHelper {
 			if(formField instanceof JPanel) {
 				try {
 					JScrollPane scrollPane = (JScrollPane)((JPanel) page.getFieldComponent(key)).getComponent(0); 
-					page.removeAllImageSelectionField(scrollPane);
+					imageFormFieldHelper().removeAllImageSelectionField(scrollPane);
 				}catch (Exception e) {
 					// TODO: handle exception
 				}
@@ -207,6 +207,10 @@ public class ManagementPageHelper {
 				doPopulateFormInputs(entity);
 			}
 		});
+	}
+	
+	private ImageFormFieldHelper imageFormFieldHelper() {
+		return page.getImageHelper();
 	}
 	
 	/**
@@ -279,7 +283,7 @@ public class ManagementPageHelper {
 				for (String string : rawValues) {
 					String imageUrl  = UrlConstants.URL_IMAGE + string;
 					JScrollPane scrollPane = (JScrollPane)((JPanel) page.getFieldComponent(key)).getComponent(0); 
-					page.addNewImageSelectionField(entityElement, scrollPane);
+					imageFormFieldHelper().addNewImageSelectionField(entityElement, scrollPane);
 					
 					Icon icon = ComponentBuilder.imageIcon(imageUrl, 160, 160);
 
@@ -357,41 +361,7 @@ public class ManagementPageHelper {
 	}
 	
 	
-	/**
-	 * build single image input form field
-	 * @param element
-	 * @param fieldType
-	 * @param multiple
-	 * @return
-	 */
-	public JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
-
-		if(multiple) {
-			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, ComponentBuilder.infoLabel("click add..", SwingConstants.CENTER)); 
-			JButton buttonAddImage = ComponentBuilder.button("add"); 
-			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
-			
-			buttonAddImage.addActionListener(buttonAddImageFieldListener( element, imageSelectionWrapperPanel));
-			
-			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(200, imageSelectionWrapperPanel, buttonAddImage); 
-			
-			page.setFormInputComponent(element.getId(), imageSelectionWrapperPanel);
-			
-			return inputPanel;
-			
-		}else {
-			JLabel imagePreview = page.createImagePreview();
-			
-			page.setSingleImageContainer(element.getId(), imagePreview);
-			
-			JButton buttonChoose = ComponentBuilder.button("choose file", 160, onChooseSingleImageFileClick(new JFileChooser(), element.getId())); 
-			
-			JButton buttonClear = ComponentBuilder.button("clear", 160, buttonClearSingleImageClick(element.getId()));  
-			JPanel inputPanel = ComponentBuilder.buildVerticallyInlineComponent(205, buttonChoose, buttonClear, imagePreview) ; 
-			
-			return inputPanel;
-		}
-	}
+	
 	
 	/**
 	 * button edit on datatable row
@@ -463,7 +433,7 @@ public class ManagementPageHelper {
 	 * @param elementId
 	 * @return
 	 */
-	private ActionListener onChooseSingleImageFileClick(final JFileChooser fileChooser, final String elementId) {
+	public ActionListener onChooseSingleImageFileClick(final JFileChooser fileChooser, final String elementId) {
 		
 		return new ActionListener() {
 
@@ -619,7 +589,7 @@ public class ManagementPageHelper {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) { 
-				page.removeImageSelectionItem(element ,index, imageSelectionScrollableWrapper);
+				imageFormFieldHelper().removeImageSelectionItem(element ,index, imageSelectionScrollableWrapper);
 				
 			}
 		};
@@ -722,7 +692,7 @@ public class ManagementPageHelper {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JScrollPane scrollableWrapper = (JScrollPane)imageSelectionScrollableWrapper.getComponent(0);  
-				page.addNewImageSelectionField(element, scrollableWrapper);
+				imageFormFieldHelper().addNewImageSelectionField(element, scrollableWrapper);
 			}
 		};
 	}
