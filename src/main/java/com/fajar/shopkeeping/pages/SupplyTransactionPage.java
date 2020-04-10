@@ -67,9 +67,12 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		long grandTotalPrice = 0l;
 		int colSize = 8;
 		int columnWidth = 100;
+		
+		Object[] tableHeader = new Object[] {"No", "Flow Id", "Product", "Quantity", "Price @unit", "Total Price", "Exp Date", "Option"};
 		Component[] rowComponents = new Component[1 + productFlows.size()];
+		
 		rowComponents[0] = rowPanelHeader(colSize, columnWidth, 
-				"No", "Flow Id", "Product", "Quantity", "Price @unit", "Total Price", "Exp Date", "Option");
+				tableHeader);
 		
 		for (int i = 0; i < productFlows.size(); i++) {
 			ProductFlow productFlow = productFlows.get(i);
