@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
@@ -58,6 +59,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected JTextField inputQtyField; 
 	protected JLabel labelProductUnit;   
 	protected JLabel labelTotalPrice;
+	protected JLabel titleLabel;
 	
 	protected final List<Product> productDropdownValues = new ArrayList<Product>();
 	protected final List<Supplier> supplierDropdownValues = new ArrayList<Supplier>(); 
@@ -94,11 +96,15 @@ public abstract class BaseTransactionPage extends BasePage{
 			formPanel = buildFormPanel();
 		}
 		
+		if(titleLabel == null) {
+			titleLabel = title("Transaction", 50);
+		}
+		
 		productListPanel = buildProductListPanel(); 
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
 
-				title("Transaction::"+type, 50),
+				titleLabel,
 				formPanel,
 				productListPanel 
 				); 
@@ -153,6 +159,14 @@ public abstract class BaseTransactionPage extends BasePage{
 		Log.log("product is valid");
 		
 		return true;
+	}
+	
+	protected PanelRequest getFormFieldPanelRequest() {
+		return PanelRequest.autoPanelNonScroll(2, 250, 5, null);
+	}
+	
+	protected PanelRequest getProductListPanelRequest(int columnWidth, int colSize) {
+		return autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 250);
 	}
 	
 	@Override

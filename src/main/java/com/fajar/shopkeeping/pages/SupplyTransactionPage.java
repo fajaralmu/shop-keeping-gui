@@ -95,7 +95,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			grandTotalPrice+=totalPrice;
 		}
 		 
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 250);
+		PanelRequest panelRequest = getProductListPanelRequest(columnWidth, colSize);
 		
 		setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
 		
@@ -128,7 +128,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
  		labelTotalPrice = label("total price", LEFT);
  		labelTotalPrice.setSize(300, 20);
  		
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
+		PanelRequest panelRequest = getFormFieldPanelRequest();
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
 				label("Supplier", LEFT), supplierComboBox,
 				label("Product", LEFT), productComboBox,
@@ -324,5 +324,10 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		refresh();
 	}
  
+	@Override
+	public void show() {
+		titleLabel.setText("Pembelian");
+		super.show();
+	}
 
 }
