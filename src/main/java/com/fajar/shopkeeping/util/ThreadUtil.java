@@ -6,6 +6,7 @@ public class ThreadUtil {
 		
 		Thread thread  = new Thread(runnable);
 		Log.log("running thread: ", thread.getId());
+		Log.log("active thread: ", Thread.activeCount());
 		thread.start();
 	}
 }

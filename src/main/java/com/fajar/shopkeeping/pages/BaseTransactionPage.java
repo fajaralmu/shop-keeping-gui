@@ -53,9 +53,11 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected JButton buttonClearCart;
 	protected JButton buttonSubmitTransaction;
 	
+	
 	protected JComboBox productComboBox; 
 	protected JTextField inputQtyField; 
 	protected JLabel labelProductUnit;   
+	protected JLabel labelTotalPrice;
 	
 	protected final List<Product> productDropdownValues = new ArrayList<Product>();
 	protected final List<Supplier> supplierDropdownValues = new ArrayList<Supplier>(); 

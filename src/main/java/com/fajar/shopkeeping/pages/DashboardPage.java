@@ -2,8 +2,6 @@ package com.fajar.shopkeeping.pages;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
@@ -215,7 +213,7 @@ public class DashboardPage extends BasePage {
 			@Override
 			public void run() {
 				setResponseTodayCashflow(response);
-				setPanelTodayCashflow(buildTodayCashflow(response));
+				setPanelTodayCashflow(buildTodayCashflowTable(response));
 				setPanelMonthlySummary(buildMonthlySummaryTable(response));
 				setMinTransactionYear(response.getTransactionYears()[0]);
 				AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
@@ -316,7 +314,7 @@ public class DashboardPage extends BasePage {
 	 * @param response
 	 * @return
 	 */
-	private JPanel buildTodayCashflow(ShopApiResponse response) {
+	private JPanel buildTodayCashflowTable(ShopApiResponse response) {
 		
 		if(selectedMonth != DateUtil.getCurrentMonth() || selectedYear != DateUtil.getCurrentYear()) {
 			return panelTodayCashflow;
@@ -346,7 +344,7 @@ public class DashboardPage extends BasePage {
 		
 		setComboBoxMonth(_comboBoxMonth);
 		setComboBoxYear(_comboBoxYear);
-		setButtonLoadMonthlyCashflow(button("Search")); 
+		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(4, 60, 3, Color.WHITE);

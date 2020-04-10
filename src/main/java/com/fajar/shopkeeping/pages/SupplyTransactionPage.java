@@ -30,6 +30,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.StringUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;
@@ -63,11 +64,12 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			productFlows = new ArrayList<ProductFlow>();
 		} 
 		
-		int colSize = 7;
+		long grandTotalPrice = 0l;
+		int colSize = 8;
 		int columnWidth = 100;
 		Component[] rowComponents = new Component[1 + productFlows.size()];
 		rowComponents[0] = rowPanelHeader(colSize, columnWidth, 
-				"No", "Flow Id", "Product", "Quantity", "Price @unit", "Exp Date", "Option");
+				"No", "Flow Id", "Product", "Quantity", "Price @unit", "Total Price", "Exp Date", "Option");
 		
 		for (int i = 0; i < productFlows.size(); i++) {
 			ProductFlow productFlow = productFlows.get(i);
@@ -78,17 +80,24 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			JPanel buttonField 		= ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove); 
 			String dateString 		= DateUtil.parseDate(expDate, "dd-MM-yyyy");
 			
+			long totalPrice = productFlow.getCount() * productFlow.getPrice();
+			
 			rowComponents[i + 1] 	= rowPanel(colSize, columnWidth, 
 					(i+1),
 					0,
 					productFlow.getProduct().getName(),
-					productFlow.getCount(),
-					productFlow.getPrice(),
+					StringUtil.beautifyNominal(productFlow.getCount()),
+					StringUtil.beautifyNominal(productFlow.getPrice()), 
+					StringUtil.beautifyNominal(totalPrice),
 					dateString,
 					buttonField);
+			
+			grandTotalPrice+=totalPrice;
 		}
 		 
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 300);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 250);
+		
+		setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
 		
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
@@ -116,6 +125,8 @@ public class SupplyTransactionPage extends BaseTransactionPage {
  		
  		labelProductUnit = label("unit", LEFT);
  		labelProductUnit.setSize(200, 20); 
+ 		labelTotalPrice = label("total price", LEFT);
+ 		labelTotalPrice.setSize(300, 20);
  		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
@@ -126,7 +137,8 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 				label("Unit Price", LEFT), inputUnitPriceField,
 				label("Expired Date", LEFT), inputExpiredDateField,
 				buttonSubmitCart, buttonClearCart,
-				buttonSubmitTransaction, null
+				buttonSubmitTransaction, null,
+				label("Total Price"), labelTotalPrice
 				);
 		return panel ;
 	}
@@ -152,6 +164,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		if(clearSupplier) {
 			selectedSupplier = null;
 			clearComboBox(supplierComboBox);
+			labelTotalPrice.setText("0");
 		}
 		
 		setEditMode(false);

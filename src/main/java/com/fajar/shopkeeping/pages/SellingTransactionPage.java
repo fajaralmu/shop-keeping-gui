@@ -33,6 +33,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.StringUtil;
 
 import lombok.Data;
 
@@ -153,6 +154,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		if(clearCustomer) {
 			selectedCustomer = null;
 			clearComboBox(customerComboBox);
+			labelTotalPrice.setText("0");
 		}
 		
 		setEditMode(false);
@@ -194,7 +196,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
  		
  		labelRemainingQty = label("Remaining Quantity", LEFT);
  		labelProductPrice = label("Price @ Unit", LEFT);
- 		
+ 		labelTotalPrice = label("Total Price", LEFT);
+ 		labelTotalPrice.setSize(300, 20);
 		 		
  		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 5, Color.LIGHT_GRAY);
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
@@ -205,7 +208,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 				label("Quantity", LEFT), inputQtyField,
 				label("Unit", LEFT), labelProductUnit, 
 				buttonSubmitCart, buttonClearCart,
-				buttonSubmitTransaction, null
+				buttonSubmitTransaction, null,
+				label("Total Price"), labelTotalPrice
 				);
 		return panel ;
 	}
@@ -216,10 +220,11 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 			productFlows = new ArrayList<ProductFlow>();
 		} 
 		
-		int colSize = 6;
+		long grandTotalPrice = 0l;
+		int colSize = 7;
 		int columnWidth = 100;
 		Component[] rowComponents = new Component[1 + productFlows.size()];
-		rowComponents[0] = rowPanelHeader(colSize, columnWidth, "No", "Flow Id", "Product", "Quantity", "Price @unit",   "Option");
+		rowComponents[0] = rowPanelHeader(colSize, columnWidth, "No", "Flow Id", "Product", "Quantity", "Price @unit", "Total Price",  "Option");
 		
 		for (int i = 0; i < productFlows.size(); i++) {
 			ProductFlow productFlow = productFlows.get(i); 
@@ -227,17 +232,22 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 			JButton buttonEdit = button("edit", 100, editProductFlow(productFlow));
 			JButton buttonRemove = button("remove", 100, buttonRemoveListener(productFlow)); 
 			JPanel buttonField = ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove);  
-			
+			long totalPrice = productFlow.getCount() * productFlow.getPrice();
 			rowComponents[i + 1] = rowPanel(colSize, columnWidth, 
 					(i+1),
 					0,
 					productFlow.getProduct().getName(),
-					productFlow.getCount(),
-					productFlow.getPrice(), 
+					beautifyNominal(productFlow.getCount()),
+					beautifyNominal(productFlow.getPrice()), 
+					beautifyNominal(totalPrice),
 					buttonField);
+			
+			grandTotalPrice+=totalPrice;
 		}
 		 
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 300);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 250);
+		
+		setText(labelTotalPrice, beautifyNominal(grandTotalPrice));
 		
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
