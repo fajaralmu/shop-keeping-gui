@@ -26,6 +26,10 @@ public class DailyCashflowPage extends BasePage {
 	private static final int COLUMN_WIDTH = 160;
 
 	private static final int COLUMN = 4;
+	
+	private static final int[] COLUMN_SIZES = new int[] {
+			50, COLUMN_WIDTH, COLUMN_WIDTH, COLUMN_WIDTH
+	};
 
 	private static final int TABLE_WIDTH = COLUMN_WIDTH * COLUMN;
 
@@ -80,6 +84,10 @@ public class DailyCashflowPage extends BasePage {
 		});
 	}
 
+	/**
+	 * product list table
+	 * @return
+	 */
 	private JPanel buildDetailTable() {
 
 		if (null == dailyCashflowResponse) {
@@ -100,7 +108,7 @@ public class DailyCashflowPage extends BasePage {
 			CashFlow cashflow 	= dailyCashflowMap.get(key); 
 			Product product 	= cashflow.getProduct();
 			String productName 	= product.getName().length() > 30 ? product.getName().substring(0, 30) :  product.getName();
-			components[index] 	= rowPanel(COLUMN, COLUMN_WIDTH, index, productName, cashflow.getCount(), cashflow.getAmount());
+			components[index] 	= rowPanel(COLUMN_SIZES, index, productName, cashflow.getCount(), cashflow.getAmount());
 			
 			count+=cashflow.getCount();
 			amount+=cashflow.getAmount();
@@ -109,8 +117,8 @@ public class DailyCashflowPage extends BasePage {
 		
 		components[components.length-1] = dailyCashflowFooter(count, amount);
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 500); 
-		
+		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH , 1, Color.LIGHT_GRAY, 500); 
+	 
 		JPanel panel = buildPanelV2(panelRequest, components);
 		
 		return panel;
@@ -118,12 +126,12 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	private Component dailyCashflowFooter(long count, long amount) { 
-		return rowPanelHeader(COLUMN, COLUMN_WIDTH, "TOTAL", null, count, amount);
+		return rowPanelHeader(COLUMN_SIZES, "TOTAL", null, count, amount);
 	}
 
 	private Component dailyCashflowHeader() {
 		 
-		return rowPanelHeader(COLUMN, COLUMN_WIDTH, "No", "Product", "Penjualan", "Nilai");
+		return rowPanelHeader(COLUMN_SIZES, "No", "Product", "Penjualan", "Nilai");
 	}
 
 	@Override

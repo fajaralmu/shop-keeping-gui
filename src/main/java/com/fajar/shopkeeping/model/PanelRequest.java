@@ -65,7 +65,15 @@ public class PanelRequest {
 	public static PanelRequest autoPanelScrollXYSpecified(int[] colSizes, int margin, Color color, int panelX, int panelY, int panelH) {
 		return new PanelRequest(colSizes, 0, margin, color, panelX, panelY, 0, panelH, true);
 	}
-	
+	protected static int[] reverseArray(int[] array) {
+		
+		int[] newArray= new int[array.length]; 
+		for (int i = array.length - 1; i >= 0; i--) {
+			newArray[array.length - i - 1] = array[i]; 
+		}
+		return array;
+//		return newArray;
+	}
  
 	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW, int panelH,
 			boolean autoScrool) {
@@ -96,7 +104,7 @@ public class PanelRequest {
 		this.panelW = panelW;
 		this.panelH = panelH;
 		this.autoScroll = autoScrool;
-		this.colSizes = colsizes;
+		this.colSizes = reverseArray(colsizes);
 	}
 
 	public PanelRequest(int col, int w, int h, int margin, Color color, int panelX, int panelY, int panelW, int panelH,
@@ -131,7 +139,7 @@ public class PanelRequest {
 		this.panelH = panelH;
 		this.autoScroll = autoScrool;
 		this.centerAligment = centerAligment;
-		this.colSizes = colSizes;
+		this.colSizes = reverseArray(colSizes);
 	}
 
 	public boolean isCenterAligment() {

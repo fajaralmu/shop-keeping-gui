@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.ComponentBuilder.fillArray;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -149,14 +151,10 @@ public abstract class BasePage {
 		return new KeyListener() {
 			
 			@Override
-			public void keyTyped(KeyEvent e) { 
-				
-			}
+			public void keyTyped(KeyEvent e) {  }
 			
 			@Override
-			public void keyReleased(KeyEvent e) { 
-				
-			}
+			public void keyReleased(KeyEvent e) {  }
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -220,12 +218,23 @@ public abstract class BasePage {
 		};
 	}
 	
-	
+	/**
+	 * 
+	 * @param col column count
+	 * @param colSize size for each column
+	 * @return
+	 */
 	protected PanelRequest rowPanelRequest(int col, int colSize) {
 		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(col, colSize, 1, Color.orange);
 		panelRequestHeader.setCenterAligment(true);
 		return panelRequestHeader;
 	}
+	
+	/**
+	 * 
+	 * @param colSizes array of column sizes
+	 * @return
+	 */
 	protected PanelRequest rowPanelRequest(int[] colSizes) {
 		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(colSizes, 1, Color.orange);
 		panelRequestHeader.setCenterAligment(true);
@@ -239,9 +248,9 @@ public abstract class BasePage {
 	 * @param objects (Component or other will converted to label)
 	 * @return
 	 */
-	protected JPanel rowPanelHeader(int col, int colSizes, Object...objects) {
+	protected JPanel rowPanelHeader(int[] colSizes, Object...objects) {
 
-		PanelRequest panelRequestHeader = rowPanelRequest(col, colSizes );
+		PanelRequest panelRequestHeader = rowPanelRequest( colSizes );
 
 		Component[] components = new Component[objects.length];
 		
@@ -259,15 +268,25 @@ public abstract class BasePage {
 	}
 	
 	/**
-	 * panel (as table) row
-	 * @param col
-	 * @param colSizes
+	 * 
+	 * @param colCount
+	 * @param colSize size of each column
+	 * @param objects
+	 * @return
+	 */
+	protected JPanel rowPanelHeader(int colCount, int colSize, Object...objects) {
+		return rowPanelHeader(fillArray(colCount, colSize), objects);
+	}
+	
+	/**
+	 * panel (as table) row 
+	 * @param colSizes array of column sizes
 	 * @param objects (Component or other will converted to label)
 	 * @return
 	 */
-	protected JPanel rowPanel(int col, int colSizes, Color color, Object...objects) {
+	protected JPanel rowPanel(int[] colSizes, Color color, Object...objects) {
 
-		PanelRequest panelRequest = rowPanelRequest(col, colSizes );
+		PanelRequest panelRequest = rowPanelRequest(  colSizes );
 		panelRequest.setColor(color);
 		
 		Component[] components = new Component[objects.length];
@@ -284,20 +303,41 @@ public abstract class BasePage {
 			}
 			
 		}
-		
+		Log.log("ROW PANEL--");
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
 	}
 	
 	/**
 	 * 
-	 * @param col
-	 * @param colSizes
+	 * @param col column count
+	 * @param colSize size for each column
+	 * @param color
+	 * @param objects
+	 * @return
+	 */
+	protected JPanel rowPanel(int col, int colSize, Color color, Object...objects) {
+		return rowPanel(fillArray(col, colSize), color, objects);
+	}
+	
+	/**
+	 * 
+	 * @param col count
+	 * @param colSize for each column
 	 * @param objects objects (Component or other will converted to label)
 	 * @return
 	 */
 	protected JPanel rowPanel(int col, int colSizes,   Object...objects) {
 		return rowPanel(col, colSizes, Color.white, objects);
+	}
+	/**
+	 * 
+	 * @param colSizes array of column sizes
+	 * @param objects
+	 * @return
+	 */
+	protected JPanel rowPanel( int[] colSizes,   Object...objects) {
+		return rowPanel(colSizes, Color.white, objects);
 	}
 	
 	/**
@@ -327,17 +367,10 @@ public abstract class BasePage {
 	 * @return
 	 */
 	protected static int[] intArray(int...ints) {
-		return reverseArray(PanelRequest.intArray(ints));
+		return  (PanelRequest.intArray(ints));
 	}
 
-	protected static int[] reverseArray(int[] array) {
-		
-		int[] newArray= new int[array.length]; 
-		for (int i = array.length - 1; i >= 0; i--) {
-			newArray[array.length - i - 1] = array[i]; 
-		}
-		return newArray;
-	}
+	
 	
 	protected static JLabel label(Object title) {
 		
@@ -372,6 +405,10 @@ public abstract class BasePage {
 		return label;
 	}
 	
+	/**
+	 * color chooser
+	 * @return
+	 */
 	protected JColorChooser colorChooser() {
 		
 		JColorChooser colorChooser = new JColorChooser();
@@ -379,11 +416,20 @@ public abstract class BasePage {
 		return colorChooser;
 	}
 	
+	/**
+	 * date chooser with nowDate as default value
+	 * @return
+	 */
 	protected JDateChooser dateChooser() { 
 		
 		return dateChooser(new Date()) ;
 	}
 	
+	/**
+	 * date chooser with specified default value
+	 * @param date
+	 * @return
+	 */
 	protected JDateChooser dateChooser(Date date) {
 		
 		JDateChooser dateChooser = new JDateChooser(date);
@@ -416,15 +462,7 @@ public abstract class BasePage {
 		return ComponentBuilder.textarea(defaultValue);
 	}
 	
-	protected static void changeSize(Component component, int width, int height) {
-
-		component.setBounds(component.getX(), component.getY(), width, height);
-	}
-
-	protected static void changeSizeHeight(Component component, int height) {
-
-		component.setBounds(component.getX(), component.getY(), component.getWidth(), height);
-	}
+	
 	
 	protected Object[] buildArray(int i, int i2) {
 
@@ -670,10 +708,20 @@ public abstract class BasePage {
 		label.setText(text.toString());
 	}
 	
+	/**
+	 * get comboBox component from KeyEvent
+	 * @param event
+	 * @return
+	 */
 	public static JComboBox getComboBox(KeyEvent event) {
 		return (JComboBox) ((Component)event.getSource()).getParent();
 	}
 	
+	/**
+	 * get typed text from JComboBox
+	 * @param comboBox
+	 * @return
+	 */
 	public static String getComboBoxText(JComboBox comboBox) {
 		return ((JTextComponent) (comboBox).getEditor().getEditorComponent()).getText(); 
 	}

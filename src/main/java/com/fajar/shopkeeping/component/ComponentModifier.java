@@ -39,4 +39,13 @@ public class ComponentModifier {
 		scrollPane.validate(); 
 	}
 	
+	public static void changeSize(Component component, int width, int height) {
+
+		component.setBounds(component.getX(), component.getY(), width, height);
+	}
+
+	public static void changeSizeHeight(Component component, int height) {
+
+		component.setBounds(component.getX(), component.getY(), component.getWidth(), height);
+	}
 }

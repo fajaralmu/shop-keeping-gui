@@ -22,7 +22,7 @@ public class PanelRow {
 
 	private int row;
 	private int height;
-	private int width;
+//	private int width;
 	@Builder.Default
 	private List<Component> components = new ArrayList<>();
 }

@@ -45,6 +45,10 @@ import lombok.Data;
 public class DashboardPage extends BasePage {
 
 	
+	private static final int[] COLUMN_SIZES = new int[] {
+			50, 100, 100, 100, 100
+	};
+
 	private JLabel labelUserInfo;
 	 
 	private JButton buttonGotoPeriodicReport;
@@ -273,7 +277,7 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private JPanel cashflowSummaryHeader() {
-		return rowPanelHeader(5, 100, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
+		return rowPanelHeader(COLUMN_SIZES, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
 	}
 
 	/**
@@ -282,7 +286,7 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private Component cashflowSummaryFooter(CashFlow totalCashFlow, CashFlow totalCostFlow) {
-		return rowPanelHeader(5, 100, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
+		return rowPanelHeader(COLUMN_SIZES, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
 				"Pengeluaran", totalCostFlow.getAmount(), totalCostFlow.getCount());
 	}
 
@@ -302,7 +306,7 @@ public class DashboardPage extends BasePage {
 		JButton buttonDetail = button("Detail");
 		buttonDetail.addActionListener(getHandler().getDailyCashflow(day, filter.getMonth(), filter.getYear()));
 
-		JPanel panel = rowPanel(5, 100, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail,
+		JPanel panel = rowPanel(COLUMN_SIZES, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail,
 				"", "Pembelian", cost.getAmount(), cost.getCount());
 		return panel;
 	}
@@ -346,16 +350,15 @@ public class DashboardPage extends BasePage {
 		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(4, 60, 3, Color.WHITE);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 3, Color.WHITE  );
+		panelRequest.setCenterAligment(true);
 		
 		JPanel panel = buildPanelV2(panelRequest ,
-					label("Month"), comboBoxMonth,
-					label("Year"), comboBoxYear,
+					ComponentBuilder.buildInlineComponent(60, label("Month"), comboBoxMonth),
+					ComponentBuilder.buildInlineComponent(60, label("Year"), comboBoxYear),
 				 
-					buttonLoadMonthlyCashflow,
-					BLANK_LABEL,
-					buttonGotoPeriodicReport,
-					BLANK_LABEL);
+					buttonLoadMonthlyCashflow, 
+					buttonGotoPeriodicReport);
 		 
 		return panel;
 	} 

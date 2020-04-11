@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.util.Log;
@@ -76,44 +77,69 @@ public class MyCustomPanel extends JPanel {
 			}
 		}
 	}
+	
+	private int getXPosition(int columnIndex, Component component) {
+		int xPosition = margin;
+		for(int i = 0; i<  columnIndex; i++) {
+			xPosition = xPosition + colSizes[i];
+			xPosition += margin;
+			 
+		}
+		if(centerAligment) {
+			int columnWidth = colSizes[columnIndex];
+			int gap = columnWidth - component.getWidth();
+			xPosition +=  new BigDecimal(gap /2 ).intValue();
+		} 
+		return xPosition;
+	}
 
 	private void calculateComponentsPosition() {
 
 		int currentHeight = 0;
 		final Set<Integer> rows = componentsMap.keySet();
-
+		Log.log("----------------------start-------------------");
 		for (Integer key : rows) {
 			Log.log(">>>>>>>>>>>>>>>ROW:", key);
 			PanelRow panelRow = componentsMap.get(key);
+			
 			int rowHeight = panelRow.getHeight();
 			List<Component> components = panelRow.getComponents();
 
 			loop: for (int i = 0; i < components.size(); i++) {
-
-				Component component = components.get(i);
+				
+				final boolean fristElement = i == 0;
+				final Component component = components.get(i);
 				if (component == null) {
 					continue loop;
 				}
 
 				int y = currentHeight + margin;
 				int x = 0;
-
+				final int columnSize = colSizes[i];
+				
 				try {
-					final int columnSize = colSizes[i];
-					Log.log("columnSize: ",columnSize);
-					x = i == 0 ? 0 : i * (columnSize + margin * 2);
-					x = x + margin;
-
-					if (this.centerAligment) {
-						int gap = columnSize - component.getWidth();
-						x = (i * columnSize) + new BigDecimal(gap / 2).intValue();
-					}
-
+					
+					final int previousColumnSize = fristElement ? 0 : colSizes[i - 1];
+					
+					Log.log("columnSize: ", columnSize);
+					x =  getXPosition(i, component);
+//					x = x + margin;
+//
+//					if (this.centerAligment) {
+//						int gap = columnSize - component.getWidth();
+//						x = (i * previousColumnSize) + new BigDecimal(gap / 2).intValue();
+//					}
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
 				}
-
+				try {
+					Log.log("label: ", ((JLabel) component).getText());
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				Log.log("x:",x,"columnSize:",columnSize);
 				// update location
 				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
 
@@ -124,6 +150,7 @@ public class MyCustomPanel extends JPanel {
 		customHeight = currentHeight + margin;
 		customWidth = calculateWidth();
 
+		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
 	}
  
 
@@ -153,7 +180,7 @@ public class MyCustomPanel extends JPanel {
 			}
 		}
 
-		return width;
+		return width + margin;
 	}
 
 	public static int getMaxHeight(List<Component> components) {
