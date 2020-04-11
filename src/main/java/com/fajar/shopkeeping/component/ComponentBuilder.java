@@ -374,7 +374,7 @@ public class ComponentBuilder {
 		int width = title.toString().length() * 10;
 
 		JLabel label = new JLabel(title.toString(), horizontalAligment);
-		
+		label.setFont(new Font("Arial", Font.PLAIN, 15));
 		label.setSize(width, 20);
 		return label;
 	}
@@ -608,21 +608,32 @@ public class ComponentBuilder {
 		 
 	}
 	
-	public static JButton button(Object text) {
-		int width = String.valueOf(text).length() * 10 + 30;
-		
-		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, 20); 
-		jButton.setBackground(Color.LIGHT_GRAY);
-		return jButton ;
+	public static JButton button(Object text) { 
+		return button(text, 0, 0, null) ;
 	}
 	
-	public static JButton button(Object text, int width, ActionListener actionListener) { 
+	public static JButton button(Object text, int width,  ActionListener actionListener) {
+		return button(text, width, 0, actionListener);
+	}
+	
+	public static JButton button(Object text, int width, int height, ActionListener actionListener) { 
+			
+		if(width == 0) {
+			width = String.valueOf(text).length() * 10 + 30;
+		}
+		if(height == 0) {
+			height =25;
+		}
 		
 		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, 20); 
+		jButton.setSize(width, height); 
 		jButton.setBackground(Color.LIGHT_GRAY);
-		jButton.addActionListener(actionListener);
+		jButton.setFont(new Font("Arial", Font.PLAIN, 14));
+//		jButton.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+		
+		if(null != actionListener)
+			jButton.addActionListener(actionListener);
+		
 		return jButton ;
 	}
 	
@@ -633,12 +644,8 @@ public class ComponentBuilder {
 	 * @param height
 	 * @return
 	 */
-	public static JButton button(Object text, int width, int height) { 
-		
-		JButton jButton = new JButton(String.valueOf(text));
-		jButton.setSize(width, height); 
-		jButton.setBackground(Color.LIGHT_GRAY);
-		return jButton ;
+	public static JButton button(Object text, int width, int height) {  
+		return button(text, width, height, null) ;
 	}
 
 	public static JPanel blankPanel(int i, int j) {

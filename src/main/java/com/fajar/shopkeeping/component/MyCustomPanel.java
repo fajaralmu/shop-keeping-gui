@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.util.Log;
@@ -97,17 +96,16 @@ public class MyCustomPanel extends JPanel {
 
 		int currentHeight = 0;
 		final Set<Integer> rows = componentsMap.keySet();
-		Log.log("----------------------start-------------------");
+//		Log.log("----------------------start-------------------");
 		for (Integer key : rows) {
-			Log.log(">>>>>>>>>>>>>>>ROW:", key);
+//			Log.log(">>>>>>>>>>>>>>>ROW:", key);
 			PanelRow panelRow = componentsMap.get(key);
 			
 			int rowHeight = panelRow.getHeight();
 			List<Component> components = panelRow.getComponents();
 
 			loop: for (int i = 0; i < components.size(); i++) {
-				
-				final boolean fristElement = i == 0;
+				 
 				final Component component = components.get(i);
 				if (component == null) {
 					continue loop;
@@ -117,29 +115,14 @@ public class MyCustomPanel extends JPanel {
 				int x = 0;
 				final int columnSize = colSizes[i];
 				
-				try {
-					
-					final int previousColumnSize = fristElement ? 0 : colSizes[i - 1];
-					
+				try { 
 					Log.log("columnSize: ", columnSize);
-					x =  getXPosition(i, component);
-//					x = x + margin;
-//
-//					if (this.centerAligment) {
-//						int gap = columnSize - component.getWidth();
-//						x = (i * previousColumnSize) + new BigDecimal(gap / 2).intValue();
-//					}
+					x =  getXPosition(i, component); 
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
-				}
-				try {
-					Log.log("label: ", ((JLabel) component).getText());
-				} catch (Exception e) {
-					// TODO: handle exception
-				}
-				Log.log("x:",x,"columnSize:",columnSize);
+				} 
 				// update location
 				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
 
@@ -198,15 +181,7 @@ public class MyCustomPanel extends JPanel {
 
 		return maxHeight;
 	}
-
-	@Override
-	public Component add(Component comp) {
-		return super.add(comp);
-	}
-
-	@Override
-	public void removeAll() {
-		super.removeAll();
-	}
+ 
+ 
 
 }
