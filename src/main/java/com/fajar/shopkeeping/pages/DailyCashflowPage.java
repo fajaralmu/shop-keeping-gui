@@ -30,7 +30,7 @@ public class DailyCashflowPage extends BasePage {
 	private static final int COLUMN = 4;
 	
 	private static final int[] COLUMN_SIZES = new int[] {
-			50, COLUMN_WIDTH, COLUMN_WIDTH, COLUMN_WIDTH
+			70, COLUMN_WIDTH, COLUMN_WIDTH, COLUMN_WIDTH
 	};
 
 	private static final int TABLE_WIDTH = COLUMN_WIDTH * COLUMN;
@@ -64,7 +64,7 @@ public class DailyCashflowPage extends BasePage {
 //			dailyCashflowPanel = null;
 		}
 		
-		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
 
 				title("Detail Penjualan " + DateUtil.dateString(day, month, year), 30),
 				dailyCashflowPanel
@@ -128,12 +128,12 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	private Component dailyCashflowFooter(long count, long amount) { 
-		return rowPanelHeader(COLUMN_SIZES, "TOTAL", null, count, amount);
+		return rowPanel (COLUMN_SIZES, "TOTAL", null, count, amount);
 	}
 
 	private Component dailyCashflowHeader() {
 		 
-		return rowPanelHeader(COLUMN_SIZES, "No", "Product", "Penjualan", "Nilai");
+		return rowPanel (COLUMN_SIZES, "No", "Product", "Penjualan", "Nilai");
 	}
 
 	@Override

@@ -244,32 +244,7 @@ public abstract class BasePage {
 		return panelRequestHeader;
 	}
 	
-	/**
-	 * panel (as table) header & footer
-	 * @param col
-	 * @param colSizes
-	 * @param objects (Component or other will converted to label)
-	 * @return
-	 */
-	protected JPanel rowPanelHeader(int[] colSizes, Object...objects) {
-
-		PanelRequest panelRequestHeader = rowPanelRequest( colSizes );
-
-		Component[] components = new Component[objects.length];
-		
-		for (int i = 0; i < objects.length; i++) {
-			try {
-				components[i] = (Component) objects[i];
-			}catch (Exception e) {
-				components[i]  = label(objects[i]);
-			}
-			
-		}
-		
-		JPanel panelHeader = buildPanelV2(panelRequestHeader, components);
-		return panelHeader;
-	}
-	
+	 
 	/**
 	 * 
 	 * @param colCount
@@ -278,7 +253,7 @@ public abstract class BasePage {
 	 * @return
 	 */
 	protected JPanel rowPanelHeader(int colCount, int colSize, Object...objects) {
-		return rowPanelHeader(fillArray(colCount, colSize), objects);
+		return rowPanel(fillArray(colCount, colSize), objects);
 	}
 	
 	/**
@@ -294,6 +269,7 @@ public abstract class BasePage {
 		
 		Component[] components = new Component[objects.length];
 		
+		int colIndex = 0;
 		for (int i = 0; i < objects.length; i++) {
 			if(objects[i] == null) {
 				objects[i] = "";
@@ -302,9 +278,14 @@ public abstract class BasePage {
 			try {
 				components[i]  = (Component) objects[i];
 			}catch (Exception e) {
-				components[i]  = label(objects[i]);
+				components[i]  = textFieldDisabled (objects[i], colSizes[colIndex]);
+				((JTextField) components[i]).setBackground(null);
 			}
+			colIndex++;
 			
+			if(colIndex >= colSizes.length  ) {
+				colIndex = 0;
+			}
 		}
 		Log.log("ROW PANEL--");
 		JPanel panel = buildPanelV2(panelRequest, components);
@@ -385,6 +366,29 @@ public abstract class BasePage {
 		textField.setFont(new Font("Arial", Font.PLAIN, 15));
 		return textField;
 	}
+	
+	protected JTextField textFieldDisabled(Object string) {
+		return textFieldDisabled(string, Integer.MAX_VALUE);
+	}
+	
+	protected JTextField textFieldDisabled(Object string, int maxWidth ) { 
+		if(null == string) {
+			string = "";
+		}
+		JTextField textfield = textFieldDisabled(string, 100, 20);
+		int characterLength = string.toString().trim().length();
+		int fontSize = textfield.getFont().getSize();
+		int width = characterLength  * fontSize  * 2/3;
+		
+		if(width> maxWidth) {
+			width = maxWidth;
+		}
+		
+		textfield.setSize(width,  fontSize);
+		textfield.setBorder(null);
+		return textfield;
+	}
+	
 	
 	protected JTextField textFieldDisabled(Object string, int width, int height) { 
 		

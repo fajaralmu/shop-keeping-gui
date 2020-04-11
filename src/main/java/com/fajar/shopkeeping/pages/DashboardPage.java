@@ -280,7 +280,7 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private JPanel cashflowSummaryHeader() {
-		return rowPanelHeader(COLUMN_SIZES, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
+		return rowPanel (COLUMN_SIZES, "Tanggal", "Jenis Aliran Kas", "Jumlah", "Nominal", "Opsi");
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private Component cashflowSummaryFooter(CashFlow totalCashFlow, CashFlow totalCostFlow) {
-		return rowPanelHeader(COLUMN_SIZES, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
+		return rowPanel (COLUMN_SIZES, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
 				"Pengeluaran", totalCostFlow.getAmount(), totalCostFlow.getCount());
 	}
 
