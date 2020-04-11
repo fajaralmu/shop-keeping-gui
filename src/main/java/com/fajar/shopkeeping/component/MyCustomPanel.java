@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import com.fajar.shopkeeping.util.Log;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -81,7 +83,7 @@ public class MyCustomPanel extends JPanel {
 		final Set<Integer> rows = componentsMap.keySet();
 
 		for (Integer key : rows) {
-
+			Log.log(">>>>>>>>>>>>>>>ROW:", key);
 			PanelRow panelRow = componentsMap.get(key);
 			int rowHeight = panelRow.getHeight();
 			List<Component> components = panelRow.getComponents();
@@ -97,7 +99,8 @@ public class MyCustomPanel extends JPanel {
 				int x = 0;
 
 				try {
-					int columnSize = colSizes[i];
+					final int columnSize = colSizes[i];
+					Log.log("columnSize: ",columnSize);
 					x = i == 0 ? 0 : i * (columnSize + margin * 2);
 					x = x + margin;
 

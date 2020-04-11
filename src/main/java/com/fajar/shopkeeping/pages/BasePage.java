@@ -226,6 +226,11 @@ public abstract class BasePage {
 		panelRequestHeader.setCenterAligment(true);
 		return panelRequestHeader;
 	}
+	protected PanelRequest rowPanelRequest(int[] colSizes) {
+		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(colSizes, 1, Color.orange);
+		panelRequestHeader.setCenterAligment(true);
+		return panelRequestHeader;
+	}
 	
 	/**
 	 * panel (as table) header & footer
@@ -316,8 +321,24 @@ public abstract class BasePage {
 		return ComponentBuilder.button(text, width, actionListener);
 	}
 	
-	
+	/**
+	 * Reversed column sizes
+	 * @param ints
+	 * @return
+	 */
+	protected static int[] intArray(int...ints) {
+		return reverseArray(PanelRequest.intArray(ints));
+	}
 
+	protected static int[] reverseArray(int[] array) {
+		
+		int[] newArray= new int[array.length]; 
+		for (int i = array.length - 1; i >= 0; i--) {
+			newArray[array.length - i - 1] = array[i]; 
+		}
+		return newArray;
+	}
+	
 	protected static JLabel label(Object title) {
 		
 		return ComponentBuilder.label(title );

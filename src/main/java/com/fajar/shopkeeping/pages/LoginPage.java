@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.handler.LoginHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.util.Log;
 
 import lombok.Data;
 
@@ -49,8 +50,9 @@ public class LoginPage extends BasePage {
 		usernameField = textField("admin123");
 		passwordField = passwordField("123");
 		
-		PanelRequest panelRequest = new PanelRequest(2, 100, 20, 15, Color.WHITE, 10, 10, 0, 0, true);
-	 
+		
+		PanelRequest panelRequest = new PanelRequest(intArray(64, 100), 20, 15, Color.WHITE, 10, 10, 0, 0, true);
+		Log.log("LOGIN PAGE**");
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest, 
 				label("Username"), usernameField, 
 				label("Password") ,passwordField,

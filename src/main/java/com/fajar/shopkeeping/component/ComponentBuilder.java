@@ -8,7 +8,6 @@ import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,16 @@ import com.fajar.shopkeeping.util.ThreadUtil;
 
 public class ComponentBuilder {
 
+	
+	public static int[] fillArray(int length, int valueForAllItem) {
+		 
+		int[] array = new int[length];
+		for(int i =0 ;i< length; i++) {
+			array[i] = valueForAllItem;
+		}
+		return array ;
+	}
+	
 	/**
 	 * build grid panel v1
 	 * @param panelRequest
@@ -149,9 +158,11 @@ public class ComponentBuilder {
 	 */
 	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
 
-		int column = panelRequest.column;
-		int width = panelRequest.width;
-		int height = panelRequest.height;
+		boolean useColSizes = panelRequest.column == 0;
+		Log.log("useColSizes: ",useColSizes);
+		int column = useColSizes ? panelRequest.colSizes.length : panelRequest.column;
+		
+//		int height = panelRequest.height;
 		int margin = panelRequest.margin;
 		Color color = panelRequest.color;
 
@@ -164,11 +175,9 @@ public class ComponentBuilder {
 		/**
 		 * set column sizes
 		 */
-		int[] colSizes = new int[column];
-		for (int i = 1; i <= column; i++) {
-			colSizes[i - 1] = width;
-		}
-
+		int[] colSizes = useColSizes ? panelRequest.colSizes : fillArray(column, panelRequest.width);
+		 
+		
 		MyCustomPanel customPanel = new MyCustomPanel(colSizes);
 		customPanel.setMargin(margin);
 		customPanel.setCenterAlignment(panelRequest.isCenterAligment());
