@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.ComponentBuilder.label;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;

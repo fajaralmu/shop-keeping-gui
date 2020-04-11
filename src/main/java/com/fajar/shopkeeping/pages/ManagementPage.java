@@ -2,6 +2,7 @@ package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.buildInlineComponent;
 import static com.fajar.shopkeeping.component.ComponentBuilder.buildVerticallyInlineComponent;
+import static com.fajar.shopkeeping.component.ComponentBuilder.label;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
@@ -355,9 +356,7 @@ public class ManagementPage extends BasePage {
 	 * 
 	 * @return
 	 */
-	private JPanel generateEntityForm() {
-
-		
+	private JPanel generateEntityForm() { 
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -374,7 +373,7 @@ public class ManagementPage extends BasePage {
 
 			Field entityField = EntityUtil.getDeclaredField(entityClass, elementId);
 			Class<?> fieldType = entityField.getType();
-			JLabel lableName = ComponentBuilder.label(element.getLableName(), SwingConstants.LEFT); 
+			JLabel lableName = label(element.getLableName(), SwingConstants.LEFT); 
 			lableName.setSize(100, 20);
 			String elementType = element.getType();
 			boolean skipFormField = false;
@@ -395,7 +394,7 @@ public class ManagementPage extends BasePage {
 				inputComponent = helper.buildDynamicComboBox(element, fieldType);
 			} else if (element.isIdentity()) {
 				
-				inputComponent = textFieldDisabled("ID"); 
+				inputComponent = textFieldDisabled("ID", 100, 20); 
 				setIdFieldName(elementId);
 				
 			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
@@ -543,7 +542,7 @@ public class ManagementPage extends BasePage {
 						}
 					}  
 					
-					components[i + 1] = label(value);
+					components[i + 1] = textFieldDisabledBlank(value, columnWidth, 20);
 				} catch (IllegalArgumentException | IllegalAccessException e) { 
 					e.printStackTrace();
 				}

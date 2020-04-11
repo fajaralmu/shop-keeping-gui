@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Calendar;
@@ -193,13 +195,14 @@ public class DashboardPage extends BasePage {
 	 */
 	private JPanel todayCashflowCard(long count, long amount, String title) {
 
-		PanelRequest panelRequest = new PanelRequest(1, 150, 50, 5, Color.yellow, 0, 0, 0, 0, false);
+		PanelRequest panelRequest = new PanelRequest(1, 150, 50, 5, Color.LIGHT_GRAY, 0, 0, 0, 0, false);
 		panelRequest.setCenterAligment(true);
 
-		JPanel panel = buildPanelV2(panelRequest, title(title), label("Jumlah"), label(count), label("Nominal"),
+		JPanel panel = ComponentBuilder.buildVerticallyInlineComponent( 150, 
+				title(title), label("Jumlah"), label(count), label("Nominal"),
 				label(amount));
 
-		Border border = BorderFactory.createBevelBorder(BevelBorder.RAISED);
+		Border border = BorderFactory.createLineBorder(Color.GRAY, 2);
 
 		panel.setBorder(border);
 		return panel;

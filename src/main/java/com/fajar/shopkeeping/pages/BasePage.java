@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.fillArray;
+import static com.fajar.shopkeeping.component.ComponentBuilder.label;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -32,6 +33,7 @@ import javax.swing.text.JTextComponent;
 
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
@@ -345,13 +347,11 @@ public abstract class BasePage {
 	 * ================================== COMPONENT INSTANCES
 	 * ==================================
 	 */
-
 	protected JLabel title(String title, int fontSize) {
 		return ComponentBuilder.title(title, fontSize);
 	}
-	
 	protected JLabel title(String title) {
-		return title(title, 20);
+		return ComponentBuilder.title(title, 20);
 	}
 	
 	protected JButton button(Object text) {
@@ -370,20 +370,7 @@ public abstract class BasePage {
 	protected static int[] intArray(int...ints) {
 		return  (PanelRequest.intArray(ints));
 	}
-
-	
-	
-	protected static JLabel label(Object title) {
-		
-		return ComponentBuilder.label(title );
-	}
-	
-	protected static JLabel label(Object title, int horizontalAligment) {
-		
-		return ComponentBuilder.label(title, horizontalAligment );
-	}
-	
-	
+    
 	protected JPasswordField passwordField(String string) { 
 		
 		JPasswordField label = new JPasswordField(string); 
@@ -399,11 +386,24 @@ public abstract class BasePage {
 		return textField;
 	}
 	
-	protected JTextField textFieldDisabled(String string) { 
+	protected JTextField textFieldDisabled(Object string, int width, int height) { 
 		
-		JTextField textField = textField(string);
+		if(null == string) {
+			string = "";
+		}
+		
+		JTextField textField = textField(string.toString());
+		ComponentModifier.changeSize(textField, width, height);
 		textField.setEditable(false);
 		return textField;
+	}
+	
+	protected JTextField textFieldDisabledBlank(Object string, int width, int height) {
+		JTextField textField = textFieldDisabled(string, width, height);
+		textField.setBackground(null);
+		textField.setBorder(null);
+		return textField;
+		
 	}
 	
 	/**

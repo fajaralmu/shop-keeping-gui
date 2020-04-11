@@ -354,28 +354,29 @@ public class ComponentBuilder {
 
 	/**
 	 * common jLabel
-	 * @param title
+	 * @param text
 	 * @param horizontalAligment SwingConstants
 	 * @return
 	 */
-	public static JLabel label(Object title, int horizontalAligment) {
-		if(null == title) {
-			title = "";
+	public static JLabel label(Object text, int horizontalAligment) {
+		if(null == text) {
+			text = "";
 		}
 
-		if (isNumber(title)) {
+		if (isNumber(text)) {
 			try {
-				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+				text = StringUtil.beautifyNominal(Long.parseLong(text.toString()));
 			}catch (Exception e) {
-				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
+				text = StringUtil.beautifyNominal(Long.parseLong(text.toString()));
 			}
 		}
 		 
-		int width = title.toString().length() * 10;
+		
 
-		JLabel label = new JLabel(title.toString(), horizontalAligment);
+		JLabel label = new JLabel(text.toString(), horizontalAligment);
 		label.setFont(new Font("Arial", Font.PLAIN, 15));
-		label.setSize(width, 20);
+		int width = text.toString().length() * (label.getFont().getSize() * 2/3);
+		label.setSize(width, label.getFont().getSize());
 		return label;
 	}
 	
@@ -490,6 +491,7 @@ public class ComponentBuilder {
 			}
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, null);
+		panelRequest.setCenterAligment(true);
 		Object[] components_ = components;
 		return buildPanelV2(panelRequest, components_ );
 	}

@@ -1,5 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

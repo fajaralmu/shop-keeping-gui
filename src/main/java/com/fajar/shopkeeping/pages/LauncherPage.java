@@ -30,7 +30,7 @@ public class LauncherPage extends BasePage {
 				title("DESA TRIKARSO", 50),
 				title("SRUWENG", 50),
 				title("KEBUMEN", 50),
-				label("Silakan Login Untuk Melanjutkan"), 
+				ComponentBuilder.label("Silakan Login Untuk Melanjutkan"), 
 				navigateLoginButton); 
 
 		parentPanel.add(mainPanel);
