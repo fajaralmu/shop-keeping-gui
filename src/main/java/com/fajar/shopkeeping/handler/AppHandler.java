@@ -3,6 +3,8 @@ package com.fajar.shopkeeping.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.web.client.ResourceAccessException;
+
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -81,9 +83,11 @@ public class AppHandler {
 
 		try {
 			getAppId();
+		  
 		} catch (Exception e) {
 			e.printStackTrace();
 			Dialogs.error("Error Occured: " + e.getMessage());
+			System.exit(1);
 			return;
 		}
 

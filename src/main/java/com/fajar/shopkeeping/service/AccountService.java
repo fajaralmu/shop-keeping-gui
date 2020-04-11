@@ -59,9 +59,10 @@ public class AccountService extends BaseService{
 					ShopApiResponse response = callRequestAppId();
 					callback.handle(response );
 				} catch (ResourceAccessException e) {
-					e.printStackTrace();
 					Dialogs.error("Error requesting app id: " + e.getMessage());
+					Dialogs.info("App terminated");
 					System.exit(1);
+					
 				} catch (Exception e) { 
 					e.printStackTrace();
 				} finally {
