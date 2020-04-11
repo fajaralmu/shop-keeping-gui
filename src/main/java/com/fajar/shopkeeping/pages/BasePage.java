@@ -236,7 +236,7 @@ public abstract class BasePage {
 	 * @return
 	 */
 	protected PanelRequest rowPanelRequest(int[] colSizes) {
-		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(colSizes, 1, Color.orange);
+		PanelRequest panelRequestHeader = PanelRequest.autoPanelNonScroll(colSizes, 5, Color.orange);
 		panelRequestHeader.setCenterAligment(true);
 		return panelRequestHeader;
 	}

@@ -171,13 +171,13 @@ public class MyCustomPanel extends JPanel {
 
 	private int calculateWidth() { 
 
-		int width = centerAligment ? 0 : margin;
+		int width =  margin;
 
 		for (int colSize : colSizes) {
-			width += colSize;
-			if (!centerAligment) {
-				width += margin * 2;
-			}
+			width += colSize + margin;
+//			if (!centerAligment) {
+//				width += margin * 2;
+//			}
 		}
 
 		return width + margin;
