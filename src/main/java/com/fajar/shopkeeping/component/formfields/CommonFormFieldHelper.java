@@ -69,6 +69,14 @@ public class CommonFormFieldHelper {
 		boolean firstSeparated = false;
 		boolean lastSeparated = false;
 
+		int prevPage = page.getSelectedPage() - 1;
+		if(prevPage < 0) {
+			prevPage = buttonCount;
+		}
+		
+		JButton prevButton =  createNavButton("prev", prevPage, false);
+		navButtons.add(prevButton);
+		
 		for (int i = 0; i < buttonCount; i++) {
 			int buttonValue = i * 1 + 1;
 			boolean included = false;
@@ -97,7 +105,13 @@ public class CommonFormFieldHelper {
 			navButtons.add(button);
 		}
 
-//		let nextPage = currentPage == buttonCount - 1 ? currentPage : currentPage + 1;
+		int nextPage = page.getSelectedPage() + 1;
+		if(nextPage > buttonCount) {
+			nextPage = 0;
+		}
+		
+		JButton nextButton =  createNavButton("next", nextPage, false);
+		navButtons.add(nextButton);
 		
 		return ComponentUtil.toArrayOfComponent(navButtons);
 	}

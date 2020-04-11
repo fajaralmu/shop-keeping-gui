@@ -125,7 +125,6 @@ public class DashboardPage extends BasePage {
 			return;
 		}
 		
-		
 		setMenuItemLogout(new JMenuItem("Logout"));
 		setMenuItemProduct(new JMenuItem("Product"));
 		setMenuItemUnit(new JMenuItem("Unit"));
@@ -133,18 +132,17 @@ public class DashboardPage extends BasePage {
 		setMenuItemCustomer(new JMenuItem("Customer"));
 		setMenuItemCategory(new JMenuItem("Category"));
 		setMenuItemTransaction(new JMenuItem("List Transction"));
-		setMenuItemCostFlow(new JMenuItem("Cost Flow"));
-		setMenuItemCostType(new JMenuItem("Cost Type"));
+		setMenuItemCostFlow(new JMenuItem("Pengeluaran Biaya"));
+		setMenuItemCostType(new JMenuItem("Jenis Biaya"));
 		setMenuItemTransactionSupply(new JMenuItem("Supply"));
 		setMenuItemProductFlow(new JMenuItem("Product Flow"));
 		setMenuItemTransactionSelling(new JMenuItem("Selling"));
 		
         JMenu managementMenu = new JMenu("Management"); 
-        managementMenu.add(menuItemProduct);
-        
+        managementMenu.add(menuItemProduct); 
         managementMenu.add(menuItemSupplier);
         managementMenu.add(menuItemCustomer);
-        managementMenu.add(menuItemCostFlow);
+        
         
         JMenu settingMenu = new JMenu("Setting");
         settingMenu.add(menuItemCostType);
@@ -159,6 +157,7 @@ public class DashboardPage extends BasePage {
 		transactionMenu.add(menuItemTransactionSelling);
 		transactionMenu.add(menuItemTransaction); 
 		transactionMenu.add(menuItemProductFlow);
+		transactionMenu.add(menuItemCostFlow);
 		
 		menuBar.add(accountMenu ); 
 		menuBar.add(settingMenu);
