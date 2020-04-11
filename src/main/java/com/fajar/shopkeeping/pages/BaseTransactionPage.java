@@ -37,7 +37,6 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType;
 import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
@@ -88,7 +87,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	@Override
 	public void initComponent() { 
 		
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);   
+		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 1, Color.WHITE, 30, 30, 0, 0, false, true);   
 		buttonSubmitCart = button("Submit To Cart");
  		buttonClearCart = button("Clear");
  		buttonSubmitTransaction = button("SUBMIT TRANSACTION");

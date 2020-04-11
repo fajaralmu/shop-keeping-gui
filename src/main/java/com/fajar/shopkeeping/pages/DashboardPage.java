@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -254,7 +255,7 @@ public class DashboardPage extends BasePage {
 			CashFlow cashflow = cashflowMap.get(key);
 			CashFlow costflow = costflowMap.get(key);
 
-			JPanel panelRow = buildCashflowSummaryTableRow(key, cashflow, costflow);
+			JPanel panelRow = buildCashflowSummaryTableRow(key,(cashflow), costflow);
 
 			components[index] = panelRow;
 
@@ -289,8 +290,13 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private Component cashflowSummaryFooter(CashFlow totalCashFlow, CashFlow totalCostFlow) {
-		return rowPanel (COLUMN_SIZES, "TOTAL", "Pemasukan", totalCashFlow.getAmount(), totalCashFlow.getCount(), "", "",
-				"Pengeluaran", totalCostFlow.getAmount(), totalCostFlow.getCount());
+		return rowPanel (COLUMN_SIZES, 
+				"TOTAL", "Pemasukan", 
+				beautifyNominal(totalCashFlow.getAmount()), 
+						beautifyNominal(totalCashFlow.getCount()),
+						"", "", "Pengeluaran", 
+						beautifyNominal(totalCostFlow.getAmount()), 
+						beautifyNominal(totalCostFlow.getCount()));
 	}
 
 	/**
@@ -309,8 +315,13 @@ public class DashboardPage extends BasePage {
 		JButton buttonDetail = button("Detail");
 		buttonDetail.addActionListener(getHandler().getDailyCashflow(day, filter.getMonth(), filter.getYear()));
 
-		JPanel panel = rowPanel(COLUMN_SIZES, color, day, "Pemasukan", income.getAmount(), income.getCount(), buttonDetail,
-				"", "Pembelian", cost.getAmount(), cost.getCount());
+		String amountCost = beautifyNominal(cost.getAmount());
+		String amountCash = beautifyNominal(income.getAmount());
+		String countCost = beautifyNominal(cost.getCount());
+		String countCash = beautifyNominal(income.getCount());
+		
+		JPanel panel = rowPanel(COLUMN_SIZES, color, day, "Pemasukan", amountCash, countCash, buttonDetail,
+				"", "Pembelian", amountCost, countCost);
 		return panel;
 	}
 

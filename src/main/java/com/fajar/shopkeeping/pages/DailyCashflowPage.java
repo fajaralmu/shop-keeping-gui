@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -110,7 +111,9 @@ public class DailyCashflowPage extends BasePage {
 			CashFlow cashflow 	= dailyCashflowMap.get(key); 
 			Product product 	= cashflow.getProduct();
 			String productName 	= product.getName().length() > 30 ? product.getName().substring(0, 30) :  product.getName();
-			components[index] 	= rowPanel(COLUMN_SIZES, index, productName, cashflow.getCount(), cashflow.getAmount());
+			components[index] 	= rowPanel(COLUMN_SIZES, index, productName, 
+					beautifyNominal(cashflow.getCount()), 
+					beautifyNominal(cashflow.getAmount()));
 			
 			count+=cashflow.getCount();
 			amount+=cashflow.getAmount();
@@ -128,7 +131,8 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	private Component dailyCashflowFooter(long count, long amount) { 
-		return rowPanel (COLUMN_SIZES, "TOTAL", null, count, amount);
+		return rowPanel (COLUMN_SIZES, "TOTAL", null,   
+				beautifyNominal(count), beautifyNominal(amount));
 	}
 
 	private Component dailyCashflowHeader() {
