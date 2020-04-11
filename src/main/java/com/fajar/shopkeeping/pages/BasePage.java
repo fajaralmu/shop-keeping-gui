@@ -4,6 +4,7 @@ import static com.fajar.shopkeeping.component.ComponentBuilder.fillArray;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -392,17 +393,17 @@ public abstract class BasePage {
 
 	protected JTextField textField(String string) { 
 		
-		JTextField label = new JTextField(string); 
-		label.setSize(100, 20);
-		return label;
+		JTextField textField = new JTextField(string); 
+		textField.setSize(100, 20);
+		textField.setFont(new Font("Arial", Font.PLAIN, 15));
+		return textField;
 	}
 	
 	protected JTextField textFieldDisabled(String string) { 
 		
-		JTextField label = new JTextField(string); 
-		label.setSize(100, 20);
-		label.setEditable(false);
-		return label;
+		JTextField textField = textField(string);
+		textField.setEditable(false);
+		return textField;
 	}
 	
 	/**
@@ -459,6 +460,7 @@ public abstract class BasePage {
 	}
 	
 	protected JTextArea textArea(Object defaultValue) {
+		
 		return ComponentBuilder.textarea(defaultValue);
 	}
 	

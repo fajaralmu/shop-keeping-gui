@@ -8,6 +8,7 @@ import static com.fajar.shopkeeping.service.AppContext.getContext;
 import static com.fajar.shopkeeping.util.ComponentUtil.toArrayOfComponent;
 import static com.fajar.shopkeeping.util.EntityUtil.getDeclaredField;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
+import static java.awt.Color.white;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -356,7 +357,7 @@ public class ManagementPage extends BasePage {
 	 */
 	private JPanel generateEntityForm() {
 
-		PanelRequest panelRequest = autoPanelNonScroll(1, 420, 2, Color.WHITE);
+		
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -374,6 +375,7 @@ public class ManagementPage extends BasePage {
 			Field entityField = EntityUtil.getDeclaredField(entityClass, elementId);
 			Class<?> fieldType = entityField.getType();
 			JLabel lableName = ComponentBuilder.label(element.getLableName(), SwingConstants.LEFT); 
+			lableName.setSize(100, 20);
 			String elementType = element.getType();
 			boolean skipFormField = false;
 			
@@ -434,8 +436,9 @@ public class ManagementPage extends BasePage {
 		}
 		
 		formComponents.add(actionButtons );
-
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, 420, 2, Color.WHITE, 450, 550);
 		JPanel formPanel = buildPanelV2(panelRequest, toArrayOfComponent(formComponents));
+		formPanel.setBackground(white);
 		return formPanel;
 	}
 	
@@ -555,7 +558,7 @@ public class ManagementPage extends BasePage {
 			listComponents.add(rowPanel);
 		}
 		
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 500, 450);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 520, 450);
 		
 		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
 //		

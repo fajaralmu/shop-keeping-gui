@@ -130,7 +130,7 @@ public class MyCustomPanel extends JPanel {
 
 			currentHeight = currentHeight + margin + rowHeight; 
 		}
-		customHeight = currentHeight + margin;
+		customHeight = currentHeight + margin*2;
 		customWidth = calculateWidth();
 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);

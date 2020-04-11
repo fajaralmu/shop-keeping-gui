@@ -12,6 +12,7 @@ import javax.activity.InvalidActivityException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
@@ -57,9 +58,12 @@ public class AccountService extends BaseService{
 				try {
 					ShopApiResponse response = callRequestAppId();
 					callback.handle(response );
-				} catch (Exception e) {
+				} catch (ResourceAccessException e) {
 					e.printStackTrace();
 					Dialogs.error("Error requesting app id: " + e.getMessage());
+					System.exit(1);
+				} catch (Exception e) { 
+					e.printStackTrace();
 				} finally {
 					Loadings.end();
 				}
