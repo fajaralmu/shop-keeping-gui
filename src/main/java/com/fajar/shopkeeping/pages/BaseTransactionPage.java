@@ -71,6 +71,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	@Setter(value = AccessLevel.NONE)
 	protected Product selectedProduct; 
 	protected int quantity; 
+	protected long grandTotalPrice = 0l;
 	
 	protected ProductFlow managedProductFlow;
 	protected List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 

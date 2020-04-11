@@ -1,39 +1,33 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 import static javax.swing.SwingConstants.LEFT;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.JTextField;
 
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
-import com.fajar.shopkeeping.util.StringUtil;
 
 import lombok.Data;
 
@@ -47,6 +41,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	private JComboBox customerComboBox;
 	private JLabel labelRemainingQty;
 	private JLabel labelProductPrice;
+	private JTextField inputCustomerPayment;
+	private JLabel labelTotalChange;
 	
 	public SellingTransactionPage() { 
 		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Selling");
@@ -60,10 +56,40 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
 		
 		//fields  
-		addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	 
+		addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	
+		addKeyListener(inputCustomerPayment, inputCustomerPaymentKeyListener(), false);
 		super.initEvent();
 	} 
 	
+	private KeyListener inputCustomerPaymentKeyListener() { 
+		return new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) { }
+			
+			@Override
+			public void keyReleased(KeyEvent e) { 
+				JTextField textfield = (JTextField) e.getSource();
+				try {
+					long value = Long.valueOf(textfield.getText());
+					long change = value - grandTotalPrice;
+					
+					if(change > 0l) {					
+						setText(labelTotalChange, beautifyNominal(change));
+					}else {
+						setText(labelTotalChange, "( - )" + beautifyNominal(Math.abs(change)));
+					}
+					
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) { }
+		};
+	}
+
 	@Override
 	protected ActionListener submitTransactionListener() { 
 		return new ActionListener() {
@@ -150,11 +176,14 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		clearLabel(labelProductPrice); 
 		clearLabel(labelProductUnit);
 		clearLabel(labelRemainingQty);
+		clearLabel(labelTotalChange); 
 		
 		if(clearCustomer) {
 			selectedCustomer = null;
 			clearComboBox(customerComboBox);
 			labelTotalPrice.setText("0");
+			clearTextField(inputCustomerPayment);
+			grandTotalPrice = 0l;
 		}
 		
 		setEditMode(false);
@@ -190,26 +219,35 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
 		
 		inputQtyField = numberField("0"); 
+		inputCustomerPayment = numberField("0");
 		 		
  		labelProductUnit = label("unit", LEFT);
  		labelProductUnit.setSize(200, 20);
  		
  		labelRemainingQty = label("Remaining Quantity", LEFT);
  		labelProductPrice = label("Price @ Unit", LEFT);
+ 		
  		labelTotalPrice = label("Total Price", LEFT);
  		labelTotalPrice.setSize(300, 20);
+ 		
+ 		labelTotalChange = label("",LEFT);
+ 		labelTotalChange.setSize(300, 20);
 		 		
+ 		JPanel panelRemainingStock = ComponentBuilder.buildInlineComponent(140, labelRemainingQty, labelProductUnit);
+ 		
  		PanelRequest panelRequest = getFormFieldPanelRequest();
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
 				label("Customer", LEFT), customerComboBox,
 				label("Product", LEFT), productComboBox,
 				label("Unit Price", LEFT), labelProductPrice,
-				label("Stock", LEFT), labelRemainingQty,
+				label("Stock", LEFT), panelRemainingStock,
 				label("Quantity", LEFT), inputQtyField,
-				label("Unit", LEFT), labelProductUnit, 
+//				label("Unit", LEFT), labelProductUnit, 
 				buttonSubmitCart, buttonClearCart,
 				buttonSubmitTransaction, null,
-				label("Total Price"), labelTotalPrice
+				label("Total Price", LEFT), labelTotalPrice,
+				label("Payment", LEFT), inputCustomerPayment,
+				label("Change", LEFT), labelTotalChange
 				);
 		return panel ;
 	}
@@ -251,6 +289,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		PanelRequest panelRequest = getProductListPanelRequest(columnWidth, colSize);
 		
 		setText(labelTotalPrice, beautifyNominal(grandTotalPrice));
+		this.grandTotalPrice = grandTotalPrice;
 		
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;

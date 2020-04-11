@@ -424,7 +424,7 @@ public abstract class BasePage {
 	 * @param elementId
 	 * @return
 	 */
-	protected KeyListener textFieldKeyListener(final JTextField inputComponent, final String fieldName) {
+	protected KeyListener textFieldKeyListener(final Component notUsed, final String fieldName) {
 		
 		try {
 			final Field field = EntityUtil.getDeclaredField(getClass(), fieldName);
@@ -443,6 +443,7 @@ public abstract class BasePage {
 				@Override
 				public void keyReleased(KeyEvent e) {
 					Log.log("HELLO");
+					final JTextField inputComponent = (JTextField) e.getSource();
 					Object value = inputComponent.getText();
 					
 					if(value == null) {
