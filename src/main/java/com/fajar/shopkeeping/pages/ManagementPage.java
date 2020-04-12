@@ -466,7 +466,6 @@ public class ManagementPage extends BasePage {
 	public JLabel getImagePreviewLabelForMultipleImages(String elementId, int index) {
 		return multipleImagePreviews.get(elementId).get(index); 
 	}
-	 
 	
 	/**
 	 * CRUID DATA TABLE

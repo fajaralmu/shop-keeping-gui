@@ -2,6 +2,7 @@ package com.fajar.shopkeeping.component;
 
 import java.awt.Component;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,11 +92,15 @@ public class MyCustomPanel extends JPanel {
 		} 
 		return xPosition;
 	}
+	
+	
 
 	private void calculateComponentsPosition() {
 
 		int currentHeight = 0;
 		final Set<Integer> rows = componentsMap.keySet();
+		final List<Component> lastComponentEachRow = new ArrayList<Component>();
+		int lastX = 0;
 //		Log.log("----------------------start-------------------");
 		for (Integer key : rows) {
 //			Log.log(">>>>>>>>>>>>>>>ROW:", key);
@@ -117,21 +122,22 @@ public class MyCustomPanel extends JPanel {
 				
 				try { 
 					Log.log("columnSize: ", columnSize);
-					x =  getXPosition(i, component); 
+					x = getXPosition(i, component); 
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
 				} 
+				lastX = x + (columnSize > component.getWidth()? columnSize : component.getWidth()) + margin;
 				// update location
 				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
 
 			}
-
+			lastComponentEachRow.add(componentsMap.get(key).getComponents().get(components.size()-1));
 			currentHeight = currentHeight + margin + rowHeight; 
 		}
 		customHeight = currentHeight + margin*2;
-		customWidth = calculateWidth();
+		customWidth = calculateWidth(lastComponentEachRow);
 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
 	}
@@ -152,16 +158,22 @@ public class MyCustomPanel extends JPanel {
 
 	}
 
-	private int calculateWidth() { 
+	private int calculateWidth(List<Component> lastComponentEachRow) { 
 
-		int width =  margin;
-
-		for (int colSize : colSizes) {
-			width += colSize + margin;
-//			if (!centerAligment) {
-//				width += margin * 2;
-//			}
+		int width = 0;
+		for (Component component : lastComponentEachRow) {
+			int componentWidth = component.getX() + component.getWidth();
+			if(componentWidth > width) {
+				width = componentWidth;
+			}
 		}
+
+//		for (int colSize : colSizes) {
+//			width += margin + colSize + margin;
+////			if (!centerAligment) {
+////				width += margin * 2;
+////			}
+//		}
 
 		return width + margin;
 	}
