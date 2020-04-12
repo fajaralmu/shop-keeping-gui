@@ -552,13 +552,19 @@ public class ManagementPage extends BasePage {
 			components[colSize - 1] = idExist ? helper.editButton(idFieldName, idValue) : label("-");
 			
 			sequenceNumber++;
+			
+			
+			
 			JPanel rowPanel = rowPanel(colSize , columnWidth, components);
 			listComponents.add(rowPanel);
 		}
 		
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 520, 450);
 		
-		JPanel panel = buildPanelV2(panelRequest, toArrayOfComponent(listComponents));
+		Component[] arrayOfComponents = toArrayOfComponent(listComponents);
+		synchronizeComponentWidth(arrayOfComponents);
+		
+		JPanel panel = buildPanelV2(panelRequest, (arrayOfComponents));
 //		
 //		PanelRequest panelRequest2 = PanelRequest.autoPanelNonScroll(1, 510, 5, Color.white);
 		return panel;

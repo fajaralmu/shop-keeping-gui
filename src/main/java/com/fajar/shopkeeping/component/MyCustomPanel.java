@@ -100,7 +100,7 @@ public class MyCustomPanel extends JPanel {
 		int currentHeight = 0;
 		final Set<Integer> rows = componentsMap.keySet();
 		final List<Component> lastComponentEachRow = new ArrayList<Component>();
-		int lastX = 0;
+		 
 //		Log.log("----------------------start-------------------");
 		for (Integer key : rows) {
 //			Log.log(">>>>>>>>>>>>>>>ROW:", key);
@@ -128,7 +128,7 @@ public class MyCustomPanel extends JPanel {
 					e.printStackTrace();
 					continue loop;
 				} 
-				lastX = x + (columnSize > component.getWidth()? columnSize : component.getWidth()) + margin;
+			 
 				// update location
 				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
 

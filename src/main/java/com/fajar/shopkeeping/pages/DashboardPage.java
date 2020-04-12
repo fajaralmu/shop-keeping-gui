@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import com.fajar.dto.Filter;
@@ -257,6 +256,8 @@ public class DashboardPage extends BasePage {
 
 			JPanel panelRow = buildCashflowSummaryTableRow(key,(cashflow), costflow);
 
+			 
+			
 			components[index] = panelRow;
 
 			updateCountAndAmount(totalCostflow, costflow);
@@ -267,7 +268,9 @@ public class DashboardPage extends BasePage {
 
 		// footer
 		components[components.length - 1] = cashflowSummaryFooter(totalCashflow, totalCostflow);
-
+		
+		synchronizeComponentWidth(components);
+		
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, 500, 1, Color.LIGHT_GRAY, 260);
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
