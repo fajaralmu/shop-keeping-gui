@@ -5,6 +5,7 @@ import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,8 @@ import javax.swing.border.Border;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
+import com.fajar.entity.Capital;
+import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -82,6 +85,8 @@ public class DashboardPage extends BasePage {
 	
 	private JMenuItem menuItemVoucher;
 	private JMenuItem menuItemCustomerVoucher;
+	private JMenuItem menuItemCapital;
+	private JMenuItem menuItemCapitalFLow;
 	
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
@@ -130,26 +135,32 @@ public class DashboardPage extends BasePage {
 	}
 
 	
+	public JMenuItem menuItem(String text) {
+		return new JMenuItem(text);
+	}
+	
 	@Override
 	protected void constructMenu() { 
 		if(menuBar.getMenuCount()>0) {
 			return;
 		}
 		
-		setMenuItemLogout(new JMenuItem("Logout"));
-		setMenuItemProduct(new JMenuItem("Product"));
-		setMenuItemUnit(new JMenuItem("Unit"));
-		setMenuItemSupplier(new JMenuItem("Supplier"));
-		setMenuItemCustomer(new JMenuItem("Customer"));
-		setMenuItemCategory(new JMenuItem("Category"));
-		setMenuItemTransaction(new JMenuItem("List Transction"));
-		setMenuItemCostFlow(new JMenuItem("Pengeluaran Biaya"));
-		setMenuItemCostType(new JMenuItem("Jenis Biaya"));
-		setMenuItemTransactionSupply(new JMenuItem("Supply"));
-		setMenuItemProductFlow(new JMenuItem("Product Flow"));
-		setMenuItemTransactionSelling(new JMenuItem("Selling"));
-		setMenuItemVoucher(new JMenuItem("Data Voucher"));
-		setMenuItemCustomerVoucher(new JMenuItem("Member Voucher"));
+		setMenuItemLogout(menuItem("Logout"));
+		setMenuItemProduct(menuItem("Product"));
+		setMenuItemUnit(menuItem("Unit"));
+		setMenuItemSupplier(menuItem("Supplier"));
+		setMenuItemCustomer(menuItem("Customer"));
+		setMenuItemCategory(menuItem("Category"));
+		setMenuItemTransaction(menuItem("List Transction"));
+		setMenuItemCostFlow(menuItem("Cost Data"));
+		setMenuItemCostType(menuItem("Cost Type"));
+		setMenuItemTransactionSupply(menuItem("Supply"));
+		setMenuItemProductFlow(menuItem("Product Flow"));
+		setMenuItemTransactionSelling(menuItem("Selling"));
+		setMenuItemVoucher(menuItem("Voucher Type"));
+		setMenuItemCustomerVoucher(menuItem("Member Voucher Data"));
+		setMenuItemCapital(menuItem("Capital Type"));
+		setMenuItemCapitalFLow(menuItem("Capital Data"));
 
 		
         JMenu managementMenu = new JMenu("Management"); 
@@ -161,6 +172,7 @@ public class DashboardPage extends BasePage {
         settingMenu.add(menuItemCostType);
         settingMenu.add(menuItemUnit);
         settingMenu.add(menuItemCategory);
+        settingMenu.add(menuItemCapital);
         
         JMenu accountMenu = new JMenu("Account"); 
 		accountMenu.add(menuItemLogout);
@@ -171,6 +183,7 @@ public class DashboardPage extends BasePage {
 		transactionMenu.add(menuItemTransaction); 
 		transactionMenu.add(menuItemProductFlow);
 		transactionMenu.add(menuItemCostFlow);
+		transactionMenu.add(menuItemCapitalFLow);
 		
 		JMenu voucherMenu = new JMenu("Voucher"); 
 		voucherMenu.add(menuItemVoucher);
@@ -412,21 +425,24 @@ public class DashboardPage extends BasePage {
 		//account
 		addActionListener(menuItemLogout, getHandler().logout());
 		//management
-		addActionListener(menuItemProduct, getHandler().managementNavigationListener(Product.class));
-		addActionListener(menuItemUnit, getHandler().managementNavigationListener(Unit.class));
-		addActionListener(menuItemSupplier, getHandler().managementNavigationListener(Supplier.class));
-		addActionListener(menuItemCategory, getHandler().managementNavigationListener(Category.class));
-		addActionListener(menuItemCustomer, getHandler().managementNavigationListener(Customer.class));
-		addActionListener(menuItemCostFlow, getHandler().managementNavigationListener(CostFlow.class)); 
-		addActionListener(menuItemCostType, getHandler().managementNavigationListener(Cost.class)); 
+		addActionListener(menuItemProduct, managementListener(Product.class));
+		addActionListener(menuItemUnit, managementListener(Unit.class));
+		addActionListener(menuItemSupplier, managementListener(Supplier.class));
+		addActionListener(menuItemCategory, managementListener(Category.class));
+		addActionListener(menuItemCustomer, managementListener(Customer.class));
+		addActionListener(menuItemCostFlow, managementListener(CostFlow.class)); 
+		addActionListener(menuItemCostType, managementListener(Cost.class)); 
 		
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
-		addActionListener(menuItemProductFlow, getHandler().managementNavigationListener(ProductFlow.class));
-		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
+		addActionListener(menuItemProductFlow, managementListener(ProductFlow.class));
+		addActionListener(menuItemTransaction, managementListener(Transaction.class)); 
 		
-		addActionListener(menuItemVoucher, getHandler().managementNavigationListener(Voucher.class)); 
-		addActionListener(menuItemCustomerVoucher, getHandler().managementNavigationListener(CustomerVoucher.class)); 
+		addActionListener(menuItemVoucher, managementListener(Voucher.class)); 
+		addActionListener(menuItemCustomerVoucher, managementListener(CustomerVoucher.class)); 
+		
+		addActionListener(menuItemCapital, managementListener(Capital.class)); 
+		addActionListener(menuItemCapitalFLow, managementListener(CapitalFlow.class)); 
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
@@ -435,6 +451,10 @@ public class DashboardPage extends BasePage {
 		addActionListener(comboBoxYear, comboBoxListener(comboBoxYear,"selectedYear")); 
 		
 		super.initEvent();
+	}
+	
+	private ActionListener managementListener(Class _class) {
+		return getHandler().managementNavigationListener(_class);
 	}
 
 	private DashboardHandler getHandler() {
