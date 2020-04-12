@@ -133,6 +133,7 @@ public class EntityUtil {
 							entityElement.setOptions(referenceEntityList);
 							entityElement.setJsonList( listToJson(referenceEntityList));
 						}
+						
 	
 					} else if (fieldType.equals(FIELD_TYPE_DYNAMIC_LIST)) {
 						 
@@ -143,7 +144,9 @@ public class EntityUtil {
 				if (field.getType().equals(Date.class) && field.getAnnotation(JsonFormat.class) == null) {
 					dateElements.add(entityElement.getId());
 				}
-				
+				if(formField.defaultValues().length > 0) {
+					entityElement.setDefaultValues(formField.defaultValues());
+				}
 				entityElements.add(entityElement);
 			}
 			entityProperty.setElementJsonList();

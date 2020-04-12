@@ -34,6 +34,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.springframework.util.StringUtils;
+
 import com.fajar.annotation.FormField;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.BaseEntity;
@@ -510,9 +512,17 @@ public class ManagementPage extends BasePage {
 						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
 							
 							String optionItemName = element.getOptionItemName();
-							Field converterField = EntityUtil.getDeclaredField(field.getType(), optionItemName);
-							Object converterValue = converterField.get(value);
-							value = converterValue;
+							
+							if(null != optionItemName && StringUtils.isEmpty(optionItemName) == false) {
+								
+								Field converterField = EntityUtil.getDeclaredField(field.getType(), optionItemName);
+								Object converterValue = converterField.get(value);
+								value = converterValue;
+								
+							}else {
+								Log.log("value: ",value);
+								value = value.toString(); 
+							}
 							
 						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
 						

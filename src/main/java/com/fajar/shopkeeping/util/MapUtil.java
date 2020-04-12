@@ -37,12 +37,13 @@ public class MapUtil {
 			for (Object key : mapKeys) {
 				Object value = map.get(key);
 				Field field = EntityUtil.getDeclaredField(objectClass, key.toString()); 
-				
+				 
 				try {  
 					
 					if (value != null && field != null) {
 
-						Class<?> fieldType = field.getType();
+						Class  fieldType = field.getType();
+						boolean isEnum = fieldType.isEnum();
 						
 						/**
 						 * mapValue is map
@@ -80,6 +81,12 @@ public class MapUtil {
 							 */
 							if(objectEquals(fieldType, long.class ,Long.class) && value.getClass().equals(Date.class)) {
 								value = ((Date) value).getTime();
+						}else
+							/**
+							 * ENUM
+							 */
+							if(isEnum) {
+								value = Enum.valueOf(fieldType, value.toString());
 							}
 							
 

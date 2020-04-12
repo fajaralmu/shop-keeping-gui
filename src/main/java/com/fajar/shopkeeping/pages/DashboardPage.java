@@ -24,11 +24,13 @@ import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
 import com.fajar.entity.Customer;
+import com.fajar.entity.CustomerVoucher;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
 import com.fajar.entity.Transaction;
 import com.fajar.entity.Unit;
+import com.fajar.entity.Voucher;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
@@ -77,6 +79,9 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemCostFlow;
 	private JMenuItem menuItemCostType;
 	private JMenuItem menuItemProductFlow;
+	
+	private JMenuItem menuItemVoucher;
+	private JMenuItem menuItemCustomerVoucher;
 	
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
@@ -143,12 +148,14 @@ public class DashboardPage extends BasePage {
 		setMenuItemTransactionSupply(new JMenuItem("Supply"));
 		setMenuItemProductFlow(new JMenuItem("Product Flow"));
 		setMenuItemTransactionSelling(new JMenuItem("Selling"));
+		setMenuItemVoucher(new JMenuItem("Data Voucher"));
+		setMenuItemCustomerVoucher(new JMenuItem("Member Voucher"));
+
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct); 
         managementMenu.add(menuItemSupplier);
-        managementMenu.add(menuItemCustomer);
-        
+        managementMenu.add(menuItemCustomer); 
         
         JMenu settingMenu = new JMenu("Setting");
         settingMenu.add(menuItemCostType);
@@ -165,11 +172,15 @@ public class DashboardPage extends BasePage {
 		transactionMenu.add(menuItemProductFlow);
 		transactionMenu.add(menuItemCostFlow);
 		
+		JMenu voucherMenu = new JMenu("Voucher"); 
+		voucherMenu.add(menuItemVoucher);
+		voucherMenu.add(menuItemCustomerVoucher);
+		
 		menuBar.add(accountMenu ); 
 		menuBar.add(settingMenu);
         menuBar.add(managementMenu); 
         menuBar.add(transactionMenu);
-		
+        menuBar.add(voucherMenu);
  
 	}
 	
@@ -413,6 +424,9 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
 		addActionListener(menuItemProductFlow, getHandler().managementNavigationListener(ProductFlow.class));
 		addActionListener(menuItemTransaction, getHandler().managementNavigationListener(Transaction.class)); 
+		
+		addActionListener(menuItemVoucher, getHandler().managementNavigationListener(Voucher.class)); 
+		addActionListener(menuItemCustomerVoucher, getHandler().managementNavigationListener(CustomerVoucher.class)); 
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());

@@ -358,14 +358,40 @@ public class CommonFormFieldHelper {
 		
 		String optionItemName = element.getOptionItemName(); 
 		String elementId = element.getId();
+		boolean hasDefaultValues = false;
 		/**
 		 * call API
 		 */
-		List<Map> objectList = page.getHandler().getAllEntity(fieldType);
+		List<Map> objectList = new ArrayList<>();
+		Log.log("element.getDefaultValues(): ",element.getDefaultValues());
+		if(element.getDefaultValues() == null || element.getDefaultValues().length == 0) {
+			objectList = page.getHandler().getAllEntity(fieldType);
+			
+		}else {
+			hasDefaultValues = true;
+			String[] defaultComboBoxValues = element.getDefaultValues();
+			for (final String string : defaultComboBoxValues) {
+				objectList.add(new HashMap() {
+					{
+						put("key", string);
+						put("value", string);
+					}
+				});
+			}
+		}
+		
 		page.setComboBoxValuesContainer(elementId, objectList);
 
-		Object[] comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
-		Object defaultValue = objectList.get(0).get(optionItemName);
+		Object defaultValue = "";
+		Object[] comboBoxValues = new Object[] {""};
+		if(!hasDefaultValues) {
+			comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
+			defaultValue = objectList.get(0).get(optionItemName);
+		
+		}else {
+			comboBoxValues = stringArrayToObject(element.getDefaultValues());
+			defaultValue = comboBoxValues[0];
+		}
 		
 		ActionListener comboBoxActionListener  = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
 		
@@ -375,7 +401,14 @@ public class CommonFormFieldHelper {
 	}
 	
 	
-	
+	static Object[] stringArrayToObject(String...strings) {
+		
+		Object[] array = new Object[strings.length];
+		for (int i = 0; i < strings.length; i++) {
+			array[i] = strings[i];
+		}
+		return array ;
+	}
 	
 	/**
 	 * button edit on datatable row
@@ -575,12 +608,26 @@ public class CommonFormFieldHelper {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				 final JComboBox inputComponent = (JComboBox) e.getSource();
+				 
 				 Object selectedValue = inputComponent.getSelectedItem();
 				 List<Map> rawList = page.getComboBoxValues(elementId);
-				 Map selectedObjectFromList = ManagementHandler.getMapFromList(optionItemName, selectedValue, rawList);
+				 Object selectedObjectFromList = null;
+				 
+				 boolean emptyOptionItemName = false;
+				 String mapKey = optionItemName;
+				 
+				 if("".equals(optionItemName) || null == optionItemName) {
+					 mapKey = "key";
+					 emptyOptionItemName = true;
+				 }
+				 selectedObjectFromList = ManagementHandler.getMapFromList(mapKey, selectedValue, rawList);
 				 
 				 if(null == selectedObjectFromList) {
 					 return ;
+				 }
+				 
+				 if(emptyOptionItemName) {
+					 selectedObjectFromList = ((Map)selectedObjectFromList).get("value");
 				 }
 				 
 				 page.updateManagedObject(elementId, selectedObjectFromList);
