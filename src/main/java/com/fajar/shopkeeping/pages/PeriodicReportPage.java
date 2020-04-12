@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -223,8 +224,12 @@ public class PeriodicReportPage extends BasePage {
 			
 			JPanel rowPanel = rowPanel(COLUMN, COLUMN_WIDTH, Color.white, 
 					
-					periodLabel, 	"Pemasukan", 	cashflow.getCount(), 	cashflow.getAmount(),
-					null,	"Pengeluaran", 	costflow.getCount(), 	costflow.getAmount() );
+					periodLabel, 	"Pemasukan", 	
+					beautifyNominal(cashflow.getCount()), 	
+					beautifyNominal(cashflow.getAmount()),
+					null,	"Pengeluaran", 	
+					beautifyNominal(costflow.getCount()), 
+					beautifyNominal(costflow.getAmount()));
 			
 			updateCountAndAmount(totalCashflow, cashflow);
 			updateCountAndAmount(totalCostflow, costflow);
@@ -237,6 +242,8 @@ public class PeriodicReportPage extends BasePage {
 		log("ARRAYSIZE: "+ arraySize);
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 400); 
 		
+		synchronizeComponentWidth(components);
+		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		return panel;
 	}
@@ -244,8 +251,12 @@ public class PeriodicReportPage extends BasePage {
 	private Component cashflowPeriodicFooter(CashFlow totalCashflow, CashFlow totalCostflow) { 
 		return rowPanelHeader( COLUMN, COLUMN_WIDTH,  
 				
-				"TOTAL", 	"Pemasukan", 	totalCashflow.getCount(), 	totalCashflow.getAmount(),
-				null,	"Pengeluaran", 	totalCostflow.getCount(), 	totalCostflow.getAmount() ) ;
+				"TOTAL", 	"Pemasukan", 	
+				beautifyNominal(totalCashflow.getCount()),
+				beautifyNominal(totalCashflow.getAmount()),
+				null,	"Pengeluaran", 	
+				beautifyNominal(totalCostflow.getCount()), 	
+				beautifyNominal(totalCostflow.getAmount())) ;
 	}
 
 	private Component periodicCashflowHeader() {

@@ -43,9 +43,9 @@ public class ImageFormFieldHelper {
 	public JPanel buildImageField(EntityElement element,  Class<?> fieldType, boolean multiple) {
 
 		if(multiple) {
-			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(200, ComponentBuilder.infoLabel("click add..", SwingConstants.CENTER)); 
+			JPanel imageSelectionField = ComponentBuilder.buildVerticallyInlineComponent(250, ComponentBuilder.infoLabel("click add..", SwingConstants.CENTER)); 
 			JButton buttonAddImage = ComponentBuilder.button("add"); 
-			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(190, 300, imageSelectionField, buttonAddImage) ; 
+			JPanel imageSelectionWrapperPanel = ComponentBuilder.buildVerticallyInlineComponentScroll(250, 300, imageSelectionField, buttonAddImage) ; 
 			
 			buttonAddImage.addActionListener(formFieldHelper().buttonAddImageFieldListener( element, imageSelectionWrapperPanel));
 			
@@ -99,7 +99,7 @@ public class ImageFormFieldHelper {
 		
 		int componentCount = imageSelectionPanel.getComponentCount();
 		
-		JPanel newImageSelection = buildVerticallyInlineComponent(200, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
+		JPanel newImageSelection = buildVerticallyInlineComponent(170, buttonChoose, buttonClear, buttonRemove, imagePreview) ;  
 		newImageSelection.setBounds(newImageSelection.getX(), componentCount * newImageSelection.getHeight(), newImageSelection.getWidth(), newImageSelection.getHeight());
 		
 		Dimension newDimension = new Dimension(imageSelectionPanel.getWidth(),  imageSelectionPanel.getHeight() + newImageSelection.getHeight() );

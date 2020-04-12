@@ -253,7 +253,9 @@ public abstract class BasePage {
 	 * @return
 	 */
 	protected JPanel rowPanelHeader(int colCount, int colSize, Object...objects) {
-		return rowPanel(fillArray(colCount, colSize), objects);
+		JPanel rowPanel = rowPanel(fillArray(colCount, colSize), objects);
+		rowPanel.setBackground(Color.yellow);
+		return rowPanel;
 	}
 	
 	/**
