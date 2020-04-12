@@ -124,6 +124,8 @@ public class DailyCashflowPage extends BasePage {
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH , 1, Color.LIGHT_GRAY, 500); 
 	 
+		synchronizeComponentWidth(components);
+		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		
 		return panel;
