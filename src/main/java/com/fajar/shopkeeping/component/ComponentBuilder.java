@@ -631,7 +631,7 @@ public class ComponentBuilder {
 		jButton.setSize(width, height); 
 		jButton.setBackground(Color.LIGHT_GRAY);
 		jButton.setFont(new Font("Arial", Font.PLAIN, 14));
-//		jButton.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+		jButton.setBorder(new RoundedBorder(10));
 		
 		if(null != actionListener)
 			jButton.addActionListener(actionListener);
