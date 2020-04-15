@@ -23,6 +23,7 @@ import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.entity.Capital;
 import com.fajar.entity.CapitalFlow;
+import com.fajar.entity.CashBalance;
 import com.fajar.entity.Category;
 import com.fajar.entity.Cost;
 import com.fajar.entity.CostFlow;
@@ -87,6 +88,7 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemCustomerVoucher;
 	private JMenuItem menuItemCapital;
 	private JMenuItem menuItemCapitalFLow;
+	private JMenuItem menuItemCashBalance;
 	
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
@@ -161,6 +163,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemCustomerVoucher(menuItem("Member Voucher Data"));
 		setMenuItemCapital(menuItem("Capital Type"));
 		setMenuItemCapitalFLow(menuItem("Capital Data"));
+		setMenuItemCashBalance(menuItem("Balance Journal"));
 
 		
         JMenu managementMenu = new JMenu("Management"); 
@@ -176,6 +179,7 @@ public class DashboardPage extends BasePage {
         
         JMenu accountMenu = new JMenu("Account"); 
 		accountMenu.add(menuItemLogout);
+		accountMenu.add(menuItemCashBalance);
 		
 		JMenu transactionMenu = new JMenu("Transaction");
 		transactionMenu.add(menuItemTransactionSupply);
@@ -436,7 +440,9 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
 		addActionListener(menuItemProductFlow, managementListener(ProductFlow.class));
-		addActionListener(menuItemTransaction, managementListener(Transaction.class)); 
+		addActionListener(menuItemTransaction, managementListener(Transaction.class));
+		
+		addActionListener(menuItemCashBalance, managementListener(CashBalance.class));
 		
 		addActionListener(menuItemVoucher, managementListener(Voucher.class)); 
 		addActionListener(menuItemCustomerVoucher, managementListener(CustomerVoucher.class)); 
