@@ -611,14 +611,22 @@ public class ComponentBuilder {
 	}
 	
 	public static JButton button(Object text) { 
-		return button(text, 0, 0, null) ;
+		return button(text, Color.LIGHT_GRAY) ;
 	}
 	
-	public static JButton button(Object text, int width,  ActionListener actionListener) {
-		return button(text, width, 0, actionListener);
+	public static JButton button(Object text, Color color) {
+		return button(text, 0, 0, color, null) ;
 	}
 	
-	public static JButton button(Object text, int width, int height, ActionListener actionListener) { 
+	public static JButton button(Object text, int width, ActionListener actionListener) {
+		return button(text, width, Color.LIGHT_GRAY, actionListener);
+	}
+	
+	public static JButton button(Object text, int width, Color color,  ActionListener actionListener) {
+		return button(text, width, 0, color,  actionListener);
+	}
+	
+	public static JButton button(Object text, int width, int height, Color color, ActionListener actionListener) { 
 			
 		if(width == 0) {
 			width = String.valueOf(text).length() * 10 + 30;
@@ -627,9 +635,9 @@ public class ComponentBuilder {
 			height =25;
 		}
 		
-		JButton jButton = new JButton(String.valueOf(text));
+		JButton jButton = new RoundedButton(String.valueOf(text), 10);
 		jButton.setSize(width, height); 
-		jButton.setBackground(Color.LIGHT_GRAY);
+		jButton.setBackground(color);
 		jButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		jButton.setBorder(new RoundedBorder(10));
 		
@@ -646,8 +654,12 @@ public class ComponentBuilder {
 	 * @param height
 	 * @return
 	 */
-	public static JButton button(Object text, int width, int height) {  
-		return button(text, width, height, null) ;
+	public static JButton button(Object text, int width, int height, Color color) {  
+		return button(text, width, height, color, null) ;
+	}
+	
+	public static JButton button(Object text, int width, int height) {
+		return button(text, width, height, Color.LIGHT_GRAY);
 	}
 
 	public static JPanel blankPanel(int i, int j) {

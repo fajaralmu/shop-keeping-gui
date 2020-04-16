@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -31,7 +32,7 @@ import com.fajar.shopkeeping.util.ThreadUtil;
 public class PeriodicReportPage extends BasePage {
 	
 	private static final int COLUMN_WIDTH = 160; 
-	private static final int COLUMN = 4;
+	private static final int COLUMN = 5;
 	private static final int TABLE_WIDTH = (COLUMN_WIDTH) *  COLUMN  ;
 
 	private JComboBox comboBoxMonthFrom;
@@ -64,7 +65,7 @@ public class PeriodicReportPage extends BasePage {
 
 		panelFilterPeriod = buildPanelPeriodFilter();
 		if(null == panelCashflowListTable) {
-			panelCashflowListTable = buildPanelV2(panelRequest, label("Please wait..."));
+			panelCashflowListTable = buildPanelV2(panelRequest, label("Please Select The Period"));
 		}
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
@@ -221,13 +222,15 @@ public class PeriodicReportPage extends BasePage {
 			int year = cashflow.getYear();
 			
 			String periodLabel = (DateUtil.dateString(month, year));
+			JButton buttonGenerateReport = button("Report", 150, generateDailyReportListener(month, year));
 			
 			JPanel rowPanel = rowPanel(COLUMN, COLUMN_WIDTH, Color.white, 
 					
 					periodLabel, 	"Pemasukan", 	
 					beautifyNominal(cashflow.getCount()), 	
 					beautifyNominal(cashflow.getAmount()),
-					null,	"Pengeluaran", 	
+					buttonGenerateReport, null,
+					"Pengeluaran", 	
 					beautifyNominal(costflow.getCount()), 
 					beautifyNominal(costflow.getAmount()));
 			
@@ -240,12 +243,23 @@ public class PeriodicReportPage extends BasePage {
 		components[components.length-1] = cashflowPeriodicFooter(totalCashflow,totalCostflow);
 		
 		log("ARRAYSIZE: "+ arraySize);
-		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH, 1, Color.LIGHT_GRAY, 400); 
+		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, TABLE_WIDTH  , 5, Color.LIGHT_GRAY, (BASE_WIDTH * 4)/5, 400); 
 		
 		synchronizeComponentWidth(components);
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
+		panel.setBorder(BorderFactory.createLineBorder(Color.blue));
 		return panel;
+	}
+
+	private ActionListener generateDailyReportListener(final int month, final int year) {  
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+				getHandler().generateExcelReportDaily(month, year);
+			}
+		};
 	}
 
 	private Component cashflowPeriodicFooter(CashFlow totalCashflow, CashFlow totalCostflow) { 
@@ -254,13 +268,13 @@ public class PeriodicReportPage extends BasePage {
 				"TOTAL", 	"Pemasukan", 	
 				beautifyNominal(totalCashflow.getCount()),
 				beautifyNominal(totalCashflow.getAmount()),
-				null,	"Pengeluaran", 	
+				null, null,	"Pengeluaran", 	
 				beautifyNominal(totalCostflow.getCount()), 	
 				beautifyNominal(totalCostflow.getAmount())) ;
 	}
 
 	private Component periodicCashflowHeader() {
-		return rowPanelHeader(COLUMN, COLUMN_WIDTH,  "Periode", "Jenis", "Jumlah", "Nilai" );
+		return rowPanelHeader(COLUMN, COLUMN_WIDTH,  "Periode", "Jenis", "Jumlah", "Nilai", "Opsi" );
 	}
 
 	@Override

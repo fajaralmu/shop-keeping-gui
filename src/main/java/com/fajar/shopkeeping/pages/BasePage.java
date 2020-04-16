@@ -340,8 +340,10 @@ public abstract class BasePage {
 	protected JButton button(Object text) {
 		return ComponentBuilder.button(text);
 	}
+	protected JButton button(Object text,Color color) {
+		return ComponentBuilder.button(text, color);
+	}
 	protected JButton button(Object text, int width, ActionListener actionListener) { 
-		
 		return ComponentBuilder.button(text, width, actionListener);
 	}
 	
@@ -354,7 +356,7 @@ public abstract class BasePage {
 		return  (PanelRequest.intArray(ints));
 	}
     
-	protected JPasswordField passwordField(String string) { 
+	protected JPasswordField passwordField(String string) {  
 		
 		JPasswordField label = new JPasswordField(string); 
 		label.setSize(100, 20);
@@ -405,6 +407,7 @@ public abstract class BasePage {
 	}
 	
 	protected JTextField textFieldDisabledBlank(Object string, int width, int height) {
+		
 		JTextField textField = textFieldDisabled(string, width, height);
 		textField.setBackground(null);
 		textField.setBorder(null);

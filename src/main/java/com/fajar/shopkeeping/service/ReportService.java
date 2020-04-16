@@ -19,6 +19,9 @@ import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.constant.ReportType;
+import com.fajar.shopkeeping.constant.WebServiceConstants;
+import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 
@@ -145,12 +148,60 @@ public class ReportService extends BaseService{
 		return parsedResponse;
 	}
 	
+	/**
+	 * convert list of hashMap to list of Cashflow
+	 * @param mapList
+	 * @return
+	 */
 	private List<BaseEntity> mapListToCashflowList(List mapList){
 		List<BaseEntity> resultList = new ArrayList<BaseEntity>();
 		for(Object item : mapList) {
-			resultList.add((CashFlow)MapUtil.mapToObject((Map)item, CashFlow.class));
+			try {
+				resultList.add((CashFlow)MapUtil.mapToObject((Map)item, CashFlow.class));
+			}catch (Exception e) { 
+				Log.log("Error converting map to cashflow: ", e);
+			}
 		}
 		return resultList;
+	}
+	
+	/**
+	 * generate excel report
+	 * @param shopApiRequest
+	 * @param myCallback handle JSON Response and report type
+	 * @param reportType
+	 */
+	public void generateReportExcel(final ShopApiRequest shopApiRequest, final MyCallback myCallback, final ReportType reportType) {
+		Loadings.start();
+		ThreadUtil.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				 
+				Log.log("Will generate report: ", reportType.toString());
+				
+				try {
+					ShopApiResponse response = null;
+					switch (reportType) {
+					case DAILY:
+						response = callGenerateExcelDaily(shopApiRequest);
+						break;
+					case MONTHLY:
+						response = callGenerateExcelMonthly(shopApiRequest);
+						break;
+					default:
+						throw new IllegalArgumentException("Invalid Report Type");
+					}
+					
+					myCallback.handle(response, reportType);
+					
+				}catch (Exception e) {
+					Dialogs.error("Error generating report: ", e.getMessage());
+				} finally { 
+					Loadings.end();
+				}
+			}
+		});
 	}
 	
 	
@@ -193,15 +244,47 @@ public class ReportService extends BaseService{
 			throw e;
 		}
 	}
-
+ 
 	
-
 	private ShopApiResponse callDailyCashflow(int day, int month, int year) {
 		try {
 			ShopApiRequest shopApiRequest = ShopApiRequest.builder()
 					.filter(Filter.builder().day(day).year(year).month(month).build()).build();
 	
 			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+	
+			return response.getBody();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	
+	/**
+	 * excel report
+	 */
+	
+	private ShopApiResponse callGenerateExcelDaily(ShopApiRequest shopApiRequest) {
+		try { 
+	
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_DAILY,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+	
+			return response.getBody();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	private ShopApiResponse callGenerateExcelMonthly(ShopApiRequest shopApiRequest) {
+		try { 
+	
+			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
 					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
 	
 			return response.getBody();

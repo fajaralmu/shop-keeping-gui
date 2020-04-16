@@ -12,6 +12,10 @@ public class WebServiceConstants {
 	public static final String URL_DAILY_CASHFOW = WS_HOST + "api/transaction/dailycashflow";
 	public static final String URL_PERIODIC_CASHFOW = WS_HOST + "api/transaction/cashflowdetail";
 	
+	//excel
+	public static final String URL_REPORT_DAILY = WS_HOST + "api/report/daily";
+	public static final String URL_REPORT_MONTHLY = WS_HOST + "api/report/monthly"; 
+	
 	//ENTITY
 	public static final String URL_ENTITY_GET = WS_HOST + "api/entity/get";
 	public static final String URL_ENTITY_ADD = WS_HOST + "api/entity/add";

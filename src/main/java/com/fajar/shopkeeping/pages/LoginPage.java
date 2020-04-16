@@ -46,7 +46,7 @@ public class LoginPage extends BasePage {
 	}
 
 	private JPanel getLoginFormPanel() {
-		loginButton  = button("Login");
+		loginButton  = button("Login", Color.YELLOW);
 		usernameField = textField("admin123");
 		passwordField = passwordField("123");
 		
