@@ -1,9 +1,7 @@
 package com.fajar.shopkeeping.handler;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +16,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.pages.PeriodicReportPage;
-import com.fajar.shopkeeping.util.DateUtil;
+import com.fajar.shopkeeping.util.FileUtil;
 import com.fajar.shopkeeping.util.Log;
 
 public class PeriodicReportHandler extends MainHandler {
@@ -51,20 +49,30 @@ public class PeriodicReportHandler extends MainHandler {
 				Log.log("Response daily excel: ", params[0]);
 				ResponseEntity<byte[]> response = (ResponseEntity<byte[]>) params[0];
 				Loadings.end();
-				
-				List<String> contentDisposition = response.getHeaders().get("Content-disposition"); 
-				String fileName = contentDisposition.get(0).replace("attachment; filename=", "").trim();
+				 
+				String fileName = getFileName(response);
 				saveFile(response.getBody(), fileName);
 			}
 		};
 		reportService.downloadReportExcel(shopApiRequest, myCallback, ReportType.DAILY);
 
 	}
+	
+	public String getFileName(ResponseEntity<?> responseEntity) {
+		try {
+			List<String> contentDisposition = responseEntity.getHeaders().get("Content-disposition"); 
+			String fileName = contentDisposition.get(0).replace("attachment; filename=", "").trim();
+			
+			return fileName;
+		}catch (Exception e) { 
+			return "New_File_"+new Date().getTime();
+		}
+	}
  
 
 	private void saveFile(byte[] byteArray, String reportName) throws Exception { 
 		
-		Dialogs.info("Select folder location to save");
+		Dialogs.info("File:", reportName, "\ngenerated successfully!\nSelect folder location to save");
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int returnVal = fileChooser.showOpenDialog(page.getParentPanel());
@@ -80,7 +88,11 @@ public class PeriodicReportHandler extends MainHandler {
 				// fos.close(); There is no more need for this line since you had created the
 				// instance of "fos" inside the try. And this will automatically close the
 				// OutputStream 
-				Dialogs.info("File saved at ",fullPath);
+				
+				Dialogs.info("File saved at \n", fullPath); 
+
+				File file = new File(fullPath);
+				FileUtil.openFile(file);
 			}
 		}
 	}
@@ -89,5 +101,7 @@ public class PeriodicReportHandler extends MainHandler {
 
 		return (PeriodicReportPage) page;
 	}
+	
+	
 
 }

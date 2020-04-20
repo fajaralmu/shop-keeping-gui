@@ -38,6 +38,7 @@ import com.fajar.entity.Voucher;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -104,6 +105,7 @@ public class DashboardPage extends BasePage {
 	public void onShow() {
 		if (responseTodayCashflow == null) {
 			getHandler().getTodayMonthlyCashflow(callbackUpdateMonthlyCashflow());
+			Loadings.end();
 		}
 	}
 	
@@ -116,7 +118,7 @@ public class DashboardPage extends BasePage {
 			labelUserInfo = title("Welcome to Dasboard!");
 		}
 		if (panelTodayCashflow == null) {
-			panelTodayCashflow = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
+			panelTodayCashflow = buildCashflowCardPanel(null, null);
 		}
 		if (panelMonthlySummary == null) {
 			panelMonthlySummary = buildPanelV2(panelCashflowRequest(), label("Please wait..."));
@@ -372,13 +374,19 @@ public class DashboardPage extends BasePage {
 		CashFlow cashflow = response.getMonthlyDetailIncome().get(today);
 		CashFlow costflow = response.getMonthlyDetailCost().get(today);
 
+		return buildCashflowCardPanel(cashflow, costflow);
+	}
+	
+	private JPanel buildCashflowCardPanel(CashFlow cashflow, CashFlow costflow) {
+		if(null == cashflow) {
+			cashflow = new CashFlow();
+		}
+		if(null == costflow) {
+			costflow = new CashFlow();
+		}
 		JPanel panelCashflow = todayCashflowCard(cashflow.getCount(), cashflow.getAmount(), "Pemasukan");
-		JPanel panelCostflow = todayCashflowCard(costflow.getCount(), costflow.getAmount(), "Pembelian");
-
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 10, Color.WHITE);
-		panelRequest.setCenterAligment(true);
-
-		return buildPanelV2(panelRequest, panelCashflow, panelCostflow);
+		JPanel panelCostflow = todayCashflowCard(costflow.getCount(), costflow.getAmount(), "Pembelian"); 
+		return ComponentBuilder.buildInlineComponent(200, panelCashflow, panelCostflow); 
 	}
  
 	/**
