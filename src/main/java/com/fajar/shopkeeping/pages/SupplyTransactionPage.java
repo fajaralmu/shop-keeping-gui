@@ -82,7 +82,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 			JButton buttonEdit 		= button("edit", 100, editProductFlow(productFlow));
 			JButton buttonRemove 	= button("remove", 100, buttonRemoveListener(productFlow)); 
 			JPanel buttonField 		= ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove); 
-			String dateString 		= DateUtil.parseDate(expDate, "dd-MM-yyyy");
+			String dateString 		= DateUtil.formatDate(expDate, "dd-MM-yyyy");
 			
 			long totalPrice = productFlow.getCount() * productFlow.getPrice();
 			

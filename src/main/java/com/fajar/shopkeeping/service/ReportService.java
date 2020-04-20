@@ -168,10 +168,10 @@ public class ReportService extends BaseService{
 	/**
 	 * generate excel report
 	 * @param shopApiRequest
-	 * @param myCallback handle JSON Response and report type
+	 * @param myCallback handle byte[] of the file
 	 * @param reportType
 	 */
-	public void generateReportExcel(final ShopApiRequest shopApiRequest, final MyCallback myCallback, final ReportType reportType) {
+	public void downloadReportExcel(final ShopApiRequest shopApiRequest, final MyCallback myCallback, final ReportType reportType) {
 		Loadings.start();
 		ThreadUtil.run(new Runnable() {
 			
@@ -181,13 +181,13 @@ public class ReportService extends BaseService{
 				Log.log("Will generate report: ", reportType.toString());
 				
 				try {
-					ShopApiResponse response = null;
+					byte[] response = null;
 					switch (reportType) {
 					case DAILY:
-						response = callGenerateExcelDaily(shopApiRequest);
+						response = callDownloadExcelDaily(shopApiRequest);
 						break;
 					case MONTHLY:
-						response = callGenerateExcelMonthly(shopApiRequest);
+						response = callDownloadExcelMonthly(shopApiRequest);
 						break;
 					default:
 						throw new IllegalArgumentException("Invalid Report Type");
@@ -267,11 +267,11 @@ public class ReportService extends BaseService{
 	 * excel report
 	 */
 	
-	private ShopApiResponse callGenerateExcelDaily(ShopApiRequest shopApiRequest) {
+	private byte[] callDownloadExcelDaily(ShopApiRequest shopApiRequest) {
 		try { 
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_DAILY,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_DAILY,
+					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
 	
 			return response.getBody();
 			
@@ -281,11 +281,11 @@ public class ReportService extends BaseService{
 		}
 	}
 	
-	private ShopApiResponse callGenerateExcelMonthly(ShopApiRequest shopApiRequest) {
+	private  byte[]  callDownloadExcelMonthly(ShopApiRequest shopApiRequest) {
 		try { 
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
+					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
 	
 			return response.getBody();
 			

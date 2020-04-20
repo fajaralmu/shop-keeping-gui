@@ -532,7 +532,7 @@ public class ManagementPage extends BasePage {
 							
 						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
 							
-							value = DateUtil.parseDate((Date)value, DATE_PATTERN);
+							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
 							
 						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
 							

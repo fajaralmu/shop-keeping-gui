@@ -97,7 +97,7 @@ public class AccountService extends BaseService{
 					ResponseEntity<HashMap> response = callLogin(username, password);
 
 					if (response.getBody().get("code").equals("00") == false) {
-						throw new InvalidActivityException("Invalid Response");
+						throw new Exception("Invalid Response");
 					}
 
 					HashMap responseBody = response.getBody();

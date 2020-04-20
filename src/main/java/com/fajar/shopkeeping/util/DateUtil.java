@@ -42,7 +42,7 @@ public class DateUtil {
 		return StringUtil.months[month - 1] + " " + year;
 	}
 	
-	public static String parseDate(Date date, String pattern) {
+	public static String formatDate(Date date, String pattern) {
 		try {
 			simpleDateFormat.applyPattern(pattern);
 			return simpleDateFormat.format(date);
@@ -50,4 +50,5 @@ public class DateUtil {
 			return date.toString();
 		}
 	}
+ 
 }
