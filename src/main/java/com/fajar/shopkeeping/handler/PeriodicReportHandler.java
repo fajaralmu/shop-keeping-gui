@@ -5,8 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JFileChooser;
+
+import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.ShopApiRequest;
@@ -39,33 +42,29 @@ public class PeriodicReportHandler extends MainHandler {
 	public void generateExcelReportDaily(final int month, final int year) {
 
 		Filter filter = Filter.builder().month(month).year(year).build();
-		ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build();
-
-		final String reportName = excelReportName(month, year);
+		ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build(); 
 
 		MyCallback myCallback = new MyCallback() {
 
 			@Override
 			public void handle(Object... params) throws Exception {
 				Log.log("Response daily excel: ", params[0]);
-				byte[] byteArray = (byte[]) params[0];
+				ResponseEntity<byte[]> response = (ResponseEntity<byte[]>) params[0];
 				Loadings.end();
-				saveFile(byteArray, reportName);
+				
+				List<String> contentDisposition = response.getHeaders().get("Content-disposition"); 
+				String fileName = contentDisposition.get(0).replace("attachment; filename=", "").trim();
+				saveFile(response.getBody(), fileName);
 			}
 		};
 		reportService.downloadReportExcel(shopApiRequest, myCallback, ReportType.DAILY);
 
 	}
-
-	private String excelReportName(int month, int year) {
-		String time = DateUtil.formatDate(new Date(), "ddMMyyyy'T'hhmmss-a");
-		String sheetName = "Daily-" + month + "-" + year;
-		final String reportName = sheetName + "_" + time + ".xlsx";
-		return reportName;
-	}
+ 
 
 	private void saveFile(byte[] byteArray, String reportName) throws Exception { 
 		
+		Dialogs.info("Select folder location to save");
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int returnVal = fileChooser.showOpenDialog(page.getParentPanel());

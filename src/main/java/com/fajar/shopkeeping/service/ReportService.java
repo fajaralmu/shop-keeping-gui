@@ -168,7 +168,7 @@ public class ReportService extends BaseService{
 	/**
 	 * generate excel report
 	 * @param shopApiRequest
-	 * @param myCallback handle byte[] of the file
+	 * @param myCallback handle ResponseEntity<byte[]>
 	 * @param reportType
 	 */
 	public void downloadReportExcel(final ShopApiRequest shopApiRequest, final MyCallback myCallback, final ReportType reportType) {
@@ -181,7 +181,7 @@ public class ReportService extends BaseService{
 				Log.log("Will generate report: ", reportType.toString());
 				
 				try {
-					byte[] response = null;
+					ResponseEntity<byte[]> response = null;
 					switch (reportType) {
 					case DAILY:
 						response = callDownloadExcelDaily(shopApiRequest);
@@ -267,13 +267,13 @@ public class ReportService extends BaseService{
 	 * excel report
 	 */
 	
-	private byte[] callDownloadExcelDaily(ShopApiRequest shopApiRequest) {
+	private ResponseEntity< byte[] > callDownloadExcelDaily(ShopApiRequest shopApiRequest) {
 		try { 
 	
 			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_DAILY,
 					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
 	
-			return response.getBody();
+			return response;
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -281,13 +281,13 @@ public class ReportService extends BaseService{
 		}
 	}
 	
-	private  byte[]  callDownloadExcelMonthly(ShopApiRequest shopApiRequest) {
+	private  ResponseEntity<byte[]>  callDownloadExcelMonthly(ShopApiRequest shopApiRequest) {
 		try { 
 	
 			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
 					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
 	
-			return response.getBody();
+			return response;
 			
 		}catch (Exception e) {
 			e.printStackTrace();
