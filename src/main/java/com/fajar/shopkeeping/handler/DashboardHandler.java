@@ -4,15 +4,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 
+import org.springframework.http.ResponseEntity;
+
 import com.fajar.dto.Filter;
+import com.fajar.dto.ShopApiRequest;
 import com.fajar.dto.ShopApiResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
+import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.pages.DailyCashflowPage;
 import com.fajar.shopkeeping.pages.DashboardPage;
 import com.fajar.shopkeeping.service.AppContext;
+import com.fajar.shopkeeping.util.Log;
 
 public class DashboardHandler extends MainHandler {
 
@@ -90,6 +96,38 @@ public class DashboardHandler extends MainHandler {
 		dailyCashflowPage.setDailyCashflowResponse(shopApiResponse);
 		dailyCashflowPage.update();
 		dailyCashflowPage.show();
+	}
+	
+	public ActionListener generateMonthlyReport( ) {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				generateExcelReportMontly(getPage().getSelectedYear());
+			}
+		};
+	}
+	
+	public void generateExcelReportMontly( final int year) {
+
+		Filter filter = Filter.builder().year(year).build();
+		ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build(); 
+
+		MyCallback myCallback = new MyCallback() {
+
+			@Override
+			public void handle(Object... params) throws Exception {
+				Log.log("Response daily excel: ", params[0]);
+				ResponseEntity<byte[]> response = (ResponseEntity<byte[]>) params[0];
+				Loadings.end();
+				 
+				String fileName = getFileName(response);
+				saveFile(response.getBody(), fileName);
+			}
+		};
+		reportService.downloadReportExcel(shopApiRequest, myCallback, ReportType.MONTHLY);
+
 	}
 
 	public ActionListener getMonthlyCashflow(final MyCallback callback) {

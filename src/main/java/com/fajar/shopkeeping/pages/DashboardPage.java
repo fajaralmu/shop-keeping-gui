@@ -62,6 +62,7 @@ public class DashboardPage extends BasePage {
 	 
 	private JButton buttonGotoPeriodicReport;
 	private JButton buttonLoadMonthlyCashflow; 
+	private JButton buttonGenerateMontlyReport;
 	
 	private JPanel panelTodayCashflow;
 	private JPanel panelMonthlySummary;
@@ -402,6 +403,7 @@ public class DashboardPage extends BasePage {
 		setComboBoxYear(_comboBoxYear);
 		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
+		setButtonGenerateMontlyReport(button("Generate Monthly Report"));
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 3, Color.WHITE  );
 		panelRequest.setCenterAligment(true);
@@ -411,7 +413,8 @@ public class DashboardPage extends BasePage {
 					ComponentBuilder.buildInlineComponent(60, label("Year"), comboBoxYear),
 				 
 					buttonLoadMonthlyCashflow, 
-					buttonGotoPeriodicReport);
+					buttonGotoPeriodicReport, 
+					buttonGenerateMontlyReport);
 		 
 		return panel;
 	} 
@@ -460,6 +463,7 @@ public class DashboardPage extends BasePage {
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
+		addActionListener(buttonGenerateMontlyReport, getHandler().generateMonthlyReport());
 		
 		addActionListener(comboBoxMonth, comboBoxListener(comboBoxMonth,"selectedMonth"));  
 		addActionListener(comboBoxYear, comboBoxListener(comboBoxYear,"selectedYear")); 
