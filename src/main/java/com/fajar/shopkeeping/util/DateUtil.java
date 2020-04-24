@@ -29,7 +29,9 @@ public class DateUtil {
 	}
 
 	public static int getCurrentYear() {
-		return Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		Log.log("DateUtil.getCurrentYear()", currentYear);
+		return currentYear;
 	}
 
 	public static String dateString(int day, int month, int year) {

@@ -72,8 +72,8 @@ public class DashboardPage extends BasePage {
 	private JComboBox comboBoxYear; 
 	
 	private int minTransactionYear;
-	private int selectedMonth = DateUtil.getCurrentMonth();
-	private int selectedYear = DateUtil.getCurrentYear();
+	private int selectedMonth;  
+	private int selectedYear;  
 	
 	private JMenuItem menuItemLogout;
 	private JMenuItem menuItemProduct;
@@ -395,6 +395,14 @@ public class DashboardPage extends BasePage {
 	 * @return
 	 */
 	private JPanel buildPanelPeriodFilter() {
+		
+
+		if(selectedMonth == 0)
+		 selectedMonth  = DateUtil.getCurrentMonth();
+		if(selectedYear == 0)
+		 selectedYear = DateUtil.getCurrentYear();
+		if(minTransactionYear == 0)
+		 minTransactionYear = DateUtil.getCurrentYear();
 
 		JComboBox _comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
 		JComboBox _comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
@@ -403,7 +411,7 @@ public class DashboardPage extends BasePage {
 		setComboBoxYear(_comboBoxYear);
 		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
-		setButtonGenerateMontlyReport(button("Generate Monthly Report"));
+		setButtonGenerateMontlyReport(button("Monthly Report"));
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 3, Color.WHITE  );
 		panelRequest.setCenterAligment(true);
@@ -431,9 +439,7 @@ public class DashboardPage extends BasePage {
 	}
 
 	@Override
-	protected void initEvent() {
-		
-		
+	protected void initEvent() { 
 		/**
 		 * menus
 		 */
