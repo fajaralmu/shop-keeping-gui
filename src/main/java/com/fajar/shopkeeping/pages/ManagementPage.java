@@ -609,7 +609,7 @@ public class ManagementPage extends BasePage {
 				JTextField dateFilterDay = buildDateFilter(elementId, "day");
 				columnFilterTextFields.put(elementId.concat("-day"), dateFilterDay);  
 				//MM
-				JTextField dateFilterMonth = buildDateFilter(elementId, "momth");
+				JTextField dateFilterMonth = buildDateFilter(elementId, "month");
 				columnFilterTextFields.put(elementId.concat("-month"), dateFilterMonth); 
 				//yyyy
 				JTextField dateFilterYear = buildDateFilter(elementId, "year");
