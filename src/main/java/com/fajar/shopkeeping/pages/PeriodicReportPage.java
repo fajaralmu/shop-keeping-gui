@@ -21,6 +21,7 @@ import com.fajar.entity.BaseEntity;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.handler.PeriodicReportHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
@@ -86,7 +87,7 @@ public class PeriodicReportPage extends BasePage {
 	 */
 	private JPanel buildPanelPeriodFilter() {
 		// getting context value
-		SharedContext context = AppContext.getContext(REPORT_STUFF);
+		SharedContext context = AppContext.getContext(ContextConstants.REPORT_STUFF);
 		int minTransactionYear = context.getMinTransactionYear();
 
 		comboBoxMonthFrom = buildComboBox(selectedMonthFrom, buildArray(1, 12));

@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 import com.fajar.shopkeeping.service.AccountService;
@@ -30,7 +31,7 @@ public class AppHandler {
 
 	private static MainHandler activeHandler;
 
-	private final Map<Integer, MainHandler> handlers = new HashMap<Integer, MainHandler>();
+	private final Map<PageConstants, MainHandler> handlers = new HashMap<PageConstants, MainHandler>();
 
 	public static AppHandler getInstance() {
 
@@ -62,7 +63,7 @@ public class AppHandler {
 	 * 
 	 * @param handlerCode
 	 */
-	public void navigate(int handlerCode) {
+	public void navigate(PageConstants handlerCode) {
 
 		System.out.println("navigating to: " + handlerCode);
 

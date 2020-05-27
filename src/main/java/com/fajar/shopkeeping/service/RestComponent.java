@@ -11,6 +11,9 @@ import com.fajar.dto.WebRequest;
 public class RestComponent {
 	
 	private static final RestTemplate restTemplate = new RestTemplate();
+	private static final String HEADER_ATTR_REQ_ID = "requestId";
+	private static final String HEADER_ATTR_CONTENT_TYPE = "content-type";
+	private static final String HEADER_ATTR_LOGIN_KEY = "loginKey";
 	
 	public static RestTemplate getRestTemplate() { 
 //		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();        
@@ -29,9 +32,9 @@ public class RestComponent {
  
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("requestId", AppSession.getApplicationID());
-		headers.set("content-type", "application/json");
-		headers.set("loginKey", AppSession.getLoginKey());
+		headers.set(HEADER_ATTR_REQ_ID, AppSession.getApplicationID());
+		headers.set(HEADER_ATTR_CONTENT_TYPE, "application/json");
+		headers.set(HEADER_ATTR_LOGIN_KEY, AppSession.getLoginKey());
  
 		return headers ;
 	}

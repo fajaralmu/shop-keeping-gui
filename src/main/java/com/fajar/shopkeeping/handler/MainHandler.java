@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.EntityService;
@@ -40,7 +41,7 @@ public class MainHandler {
 
 	protected void init() {  }
 
-	public ActionListener navigationListener(final int pageCode) {
+	public ActionListener navigationListener(final PageConstants pageCode) {
 		return new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

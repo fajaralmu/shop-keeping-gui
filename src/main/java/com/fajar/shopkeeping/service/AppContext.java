@@ -3,20 +3,21 @@ package com.fajar.shopkeeping.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.model.SharedContext;
 
 public class AppContext {
 
-	private static final Map<String, SharedContext> appContextMap = new HashMap<>();
+	private static final Map<ContextConstants, SharedContext> appContextMap = new HashMap<>();
 
-	public static SharedContext getContext(String key) {
+	public static SharedContext getContext(ContextConstants key) {
 		if( appContextMap.get(key) == null) {
 			setContext(key, new SharedContext());
 		}
 		return appContextMap.get(key);
 	}
 
-	public static void setContext(String key, SharedContext value) {
+	public static void setContext(ContextConstants key, SharedContext value) {
 		appContextMap.put(key, value);
 	}
 

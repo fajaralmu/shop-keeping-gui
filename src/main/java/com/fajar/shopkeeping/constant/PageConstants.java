@@ -1,12 +1,13 @@
 package com.fajar.shopkeeping.constant;
 
-public class PageConstants {
-	public static final int PAGE_LOGIN = 1;
-	public static final int PAGE_DASHBOARD = 2;
-	public static final int PAGE_LAUNCHER = 3;
-	public static final int PAGE_PERIODIC_REPORT = 4;
-	public static final int PAGE_MANAGEMENT = 5;
-	public static final int PAGE_TRAN_SUPPLY = 6;
-	public static final int PAGE_TRAN_SELLING = 7;
+public enum PageConstants {
+	PAGE_LOGIN(1), PAGE_DASHBOARD(2), PAGE_LAUNCHER(3), PAGE_PERIODIC_REPORT(4), PAGE_MANAGEMENT(5),
+	PAGE_TRAN_SUPPLY(6), PAGE_TRAN_SELLING(7);
+
+	public final int value;
+
+	private PageConstants(int value) {
+		this.value = (value);
+	}
 
 }

@@ -37,6 +37,7 @@ import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
+import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -146,7 +147,7 @@ public abstract class BasePage {
 		Log.log("No menu present..", getClass().getSimpleName());
 	}
 	
-	protected ActionListener pageNavigation(int pageCode) {
+	protected ActionListener pageNavigation(PageConstants pageCode) {
 		return appHandler.navigationListener(pageCode);
 	}
 

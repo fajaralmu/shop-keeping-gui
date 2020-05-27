@@ -39,6 +39,7 @@ import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.DashboardHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -253,7 +254,7 @@ public class DashboardPage extends BasePage {
 				setPanelTodayCashflow(buildTodayCashflowTable(response));
 				setPanelMonthlySummary(buildMonthlySummaryTable(response));
 				setMinTransactionYear(response.getTransactionYears()[0]);
-				AppContext.setContext(REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
+				AppContext.setContext(ContextConstants.REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
 				
 				preInitComponent();
 				initEvent();

@@ -1,22 +1,13 @@
 package com.fajar.shopkeeping.handler;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.JFileChooser;
-
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
 import com.fajar.dto.WebRequest;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.pages.PeriodicReportPage;
-import com.fajar.shopkeeping.util.FileUtil;
 import com.fajar.shopkeeping.util.Log;
 
 public class PeriodicReportHandler extends MainHandler {
@@ -56,11 +47,7 @@ public class PeriodicReportHandler extends MainHandler {
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.DAILY);
 
-	}
-	
-	
- 
-
+	}  
 	
 	private PeriodicReportPage getPage() {
 
