@@ -11,8 +11,8 @@ import javax.activity.InvalidActivityException;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
@@ -50,10 +50,10 @@ public class TransactionService extends BaseService{
 		Loadings.start();
 		ThreadUtil.run(new Runnable() {
 			
-			@Override
+		 
 			public void run() {
 				try {
-					ShopApiResponse response = callTransactionSupply(productFlows, supplier);
+					WebResponse response = callTransactionSupply(productFlows, supplier);
 					
 					if("00".equals(response.getCode()) == false) {
 						throw new InvalidActivityException(response.getCode());
@@ -76,10 +76,9 @@ public class TransactionService extends BaseService{
 		Loadings.start();
 		ThreadUtil.run(new Runnable() {
 			
-			@Override
 			public void run() {
 				try {
-					ShopApiResponse response = callTransactionSell(productFlows, customer);
+					WebResponse response = callTransactionSell(productFlows, customer);
 					
 					if("00".equals(response.getCode()) == false) {
 						throw new InvalidActivityException(response.getCode());
@@ -104,10 +103,9 @@ public class TransactionService extends BaseService{
 		Loadings.start();
 		ThreadUtil.run(new Runnable() {
 			
-			@Override
 			public void run() {
 				try {
-					ShopApiResponse response = getProductDetail(productCode); 
+					WebResponse response = getProductDetail(productCode); 
 					callback.handle(response);
 				} catch (Exception e) {
 					Dialogs.error("Error getting product detail: "+e.getMessage());
@@ -124,24 +122,24 @@ public class TransactionService extends BaseService{
 	 * @param productCode
 	 * @return
 	 */
-	private ShopApiResponse getProductDetail(String productCode) {
+	private WebResponse getProductDetail(String productCode) {
 
 		try {
 			HashMap response = callProductDetail(productCode);
 	
 			if (response.get("code").equals("00") == false) {
-				return ShopApiResponse.failed();
+				return WebResponse.failed();
 			}
 	
 			List rawEntityList = (List) response.get("entities"); 
 			List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, Product.class); 
-			ShopApiResponse jsonResponse = new ShopApiResponse(); 
+			WebResponse jsonResponse = new WebResponse(); 
 			jsonResponse.setEntities(resultList);  
 			return jsonResponse;
 			
 		}catch (Exception e) {
 			
-			return ShopApiResponse.failed();
+			return WebResponse.failed();
 		}
 
 	}
@@ -151,15 +149,16 @@ public class TransactionService extends BaseService{
 	 *                 WEBSERVICE CALLS
 	 *  ========================================
 	 *  
+	 *  
 	 */
 	
-	private ShopApiResponse callTransactionSupply(List<ProductFlow> productFlows, Supplier supplier) {
+	private WebResponse callTransactionSupply(List<ProductFlow> productFlows, Supplier supplier) throws Exception {
 		
 		try {
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder().productFlows(productFlows).supplier(supplier).build();
+			WebRequest shopApiRequest = WebRequest.builder().productFlows(productFlows).supplier(supplier).build();
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_TRAN_SUPPLY,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_TRAN_SUPPLY,
+					RestComponent.buildAuthRequest(shopApiRequest, true), WebResponse.class);
 			return response.getBody();
 			
 		}catch (Exception e) { 
@@ -168,13 +167,13 @@ public class TransactionService extends BaseService{
 		}
 	}
 	
-	private ShopApiResponse callTransactionSell(List<ProductFlow> productFlows, Customer customer) {
+	private WebResponse callTransactionSell(List<ProductFlow> productFlows, Customer customer) throws Exception {
 		
 		try {
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder().productFlows(productFlows).customer(customer).build();
+			WebRequest shopApiRequest = WebRequest.builder().productFlows(productFlows).customer(customer).build();
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_TRAN_SELL_V2,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity<WebResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_TRAN_SELL_V2,
+					RestComponent.buildAuthRequest(shopApiRequest, true), WebResponse.class);
 			return response.getBody();
 			
 		}catch (Exception e) { 
@@ -184,7 +183,7 @@ public class TransactionService extends BaseService{
 	}
 	
 	
-	private HashMap callProductDetail(final String productCode) {
+	private HashMap callProductDetail(final String productCode) throws Exception {
 		
 		try {
 			Map<String, Object> fieldsFilter = new HashMap<String, Object>(){
@@ -195,7 +194,7 @@ public class TransactionService extends BaseService{
 				}
 			};
 			Filter filter = Filter.builder().exacts(true).contains(false).limit(1).fieldsFilter(fieldsFilter ).build();
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder().entity("product").filter(filter ).build();
+			WebRequest shopApiRequest = WebRequest.builder().entity("product").filter(filter ).build();
 	
 			ResponseEntity<HashMap> response = restTemplate.postForEntity(WebServiceConstants.URL_PUBLIC_GET,
 					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);

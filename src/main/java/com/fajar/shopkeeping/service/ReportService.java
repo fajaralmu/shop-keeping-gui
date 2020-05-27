@@ -12,8 +12,8 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -54,7 +54,7 @@ public class ReportService extends BaseService{
 			public void run() {
 
 				try { 
-					ShopApiResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
+					WebResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
 
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
@@ -83,7 +83,7 @@ public class ReportService extends BaseService{
 			public void run() {
 
 				try { 
-					ShopApiResponse jsonResponse = callDailyCashflow(day, month, year);
+					WebResponse jsonResponse = callDailyCashflow(day, month, year);
 
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
@@ -115,7 +115,7 @@ public class ReportService extends BaseService{
 
 					HashMap mapResponse = callPeriodicCashflow(filter);
 
-					ShopApiResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
+					WebResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
 
 					callback.handle(jsonResponse);
 				} catch (Exception e) {
@@ -137,14 +137,14 @@ public class ReportService extends BaseService{
 	 * @param mapResponse
 	 * @return
 	 */
-	private ShopApiResponse parseCashflowPeriodicResponse(HashMap mapResponse) {
+	private WebResponse parseCashflowPeriodicResponse(HashMap mapResponse) {
 		List supplies = (List) mapResponse.get("supplies");
 		List purchases = (List) mapResponse.get("purchases");
 		
 		List<BaseEntity> suppliesList = mapListToCashflowList(supplies);
 		List<BaseEntity> purchasesList = mapListToCashflowList(purchases); 
 		 
-		ShopApiResponse parsedResponse = ShopApiResponse.builder().supplies(suppliesList).purchases(purchasesList).build();
+		WebResponse parsedResponse = WebResponse.builder().supplies(suppliesList).purchases(purchasesList).build();
 		return parsedResponse;
 	}
 	
@@ -167,11 +167,11 @@ public class ReportService extends BaseService{
 	
 	/**
 	 * generate excel report
-	 * @param shopApiRequest
+	 * @param WebRequest
 	 * @param myCallback handle ResponseEntity<byte[]>
 	 * @param reportType
 	 */
-	public void downloadReportExcel(final ShopApiRequest shopApiRequest, final MyCallback myCallback, final ReportType reportType) {
+	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback myCallback, final ReportType reportType) {
 		Loadings.start();
 		ThreadUtil.run(new Runnable() {
 			
@@ -184,10 +184,10 @@ public class ReportService extends BaseService{
 					ResponseEntity<byte[]> response = null;
 					switch (reportType) {
 					case DAILY:
-						response = callDownloadExcelDaily(shopApiRequest);
+						response = callDownloadExcelDaily(WebRequest);
 						break;
 					case MONTHLY:
-						response = callDownloadExcelMonthly(shopApiRequest);
+						response = callDownloadExcelMonthly(WebRequest);
 						break;
 					default:
 						throw new IllegalArgumentException("Invalid Report Type");
@@ -212,14 +212,14 @@ public class ReportService extends BaseService{
 	 *  
 	 */
 	
-	private ShopApiResponse callGetMothlyCashflowDetail(int month, int year) {
+	private WebResponse callGetMothlyCashflowDetail(int month, int year) {
 		
 		try {
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+			WebRequest webRequest = WebRequest.builder()
 					.filter(Filter.builder().year(year).month(month).build()).build();
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_MONTHLY_CASHFOW,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_MONTHLY_CASHFOW,
+					RestComponent.buildAuthRequest(webRequest, true), WebResponse.class);
 			return response.getBody();
 			
 		}catch (Exception e) { 
@@ -232,10 +232,10 @@ public class ReportService extends BaseService{
 	private HashMap callPeriodicCashflow(Filter filter) {
 		
 		try {
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build();
+			WebRequest webRequest = WebRequest.builder().filter(filter).build();
 	
 			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
-					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
+					RestComponent.buildAuthRequest(webRequest, true), HashMap.class);
 	
 			return response.getBody();
 			 
@@ -246,13 +246,13 @@ public class ReportService extends BaseService{
 	}
  
 	
-	private ShopApiResponse callDailyCashflow(int day, int month, int year) {
+	private WebResponse callDailyCashflow(int day, int month, int year) {
 		try {
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder()
+			WebRequest webRequest = WebRequest.builder()
 					.filter(Filter.builder().day(day).year(year).month(month).build()).build();
 	
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
-					RestComponent.buildAuthRequest(shopApiRequest, true), ShopApiResponse.class);
+			ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_DAILY_CASHFOW,
+					RestComponent.buildAuthRequest(webRequest, true), WebResponse.class);
 	
 			return response.getBody();
 			
@@ -267,11 +267,11 @@ public class ReportService extends BaseService{
 	 * excel report
 	 */
 	
-	private ResponseEntity< byte[] > callDownloadExcelDaily(ShopApiRequest shopApiRequest) {
+	private ResponseEntity< byte[] > callDownloadExcelDaily(WebRequest WebRequest) {
 		try { 
 	
 			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_DAILY,
-					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
+					RestComponent.buildAuthRequest(WebRequest, true),  byte[] .class);
 	
 			return response;
 			
@@ -281,11 +281,11 @@ public class ReportService extends BaseService{
 		}
 	}
 	
-	private  ResponseEntity<byte[]>  callDownloadExcelMonthly(ShopApiRequest shopApiRequest) {
+	private  ResponseEntity<byte[]>  callDownloadExcelMonthly(WebRequest WebRequest) {
 		try { 
 	
 			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
-					RestComponent.buildAuthRequest(shopApiRequest, true),  byte[] .class);
+					RestComponent.buildAuthRequest(WebRequest, true),  byte[] .class);
 	
 			return response;
 			

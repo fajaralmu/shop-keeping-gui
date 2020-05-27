@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.Customer;
 import com.fajar.entity.ProductFlow;
 import com.fajar.entity.Supplier;
@@ -50,7 +50,7 @@ public class TransactionHandler extends MainHandler {
 			
 			@Override
 			public void handle(Object... params) throws Exception {
-				ShopApiResponse response = (ShopApiResponse) params[0];
+				WebResponse response = (WebResponse) params[0];
 				getSupplyPage().callbackTransactionSupply(response);
 			}
 		};
@@ -71,7 +71,7 @@ public class TransactionHandler extends MainHandler {
 			
 			@Override
 			public void handle(Object... params) throws Exception {
-				ShopApiResponse response = (ShopApiResponse) params[0];
+				WebResponse response = (WebResponse) params[0];
 				getSellingPage().callbackGetProductDetail(response);
 			}
 		};
@@ -83,7 +83,7 @@ public class TransactionHandler extends MainHandler {
 			
 			@Override
 			public void handle(Object... params) throws Exception {
-				ShopApiResponse response = (ShopApiResponse) params[0];
+				WebResponse response = (WebResponse) params[0];
 				getSellingPage().callbackTransactionSell(response);
 			}
 		};

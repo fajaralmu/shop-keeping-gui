@@ -6,7 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
-import com.fajar.dto.ShopApiRequest;
+import com.fajar.dto.WebRequest;
 
 public class RestComponent {
 	
@@ -36,16 +36,16 @@ public class RestComponent {
 		return headers ;
 	}
 	
-	public static HttpEntity<ShopApiRequest> buildEmptyAuthRequest(boolean withLoginKey){
-		return new HttpEntity<ShopApiRequest>(new ShopApiRequest(), buildAuthHeader(withLoginKey));
+	public static HttpEntity<WebRequest> buildEmptyAuthRequest(boolean withLoginKey){
+		return new HttpEntity<WebRequest>(new WebRequest(), buildAuthHeader(withLoginKey));
 	}
 	
-	public static HttpEntity<ShopApiRequest> buildAuthRequest(ShopApiRequest shopApiRequest, boolean withLoginKey) {
-		return new HttpEntity<ShopApiRequest>(shopApiRequest, buildAuthHeader(withLoginKey));
+	public static HttpEntity<WebRequest> buildAuthRequest(WebRequest WebRequest, boolean withLoginKey) {
+		return new HttpEntity<WebRequest>(WebRequest, buildAuthHeader(withLoginKey));
 	}
 	
-	public static HttpEntity<Map> buildAuthRequest(Map shopApiRequest, boolean withLoginKey) {
-		return new HttpEntity<Map>(shopApiRequest, buildAuthHeader(withLoginKey));
+	public static HttpEntity<Map> buildAuthRequest(Map WebRequest, boolean withLoginKey) {
+		return new HttpEntity<Map>(WebRequest, buildAuthHeader(withLoginKey));
 	}
 
 }

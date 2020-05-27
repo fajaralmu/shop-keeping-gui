@@ -1,12 +1,14 @@
 package com.fajar.shopkeeping.util;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.fajar.util.EntityUtil;
 
 public class MapUtil {
 	
@@ -36,7 +38,7 @@ public class MapUtil {
 
 			for (Object key : mapKeys) {
 				Object value = map.get(key);
-				Field field = EntityUtil.getDeclaredField(objectClass, key.toString()); 
+				Field field =  EntityUtil.getDeclaredField(objectClass, key.toString()); 
 				 
 				try {  
 					

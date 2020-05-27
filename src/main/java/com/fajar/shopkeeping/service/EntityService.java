@@ -1,6 +1,8 @@
 package com.fajar.shopkeeping.service;
 
-import static com.fajar.shopkeeping.constant.WebServiceConstants.*;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_ADD;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_GET;
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_UPDATE;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +11,8 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -41,7 +43,7 @@ public class EntityService extends BaseService {
 			public void run() {
 
 				try { 
-					ShopApiResponse response = getEntityListFullResponse(filter, entityClass);
+					WebResponse response = getEntityListFullResponse(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -126,7 +128,7 @@ public class EntityService extends BaseService {
 	}
 	
 	/**
-	 * the given response is java object [ShopApiResponse]
+	 * the given response is java object [WebResponse]
 	 * @param filter
 	 * @param entityClass
 	 * @param callback
@@ -139,7 +141,7 @@ public class EntityService extends BaseService {
 			public void run() {
 
 				try {
-					ShopApiResponse response = getEntityListFullResponse(filter, entityClass);
+					WebResponse response = getEntityListFullResponse(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -192,19 +194,19 @@ public class EntityService extends BaseService {
 		thread.start();
 	}
 
-	private ShopApiResponse getEntityListFullResponse(Filter filter, Class entityClass) {
+	private WebResponse getEntityListFullResponse(Filter filter, Class entityClass) {
 
 		HashMap response = callGetEntity(filter, entityClass);
 
 		if (response.get("code").equals("00") == false) {
-			return ShopApiResponse.failed();
+			return WebResponse.failed();
 		}
 
 		List rawEntityList = (List) response.get("entities");
 
 		List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, entityClass);
 
-		ShopApiResponse jsonResponse = new ShopApiResponse();
+		WebResponse jsonResponse = new WebResponse();
 
 		jsonResponse.setEntities(resultList);
 		jsonResponse.setTotalData((Integer) response.get("totalData"));
@@ -231,7 +233,7 @@ public class EntityService extends BaseService {
 	private HashMap callGetEntity(Filter filter, Class entityClass) {
 		try {
 
-			ShopApiRequest shopApiRequest = ShopApiRequest.builder().entity(entityClass.getSimpleName().toLowerCase())
+			WebRequest shopApiRequest = WebRequest.builder().entity(entityClass.getSimpleName().toLowerCase())
 					.filter(filter).build();
 			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_GET,
 					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);

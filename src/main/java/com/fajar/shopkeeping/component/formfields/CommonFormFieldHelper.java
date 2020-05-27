@@ -29,7 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.annotation.FormField;
+import com.fajar.dto.FieldType;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
@@ -250,7 +250,7 @@ public class CommonFormFieldHelper {
 			if(value == null) {
 				value = "";
 			}
-			boolean isImage = FormField.FIELD_TYPE_IMAGE.equals(elementType);
+			boolean isImage = FieldType.FIELD_TYPE_IMAGE.value.equals(elementType);
 			Component formField = page.getFieldComponent(key);
 			if(formField != null && !isImage) {
 			
@@ -784,16 +784,16 @@ public class CommonFormFieldHelper {
 					@Override
 					public void handle(Object... params) throws Exception { 
 						
-						HashMap shopApiResponse = (HashMap) params[0];
-						populateDynamicDropdown(shopApiResponse);
+						HashMap WebResponse = (HashMap) params[0];
+						populateDynamicDropdown(WebResponse);
 					}
 
 					/**
 					 * populate items on comboBox
-					 * @param shopApiResponse
+					 * @param WebResponse
 					 */
-					private void populateDynamicDropdown(HashMap shopApiResponse) {
-						List  entities = (List) shopApiResponse.get("entities"); 
+					private void populateDynamicDropdown(HashMap WebResponse) {
+						List  entities = (List) WebResponse.get("entities"); 
 						page.setComboBoxValuesContainer(elementId, entities);
 						
 						dynamicComboBox.removeAllItems();

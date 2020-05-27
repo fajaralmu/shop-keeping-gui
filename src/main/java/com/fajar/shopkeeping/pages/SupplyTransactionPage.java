@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Product;
 import com.fajar.entity.ProductFlow;
@@ -317,7 +317,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 	 * handle response when supply transaction has been performed
 	 * @param response
 	 */
-	public void callbackTransactionSupply(ShopApiResponse response) {
+	public void callbackTransactionSupply(WebResponse response) {
 		Transaction transaction = response.getTransaction();
 		String tranCode = transaction.getCode();
 		

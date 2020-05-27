@@ -40,9 +40,9 @@ import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;

@@ -19,7 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
@@ -337,7 +337,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		
 	}
 
-	public void callbackGetProductDetail(ShopApiResponse response) {
+	public void callbackGetProductDetail(WebResponse response) {
 		Log.log("callbackGetProductDetail: ",response);
 		try {
 			 Product product = (Product) response.getEntities().get(0);
@@ -353,7 +353,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	 * handle response when selling transaction has been performed
 	 * @param response
 	 */
-	public void callbackTransactionSell(ShopApiResponse response) {
+	public void callbackTransactionSell(WebResponse response) {
 		Transaction transaction = response.getTransaction();
 		String tranCode = transaction.getCode();
 		

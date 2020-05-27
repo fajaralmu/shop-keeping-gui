@@ -10,7 +10,7 @@ import javax.swing.JFileChooser;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
+import com.fajar.dto.WebRequest;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
@@ -40,7 +40,7 @@ public class PeriodicReportHandler extends MainHandler {
 	public void generateExcelReportDaily(final int month, final int year) {
 
 		Filter filter = Filter.builder().month(month).year(year).build();
-		ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build(); 
+		WebRequest webRequest = WebRequest.builder().filter(filter).build(); 
 
 		MyCallback myCallback = new MyCallback() {
 
@@ -54,7 +54,7 @@ public class PeriodicReportHandler extends MainHandler {
 				saveFile(response.getBody(), fileName);
 			}
 		};
-		reportService.downloadReportExcel(shopApiRequest, myCallback, ReportType.DAILY);
+		reportService.downloadReportExcel(webRequest, myCallback, ReportType.DAILY);
 
 	}
 	

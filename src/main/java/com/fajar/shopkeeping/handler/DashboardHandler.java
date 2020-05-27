@@ -7,8 +7,8 @@ import java.util.Calendar;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;
@@ -75,7 +75,7 @@ public class DashboardHandler extends MainHandler {
 					@Override
 					public void handle(Object... params) throws Exception {
 
-						ShopApiResponse response = (ShopApiResponse) params[0];
+						WebResponse response = (WebResponse) params[0];
 						handleResponseDailyCashflow(response);
 					}
 				});
@@ -83,9 +83,9 @@ public class DashboardHandler extends MainHandler {
 		};
 	}
 
-	private void handleResponseDailyCashflow(ShopApiResponse shopApiResponse) {
+	private void handleResponseDailyCashflow(WebResponse WebResponse) {
 
-		Filter filter = shopApiResponse.getFilter();
+		Filter filter = WebResponse.getFilter();
 
 		AppContext.setContext(ContextConstants.CTX_DETAIL_CASHFLOW,
 				new SharedContext(filter.getDay(), filter.getMonth(), filter.getYear()));
@@ -93,7 +93,7 @@ public class DashboardHandler extends MainHandler {
 		DailyCashflowPage dailyCashflowPage = new DailyCashflowPage(filter.getDay(), filter.getMonth(),
 				filter.getYear());
 		dailyCashflowPage.setAppHandler(this);
-		dailyCashflowPage.setDailyCashflowResponse(shopApiResponse);
+		dailyCashflowPage.setDailyCashflowResponse(WebResponse);
 		dailyCashflowPage.update();
 		dailyCashflowPage.show();
 	}
@@ -112,7 +112,7 @@ public class DashboardHandler extends MainHandler {
 	public void generateExcelReportMontly( final int year) {
 
 		Filter filter = Filter.builder().year(year).build();
-		ShopApiRequest shopApiRequest = ShopApiRequest.builder().filter(filter).build(); 
+		WebRequest webRequest =  WebRequest.builder().filter(filter).build(); 
 
 		MyCallback myCallback = new MyCallback() {
 
@@ -126,7 +126,7 @@ public class DashboardHandler extends MainHandler {
 				saveFile(response.getBody(), fileName);
 			}
 		};
-		reportService.downloadReportExcel(shopApiRequest, myCallback, ReportType.MONTHLY);
+		reportService.downloadReportExcel(webRequest, myCallback, ReportType.MONTHLY);
 
 	}
 

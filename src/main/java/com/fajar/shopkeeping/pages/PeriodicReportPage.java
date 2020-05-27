@@ -16,7 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.callbacks.MyCallback;
@@ -51,7 +51,7 @@ public class PeriodicReportPage extends BasePage {
 	private int selectedMonthFrom = DateUtil.getCurrentMonth();
 	private int selectedYearFrom = DateUtil.getCurrentYear();
 	
-	private ShopApiResponse periodicCashflowResponse;
+	private WebResponse periodicCashflowResponse;
 
 	public PeriodicReportPage() {
 		super("Periodic Report", BASE_WIDTH, BASE_HEIGHT);
@@ -161,14 +161,14 @@ public class PeriodicReportPage extends BasePage {
 			
 			@Override
 			public void handle(Object... params) throws Exception {
-				 ShopApiResponse response = (ShopApiResponse) params[0];
+				 WebResponse response = (WebResponse) params[0];
 				 callbackPeriodicCashflow(response);
 			} 
 			
 		};
 	}
 	
-	private void callbackPeriodicCashflow(final ShopApiResponse response) {
+	private void callbackPeriodicCashflow(final WebResponse response) {
 		
 		ThreadUtil.run(new Runnable() {
 			

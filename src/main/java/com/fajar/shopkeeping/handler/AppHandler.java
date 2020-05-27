@@ -1,11 +1,17 @@
 package com.fajar.shopkeeping.handler;
 
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_DASHBOARD;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_LAUNCHER;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_LOGIN;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_MANAGEMENT;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_PERIODIC_REPORT;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_TRAN_SELLING;
+import static com.fajar.shopkeeping.constant.PageConstants.PAGE_TRAN_SUPPLY;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.web.client.ResourceAccessException;
-
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
@@ -13,7 +19,6 @@ import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
-import static com.fajar.shopkeeping.constant.PageConstants.*;
 
 public class AppHandler {
 
@@ -100,7 +105,7 @@ public class AppHandler {
 			public void handle(Object... params) throws Exception {
 				// TODO Auto-generated method stub
 				try {
-					ShopApiResponse response = (ShopApiResponse) params[0];
+					WebResponse response = (WebResponse) params[0];
 					String applicationId = response.getMessage();
 				
 					AppSession.setApplicationID(applicationId);

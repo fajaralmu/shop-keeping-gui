@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.Customer;
 import com.fajar.entity.Product;
@@ -37,9 +37,9 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.fajar.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
@@ -362,7 +362,7 @@ public abstract class BaseTransactionPage extends BasePage{
 			
 			@Override
 			public void handle(Object... params) throws Exception { 
-				ShopApiResponse response = (ShopApiResponse) params[0];
+				WebResponse response = (WebResponse) params[0];
 				Log.log("entities: ", response.getEntities()); 
 				
 				if(dropDownType.equals(PRODUCT)) {	

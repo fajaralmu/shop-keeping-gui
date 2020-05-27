@@ -7,7 +7,6 @@ import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
 import static com.fajar.shopkeeping.util.ComponentUtil.toArrayOfComponent;
-import static com.fajar.shopkeeping.util.EntityUtil.getDeclaredField;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 import static java.awt.Color.white;
 
@@ -36,8 +35,8 @@ import javax.swing.SwingConstants;
 
 import org.springframework.util.StringUtils;
 
-import com.fajar.annotation.FormField;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.FieldType;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.BaseEntity;
 import com.fajar.entity.setting.EntityElement;
 import com.fajar.entity.setting.EntityProperty;
@@ -55,10 +54,10 @@ import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.util.DateUtil;
-import com.fajar.shopkeeping.util.EntityUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.fajar.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
@@ -388,10 +387,10 @@ public class ManagementPage extends BasePage {
 			inputComponent.setFocusable(true);
 			inputComponent.requestFocus();
 
-			if (elementType.equals(FormField.FIELD_TYPE_FIXED_LIST)) {
+			if (elementType.equals(FieldType.FIELD_TYPE_FIXED_LIST)) {
  
 				inputComponent = helper.buildFixedComboBox(element, fieldType);
-			} else if (elementType.equals(FormField.FIELD_TYPE_DYNAMIC_LIST)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST)) {
 				 
 				inputComponent = helper.buildDynamicComboBox(element, fieldType);
 			} else if (element.isIdentity()) {
@@ -399,7 +398,7 @@ public class ManagementPage extends BasePage {
 				inputComponent = textFieldDisabled("ID", 100, 20); 
 				setIdFieldName(elementId);
 				
-			} else if (elementType.equals(FormField.FIELD_TYPE_TEXTAREA)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_TEXTAREA)) {
 
 				inputComponent = textArea(elementId);
 				((JTextArea) inputComponent).addKeyListener(helper.textAreaActionListener((JTextArea) inputComponent, elementId));
@@ -407,18 +406,18 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals("color")) {
 				skipFormField = true;
 				continue;
-			} else if (elementType.equals(FormField.FIELD_TYPE_NUMBER)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_NUMBER)) {
 
 				inputComponent = numberField(elementId);
 				((JTextField) inputComponent).addKeyListener(helper.crudTextFieldActionListener((JTextField) inputComponent, elementId));
 				
-			} else if (elementType.equals(FormField.FIELD_TYPE_DATE)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_DATE)) {
 
 				inputComponent = dateChooser();
 				((JDateChooser) inputComponent).addPropertyChangeListener(helper.dateChooserPropertyChangeListener(
 						(JDateChooser) inputComponent, elementId ));
 				
-			} else if (elementType.equals(FormField.FIELD_TYPE_IMAGE)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_IMAGE)) {
 				skipFormField = true;
 				inputComponent = getImageHelper().buildImageField(element, fieldType, element.isMultiple());
 				
@@ -500,7 +499,7 @@ public class ManagementPage extends BasePage {
 			elementLoop: for(int i = 0; i< entityElements.size();i++) {
 				
 				final EntityElement element = entityElements.get(i); 
-				final Field field = getDeclaredField(entity.getClass(), element.getId());
+				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
 				final String fieldType = element.getType();
 				Object value;
 				
@@ -509,7 +508,7 @@ public class ManagementPage extends BasePage {
 					
 					if(null != value) {
 						
-						if( objectEquals(fieldType, FormField.FIELD_TYPE_DYNAMIC_LIST, FormField.FIELD_TYPE_FIXED_LIST)){
+						if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST, FieldType.FIELD_TYPE_FIXED_LIST)){
 							
 							String optionItemName = element.getOptionItemName();
 							
@@ -524,17 +523,17 @@ public class ManagementPage extends BasePage {
 								value = value.toString(); 
 							}
 							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_IMAGE)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE)) {
 						
 							value = value.toString().split("~")[0];
 							components[i + 1] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
 							continue elementLoop;
 							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_DATE)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE)) {
 							
 							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
 							
-						}else if(objectEquals(fieldType, FormField.FIELD_TYPE_NUMBER)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER)) {
 							
 							value = StringUtil.beautifyNominal(Long.valueOf(value.toString()));
 							
@@ -603,7 +602,7 @@ public class ManagementPage extends BasePage {
 			
 			JLabel columnLabel = label(elementId);
 			
-			if(element.getType().equals(FormField.FIELD_TYPE_DATE)) {
+			if(element.getType().equals(FieldType.FIELD_TYPE_DATE)) {
 				
 				//DD
 				JTextField dateFilterDay = buildDateFilter(elementId, "day");
@@ -617,7 +616,7 @@ public class ManagementPage extends BasePage {
 				 
 				Component columnHeader = buildVerticallyInlineComponent(100, columnLabel, dateFilterDay, dateFilterMonth, dateFilterYear, orderButtons );
 				headerComponents.add(columnHeader);
-//			} else if(element.getType().equals(FormField.FIELD_TYPE_IMAGE)) {
+//			} else if(element.getType().equals(FieldType.FIELD_TYPE_IMAGE)) {
 //				
 //				Component columnHeader = ComponentBuilder.buildVerticallyInlineComponent(100, columnLabel, orderButtons);
 //				headerComponents.add(columnHeader);
@@ -787,7 +786,7 @@ public class ManagementPage extends BasePage {
 	 * handle response when get filtered entities
 	 * @param response
 	 */
-	public void callbackGetFilteredEntities(final ShopApiResponse response) { 
+	public void callbackGetFilteredEntities(final WebResponse response) { 
 		
 		ThreadUtil.run(new Runnable() {
 			
@@ -913,7 +912,7 @@ public class ManagementPage extends BasePage {
 				continue;
 			} 
 			
-			if(FormField.FIELD_TYPE_IMAGE.equals(element.getType()) && element.isMultiple()) {
+			if(FieldType.FIELD_TYPE_IMAGE.equals(element.getType()) && element.isMultiple()) {
 				String[] rawValue = value.toString().split("~"); 
 				Log.log("rawValue length:",rawValue.length);
 				List<String> validValues = new ArrayList<>();

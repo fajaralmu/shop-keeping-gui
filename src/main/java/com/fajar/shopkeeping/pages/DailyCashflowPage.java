@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.Product;
 import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
@@ -36,7 +36,7 @@ public class DailyCashflowPage extends BasePage {
 
 	private static final int TABLE_WIDTH = COLUMN_WIDTH * COLUMN;
 
-	private ShopApiResponse dailyCashflowResponse;
+	private WebResponse dailyCashflowResponse;
 	private JPanel dailyCashflowPanel;
 
 	public DailyCashflowPage() {

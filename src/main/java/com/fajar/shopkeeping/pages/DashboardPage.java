@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.Capital;
 import com.fajar.entity.CapitalFlow;
 import com.fajar.entity.CashBalance;
@@ -95,7 +95,7 @@ public class DashboardPage extends BasePage {
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
 	
-	private ShopApiResponse responseTodayCashflow;
+	private WebResponse responseTodayCashflow;
 
 	public DashboardPage() {
 		super("Dashboard", BASE_WIDTH, BASE_HEIGHT);
@@ -210,7 +210,7 @@ public class DashboardPage extends BasePage {
 
 			@Override
 			public void handle(Object... params) throws Exception {
-				ShopApiResponse jsonResponse = (ShopApiResponse) params[0];
+				WebResponse jsonResponse = (WebResponse) params[0];
 				callbackMonthlyCashflow(jsonResponse);
 			}
 		};
@@ -244,7 +244,7 @@ public class DashboardPage extends BasePage {
 	 * 
 	 * @param response
 	 */
-	private void callbackMonthlyCashflow(final ShopApiResponse response) {
+	private void callbackMonthlyCashflow(final WebResponse response) {
 		ThreadUtil.run(new Runnable() {
 			
 			@Override
@@ -268,7 +268,7 @@ public class DashboardPage extends BasePage {
 	 * @param response
 	 * @return
 	 */
-	private JPanel buildMonthlySummaryTable(ShopApiResponse response) {
+	private JPanel buildMonthlySummaryTable(WebResponse response) {
 
 		Set<Integer> keys = response.getMonthlyDetailCost().keySet();
 		Map<Integer, CashFlow> cashflowMap = response.getMonthlyDetailIncome();
@@ -365,7 +365,7 @@ public class DashboardPage extends BasePage {
 	 * @param response
 	 * @return
 	 */
-	private JPanel buildTodayCashflowTable(ShopApiResponse response) {
+	private JPanel buildTodayCashflowTable(WebResponse response) {
 		
 		if(selectedMonth != DateUtil.getCurrentMonth() || selectedYear != DateUtil.getCurrentYear()) {
 			return panelTodayCashflow;

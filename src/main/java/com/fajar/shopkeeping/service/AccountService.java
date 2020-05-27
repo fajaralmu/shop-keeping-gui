@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
-import com.fajar.dto.ShopApiRequest;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebRequest;
+import com.fajar.dto.WebResponse;
 import com.fajar.entity.User;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -57,7 +57,7 @@ public class AccountService extends BaseService{
 			public void run() {
 
 				try {
-					ShopApiResponse response = callRequestAppId();
+					WebResponse response = callRequestAppId();
 					callback.handle(response );
 				} catch (ResourceAccessException | HttpClientErrorException e) {
 					Dialogs.error("Error requesting app id: " + e.getMessage());
@@ -152,7 +152,7 @@ public class AccountService extends BaseService{
 
 				try {
 
-					ShopApiResponse response  = callLogout();
+					WebResponse response  = callLogout();
 
 					if (response. getCode().equals("00") == false) {
 						throw new InvalidActivityException("Invalid Response: "+response. getCode());
@@ -191,10 +191,10 @@ public class AccountService extends BaseService{
 	 * 
 	 */
 	
-	private ShopApiResponse callLogout() {
+	private WebResponse callLogout() {
 		try {
-			ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_LOGOUT,
-				RestComponent.buildEmptyAuthRequest(true), ShopApiResponse.class);
+			ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_LOGOUT,
+				RestComponent.buildEmptyAuthRequest(true), WebResponse.class);
 			return response.getBody();
 		}catch (Exception e) { 
 			e.printStackTrace();
@@ -205,7 +205,7 @@ public class AccountService extends BaseService{
 	private ResponseEntity<HashMap> callLogin(String username, String password) {
 		User user = User.builder().username(username).password(password).build();
 
-		final ShopApiRequest loginRequest = ShopApiRequest.builder().user(user).build();
+		final WebRequest loginRequest = WebRequest.builder().user(user).build();
 
 		try {
 			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_LOGIN,
@@ -219,9 +219,9 @@ public class AccountService extends BaseService{
 	}
 	
 
-	private ShopApiResponse callRequestAppId() {
-		ResponseEntity<ShopApiResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
-				new ShopApiRequest(), ShopApiResponse.class);
+	private WebResponse callRequestAppId() {
+		ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
+				new WebRequest(), WebResponse.class);
 		return response.getBody();
 	}
 

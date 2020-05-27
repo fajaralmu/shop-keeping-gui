@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import com.fajar.dto.Filter;
-import com.fajar.dto.ShopApiResponse;
+import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.pages.ManagementPage;
@@ -147,7 +147,7 @@ public class ManagementHandler extends MainHandler {
 					
 					@Override
 					public void handle(Object... params) throws Exception {
-						ShopApiResponse response = (ShopApiResponse) params[0];
+						WebResponse response = (WebResponse) params[0];
 						getPage().callbackGetFilteredEntities(response);
 					}
 				});
