@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.activity.InvalidActivityException;
+import javax.management.RuntimeErrorException;
 
 import org.springframework.http.ResponseEntity;
 
@@ -56,7 +57,8 @@ public class TransactionService extends BaseService{
 					WebResponse response = callTransactionSupply(productFlows, supplier);
 					
 					if("00".equals(response.getCode()) == false) {
-						throw new InvalidActivityException(response.getCode());
+						Error error = new Error(response.getMessage());
+						throw new RuntimeErrorException(error );
 					}
 					
 					myCallback.handle(response);
@@ -81,7 +83,7 @@ public class TransactionService extends BaseService{
 					WebResponse response = callTransactionSell(productFlows, customer);
 					
 					if("00".equals(response.getCode()) == false) {
-						throw new InvalidActivityException(response.getCode());
+						throw new Exception(response.getCode());
 					}
 					
 					myCallback.handle(response);
@@ -155,6 +157,10 @@ public class TransactionService extends BaseService{
 	private WebResponse callTransactionSupply(List<ProductFlow> productFlows, Supplier supplier) throws Exception {
 		
 		try {
+			if(null == productFlows || productFlows.size() == 0 || supplier == null) {
+				throw new Exception("Invalid Parameter");
+			}
+			
 			WebRequest shopApiRequest = WebRequest.builder().productFlows(productFlows).supplier(supplier).build();
 	
 			ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_TRAN_SUPPLY,
@@ -170,6 +176,10 @@ public class TransactionService extends BaseService{
 	private WebResponse callTransactionSell(List<ProductFlow> productFlows, Customer customer) throws Exception {
 		
 		try {
+			if(null == productFlows || productFlows.size() == 0 || customer == null) {
+				throw new Exception("Invalid Parameter");
+			}
+			
 			WebRequest shopApiRequest = WebRequest.builder().productFlows(productFlows).customer(customer).build();
 	
 			ResponseEntity<WebResponse> response = restTemplate.postForEntity(WebServiceConstants.URL_TRAN_SELL_V2,

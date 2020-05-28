@@ -88,9 +88,9 @@ public abstract class BaseTransactionPage extends BasePage{
 	public void initComponent() { 
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 1, Color.WHITE, 30, 30, 0, 0, false, true);   
-		buttonSubmitCart = button("Submit To Cart");
+		buttonSubmitCart = ComponentBuilder.editButton("Submit To Cart");
  		buttonClearCart = button("Clear");
- 		buttonSubmitTransaction = button("SUBMIT TRANSACTION");
+ 		buttonSubmitTransaction = submitButton("SUBMIT TRANSACTION");
 		
 		if(formPanel == null) {
 			formPanel = buildFormPanel();

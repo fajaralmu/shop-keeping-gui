@@ -417,7 +417,7 @@ public class CommonFormFieldHelper {
 	 * @return
 	 */
 	public JButton editButton(final String idFieldName2, final Object idValue2) {
-		JButton button = ComponentBuilder.button("Edit");
+		JButton button = ComponentBuilder.editButton("Edit");
 		button.addActionListener(new ActionListener() {
 
 			@Override

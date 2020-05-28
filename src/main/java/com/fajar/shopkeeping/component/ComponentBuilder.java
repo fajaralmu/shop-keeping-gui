@@ -668,4 +668,9 @@ public class ComponentBuilder {
 //		panel.setBackground(Color.green);
 		return panel ;
 	}
+
+	public static JButton editButton(String string) {
+		// TODO Auto-generated method stub
+		return button("Edit", Color.orange);
+	}
 }

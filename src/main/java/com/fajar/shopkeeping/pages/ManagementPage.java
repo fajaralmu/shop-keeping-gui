@@ -80,7 +80,7 @@ public class ManagementPage extends BasePage {
 	private JPanel listPanel;
 	private JPanel navigationPanel;
 
-	private final JButton buttonSubmit = button("Submit");
+	private final JButton buttonSubmit = submitButton("Submit");
 	private final JButton buttonClear = button("Clear");
 	private final JButton buttonFilterEntity = button("SEARCH");
 	private final JButton buttonClearDataTableFilter = button("Clear");
@@ -201,10 +201,7 @@ public class ManagementPage extends BasePage {
 		
 		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, label("input page"), inputPage);
 		return buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
-	}
-
-	
-	
+	} 
 
 	private String getEntityClassName() {
 		if(entityClass == null) {

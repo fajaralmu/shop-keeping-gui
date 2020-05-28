@@ -341,6 +341,12 @@ public abstract class BasePage {
 	protected JButton button(Object text) {
 		return ComponentBuilder.button(text);
 	}
+	protected JButton submitButton(Object text) {
+		JButton button = ComponentBuilder.button(text);
+		button.setBackground(Color.green);
+		button.setForeground(Color.white);
+		return button;
+	}
 	protected JButton button(Object text,Color color) {
 		return ComponentBuilder.button(text, color);
 	}
