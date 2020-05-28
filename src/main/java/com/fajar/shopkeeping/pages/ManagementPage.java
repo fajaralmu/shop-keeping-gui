@@ -387,10 +387,10 @@ public class ManagementPage extends BasePage {
 			inputComponent.setFocusable(true);
 			inputComponent.requestFocus();
 
-			if (elementType.equals(FieldType.FIELD_TYPE_FIXED_LIST)) {
+			if (elementType.equals(FieldType.FIELD_TYPE_FIXED_LIST.value)) {
  
 				inputComponent = helper.buildFixedComboBox(element, fieldType);
-			} else if (elementType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST.value)) {
 				 
 				inputComponent = helper.buildDynamicComboBox(element, fieldType);
 			} else if (element.isIdentity()) {
@@ -398,7 +398,7 @@ public class ManagementPage extends BasePage {
 				inputComponent = textFieldDisabled("ID", 100, 20); 
 				setIdFieldName(elementId);
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_TEXTAREA)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_TEXTAREA.value)) {
 
 				inputComponent = textArea(elementId);
 				((JTextArea) inputComponent).addKeyListener(helper.textAreaActionListener((JTextArea) inputComponent, elementId));
@@ -406,18 +406,18 @@ public class ManagementPage extends BasePage {
 			} else if (elementType.equals("color")) {
 				skipFormField = true;
 				continue;
-			} else if (elementType.equals(FieldType.FIELD_TYPE_NUMBER)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_NUMBER.value)) {
 
 				inputComponent = numberField(elementId);
 				((JTextField) inputComponent).addKeyListener(helper.crudTextFieldActionListener((JTextField) inputComponent, elementId));
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_DATE)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_DATE.value)) {
 
 				inputComponent = dateChooser();
 				((JDateChooser) inputComponent).addPropertyChangeListener(helper.dateChooserPropertyChangeListener(
 						(JDateChooser) inputComponent, elementId ));
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_IMAGE)) {
+			} else if (elementType.equals(FieldType.FIELD_TYPE_IMAGE.value)) {
 				skipFormField = true;
 				inputComponent = getImageHelper().buildImageField(element, fieldType, element.isMultiple());
 				
@@ -508,7 +508,7 @@ public class ManagementPage extends BasePage {
 					
 					if(null != value) {
 						
-						if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST, FieldType.FIELD_TYPE_FIXED_LIST)){
+						if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST.value, FieldType.FIELD_TYPE_FIXED_LIST.value)){
 							
 							String optionItemName = element.getOptionItemName();
 							
@@ -523,17 +523,17 @@ public class ManagementPage extends BasePage {
 								value = value.toString(); 
 							}
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE.value)) {
 						
 							value = value.toString().split("~")[0];
 							components[i + 1] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
 							continue elementLoop;
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE.value)) {
 							
 							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER.value)) {
 							
 							value = StringUtil.beautifyNominal(Long.valueOf(value.toString()));
 							
@@ -602,7 +602,7 @@ public class ManagementPage extends BasePage {
 			
 			JLabel columnLabel = label(elementId);
 			
-			if(element.getType().equals(FieldType.FIELD_TYPE_DATE)) {
+			if(element.getType().equals(FieldType.FIELD_TYPE_DATE.value)) {
 				
 				//DD
 				JTextField dateFilterDay = buildDateFilter(elementId, "day");
@@ -912,7 +912,7 @@ public class ManagementPage extends BasePage {
 				continue;
 			} 
 			
-			if(FieldType.FIELD_TYPE_IMAGE.equals(element.getType()) && element.isMultiple()) {
+			if(FieldType.FIELD_TYPE_IMAGE.value.equals(element.getType()) && element.isMultiple()) {
 				String[] rawValue = value.toString().split("~"); 
 				Log.log("rawValue length:",rawValue.length);
 				List<String> validValues = new ArrayList<>();

@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 import com.fajar.dto.Filter;
 import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
