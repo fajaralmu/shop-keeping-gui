@@ -19,16 +19,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Customer;
-import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Transaction;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.Customer;
+import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.ProductFlow;
+import com.fajar.shoppingmart.entity.Transaction;
 
 import lombok.Data;
 

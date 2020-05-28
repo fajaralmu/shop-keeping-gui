@@ -31,7 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.entity.custom.CashFlow;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -43,7 +42,8 @@ import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
-import com.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.entity.custom.CashFlow;
+import com.fajar.shoppingmart.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;

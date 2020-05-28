@@ -25,12 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Customer;
-import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -39,7 +33,13 @@ import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
-import com.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.Customer;
+import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.ProductFlow;
+import com.fajar.shoppingmart.entity.Supplier;
+import com.fajar.shoppingmart.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;

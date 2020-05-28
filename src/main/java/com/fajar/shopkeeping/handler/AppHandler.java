@@ -11,7 +11,6 @@ import static com.fajar.shopkeeping.constant.PageConstants.PAGE_TRAN_SUPPLY;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fajar.dto.WebResponse;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
@@ -20,6 +19,7 @@ import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.dto.WebResponse;
 
 public class AppHandler {
 

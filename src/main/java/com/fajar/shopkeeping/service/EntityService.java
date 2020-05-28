@@ -10,15 +10,15 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 
-import com.fajar.dto.Filter;
-import com.fajar.dto.WebRequest;
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
 
 public class EntityService extends BaseService {
 

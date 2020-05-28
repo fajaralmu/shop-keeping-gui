@@ -2,13 +2,13 @@ package com.fajar.shopkeeping.handler;
 
 import org.springframework.http.ResponseEntity;
 
-import com.fajar.dto.Filter;
-import com.fajar.dto.WebRequest;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.pages.PeriodicReportPage;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.dto.WebRequest;
 
 public class PeriodicReportHandler extends MainHandler {
 

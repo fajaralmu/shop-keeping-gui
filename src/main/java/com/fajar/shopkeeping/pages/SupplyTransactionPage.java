@@ -1,12 +1,10 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.ComponentBuilder.label;
-import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,22 +14,21 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Supplier;
-import com.fajar.entity.Transaction;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.ProductFlow;
+import com.fajar.shoppingmart.entity.Supplier;
+import com.fajar.shoppingmart.entity.Transaction;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.Data;

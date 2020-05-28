@@ -15,14 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
-import com.fajar.dto.WebRequest;
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.User;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shoppingmart.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.User;
 
 public class AccountService extends BaseService{ 
 

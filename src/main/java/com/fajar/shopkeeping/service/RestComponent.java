@@ -6,7 +6,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
-import com.fajar.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebRequest;
 
 public class RestComponent {
 	

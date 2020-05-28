@@ -10,20 +10,20 @@ import javax.activity.InvalidActivityException;
 
 import org.springframework.http.ResponseEntity;
 
-import com.fajar.dto.Filter;
-import com.fajar.dto.WebRequest;
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
-import com.fajar.entity.Customer;
-import com.fajar.entity.Product;
-import com.fajar.entity.ProductFlow;
-import com.fajar.entity.Supplier;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.Customer;
+import com.fajar.shoppingmart.entity.Product;
+import com.fajar.shoppingmart.entity.ProductFlow;
+import com.fajar.shoppingmart.entity.Supplier;
 
 public class TransactionService extends BaseService{ 
 

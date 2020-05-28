@@ -35,11 +35,6 @@ import javax.swing.SwingConstants;
 
 import org.springframework.util.StringUtils;
 
-import com.fajar.dto.FieldType;
-import com.fajar.dto.WebResponse;
-import com.fajar.entity.BaseEntity;
-import com.fajar.entity.setting.EntityElement;
-import com.fajar.entity.setting.EntityProperty;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -57,14 +52,21 @@ import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
-import com.fajar.util.EntityUtil;
+import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.entity.setting.EntityElement;
+import com.fajar.shoppingmart.entity.setting.EntityProperty;
+import com.fajar.shoppingmart.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
+@Slf4j
 public class ManagementPage extends BasePage {
 
 	private static final String DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss";
@@ -502,6 +504,8 @@ public class ManagementPage extends BasePage {
 				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
 				final String fieldType = element.getType();
 				Object value;
+				Log.log("ID FIELD IS: ", entityProperty.getIdField());
+				Log.log(field.getName(), " ALIAS ", element.getId(), "identity: ", element.isIdentity(), " or ", element.isIdField());
 				
 				try {
 					value = field.get(entity);
@@ -543,7 +547,8 @@ public class ManagementPage extends BasePage {
 							value = value.toString().substring(0, 30)+"...";
 						}
 						
-						if(element.isIdentity()) {
+						if(element.isIdField() || EntityUtil.getIdFieldOfAnObject(entityClass).equals(field)) {
+							log.info("ID FIELD: {}", field.getName());
 							idExist  = true;
 							idFieldName = element.getId();
 							idValue = value;
@@ -558,7 +563,7 @@ public class ManagementPage extends BasePage {
 			}
 			
 			//end field elements
-			components[colSize - 1] = idExist ? helper.editButton(idFieldName, idValue) : label("-");
+			components[colSize - 1] = idExist ? helper.editButton(idFieldName, idValue) : label("--");
 			
 			sequenceNumber++;
 			

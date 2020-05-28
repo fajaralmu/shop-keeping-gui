@@ -6,7 +6,7 @@
 	<groupId>com.fajar</groupId>
 	<artifactId>shop-keeping</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<!-- <packaging>jar</packaging> --> 
    
 	<name>shop-keeping</name>
 	<url>http://maven.apache.org</url>

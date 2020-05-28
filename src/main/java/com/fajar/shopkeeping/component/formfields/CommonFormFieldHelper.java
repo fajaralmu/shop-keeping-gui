@@ -29,8 +29,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.dto.FieldType;
-import com.fajar.entity.setting.EntityElement;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -40,6 +38,8 @@ import com.fajar.shopkeeping.util.ComponentUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.fajar.shoppingmart.dto.FieldType;
+import com.fajar.shoppingmart.entity.setting.EntityElement;
 import com.toedter.calendar.JDateChooser;
 
 public class CommonFormFieldHelper {

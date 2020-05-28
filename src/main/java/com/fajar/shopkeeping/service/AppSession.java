@@ -1,6 +1,6 @@
 package com.fajar.shopkeeping.service;
 
-import com.fajar.entity.User;
+import com.fajar.shoppingmart.entity.User;
 
 public class AppSession {
 	

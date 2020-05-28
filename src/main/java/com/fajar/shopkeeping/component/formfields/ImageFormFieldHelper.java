@@ -16,12 +16,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.fajar.entity.setting.EntityElement;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.MyInfoLabel;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.entity.setting.EntityElement;
 
 import lombok.Data;
 
