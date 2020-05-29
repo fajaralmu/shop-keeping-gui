@@ -90,28 +90,28 @@ public class StringUtil {
 		}
 		String[] rawNominal = Int.toString().split("\\.");
 		String nominal = rawNominal[0];
-		String hasil = "";
+		String result = "";
 		if (nominal.length() > 3) {
 			int nol = 0;
 			for (int i = nominal.length() - 1; i > 0; i--) {
 				nol++;
-				hasil = nominal.charAt(i) + hasil;
+				result = nominal.charAt(i) + result;
 				if (nol == 3) {
-					hasil = "." + hasil;
+					result = "." + result;
 					nol = 0;
 				}
 
 			}
-			hasil = nominal.charAt(0) + hasil;
+			result = nominal.charAt(0) + result;
 		} else {
-			hasil = Int.toString();
+			result = Int.toString();
 		}
 
 		if (rawNominal.length > 1) {
-			hasil = hasil + "," + rawNominal[1];
+			result = result + "," + rawNominal[1];
 		}
 
-		return hasil;
+		return result;
 	}
 	
 	public static String getBase64Image(File file) {

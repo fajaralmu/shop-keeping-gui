@@ -17,9 +17,9 @@ import org.springframework.web.client.ResourceAccessException;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.User;
@@ -50,9 +50,7 @@ public class AccountService extends BaseService{
 	 * @param callback params : JsonResponse
 	 */
 	private void requestAppId(final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -66,13 +64,10 @@ public class AccountService extends BaseService{
 					
 				} catch (Exception e) { 
 					e.printStackTrace();
-				} finally {
-					Loadings.end();
-				}
+				} finally {  }
 			}
 
-		});
-		thread.start();
+		}); 
 	}
 
 	/**
@@ -83,17 +78,12 @@ public class AccountService extends BaseService{
 	 */
 	public void doLogin(final String username, final String password, final MyCallback callback) {
 
-		Loadings.start();
+		ThreadUtil.runWithLoading(new Runnable() {
 
-		Thread thread = new Thread(new Runnable() {
-
-			public void run() {
-
-				boolean success = false;
-
+			public void run() { 
+				boolean success = false; 
 				try {
-					 
-
+					  
 					ResponseEntity<HashMap> response = callLogin(username, password);
 
 					if (response.getBody().get("code").equals("00") == false) {
@@ -128,11 +118,7 @@ public class AccountService extends BaseService{
 					}
 				}
 			}
-
-			
-
 		});
-		thread.start();
 
 	}
 
@@ -142,16 +128,13 @@ public class AccountService extends BaseService{
 	 */
 	public void logout(final MyCallback callback) {
 
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
 				boolean success = false;
 
-				try {
-
+				try { 
 					WebResponse response  = callLogout();
 
 					if (response. getCode().equals("00") == false) {
@@ -178,9 +161,7 @@ public class AccountService extends BaseService{
 				}
 			} 
 
-		});
-
-		thread.start();
+		}); 
 
 	}
 	

@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.activity.InvalidActivityException;
 import javax.management.RuntimeErrorException;
 
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
@@ -48,9 +46,7 @@ public class TransactionService extends BaseService{
 	  * @param myCallback handles json response
 	  */
 	public void transactionSupply(final List<ProductFlow> productFlows, final Supplier supplier, final MyCallback myCallback) {
-		Loadings.start();
-		ThreadUtil.run(new Runnable() {
-			
+		ThreadUtil.runWithLoading(new Runnable() { 
 		 
 			public void run() {
 				try {
@@ -66,17 +62,14 @@ public class TransactionService extends BaseService{
 
 				} catch (Exception e) {
 					Dialogs.error("Error performing transaction :" +e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 				
 			}
 		});
 	}
 	
 	public void transactionSell(final List<ProductFlow> productFlows, final Customer customer, final MyCallback myCallback) {
-		Loadings.start();
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 			
 			public void run() {
 				try {
@@ -91,10 +84,7 @@ public class TransactionService extends BaseService{
 
 				} catch (Exception e) {
 					Dialogs.error("Error performing transaction :" +e.getMessage());
-				} finally {
-					Loadings.end();
-				}
-				
+				} finally { }
 			}
 		});
 	}
@@ -102,8 +92,7 @@ public class TransactionService extends BaseService{
 	
 	public void getProductDetail(final String productCode, final MyCallback callback) {
 		
-		Loadings.start();
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 			
 			public void run() {
 				try {
@@ -112,9 +101,7 @@ public class TransactionService extends BaseService{
 				} catch (Exception e) {
 					Dialogs.error("Error getting product detail: "+e.getMessage());
 					e.printStackTrace();
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 			}
 		});
 	}

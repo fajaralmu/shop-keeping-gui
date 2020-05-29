@@ -15,6 +15,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -36,9 +37,7 @@ public class EntityService extends BaseService {
 	}
 
 	public void getEntityList(final Filter filter, final Class entityClass, final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -48,13 +47,9 @@ public class EntityService extends BaseService {
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getEntityList: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
-			}
-
-		});
-		thread.start();
+				} finally { }
+			} 
+		}); 
 	} 
 	
 	/**
@@ -106,9 +101,7 @@ public class EntityService extends BaseService {
 	 * @param callback
 	 */
 	public void getEntityListHashMapResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -118,13 +111,10 @@ public class EntityService extends BaseService {
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getEntityList: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { 	}
 			}
 
-		});
-		thread.start();
+		}); 
 	}
 	
 	/**
@@ -134,9 +124,7 @@ public class EntityService extends BaseService {
 	 * @param callback
 	 */
 	public void getEntityListJsonResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -146,13 +134,10 @@ public class EntityService extends BaseService {
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getEntityList: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 			}
 
-		});
-		thread.start();
+		}); 
 	}
 
 	public List< Map> getAllEntityOnlyList(Class entityClass) {
@@ -166,9 +151,7 @@ public class EntityService extends BaseService {
 
 	
 	public void updateEntity( final Map entityObject, final boolean editMode, final Class entityClass, final MyCallback myCallback) { 
-		Loadings.start();
-		
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -185,13 +168,10 @@ public class EntityService extends BaseService {
 					
 				}catch (Exception e) {
 					e.printStackTrace();
-				}finally {
-					Loadings.end();
-				}
+				}finally { }
 			}
 		});
-		
-		thread.start();
+		 
 	}
 
 	private WebResponse getEntityListFullResponse(Filter filter, Class entityClass) {

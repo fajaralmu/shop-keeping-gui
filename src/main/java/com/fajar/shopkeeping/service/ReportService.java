@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.Log;
@@ -47,9 +46,7 @@ public class ReportService extends BaseService{
 	 * @param callback params : JsonResponse
 	 */
 	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback callback) {
-		Loadings.start();
-
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -60,9 +57,7 @@ public class ReportService extends BaseService{
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getMonthlyCashflowDetail: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 			} 
 		}); 
 	}
@@ -76,9 +71,7 @@ public class ReportService extends BaseService{
 	 * @param callback
 	 */
 	public void getDailyCashflowDetail(final int day, final int month, final int year, final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -89,13 +82,10 @@ public class ReportService extends BaseService{
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getDailyCashflowDetail: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 			}
 
-		});
-		thread.start();
+		}); 
 	}
 
 	/**
@@ -105,9 +95,7 @@ public class ReportService extends BaseService{
 	 * @param callback
 	 */
 	public void getPeriodicCashflow(final Filter filter, final MyCallback callback) {
-		Loadings.start();
-
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
@@ -121,14 +109,9 @@ public class ReportService extends BaseService{
 				} catch (Exception e) {
 					e.printStackTrace();
 					Dialogs.error("Error getPeriodicCashflow: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
+				} finally { }
 			}
-
-
-		});
-		thread.start();
+		}); 
 
 	}
 
@@ -172,8 +155,7 @@ public class ReportService extends BaseService{
 	 * @param reportType
 	 */
 	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback myCallback, final ReportType reportType) {
-		Loadings.start();
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -197,9 +179,7 @@ public class ReportService extends BaseService{
 					
 				}catch (Exception e) {
 					Dialogs.error("Error generating report: ", e.getMessage());
-				} finally { 
-					Loadings.end();
-				}
+				} finally {  }
 			}
 		});
 	}

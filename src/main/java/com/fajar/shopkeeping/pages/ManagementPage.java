@@ -50,6 +50,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shopkeeping.util.ObjectUtil;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.FieldType;
@@ -291,8 +292,8 @@ public class ManagementPage extends BasePage {
 	 * constructs CRUD form
 	 */
 	public void loadForm() {
-		Loadings.start();
-		ThreadUtil.run(new Runnable() {
+		 
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			@Override
 			public void run() {
@@ -301,8 +302,7 @@ public class ManagementPage extends BasePage {
 				getHandler().getEntities();
 				
 				preInitComponent();
-				initEvent();
-				Loadings.end();
+				initEvent(); 
 			}
 		}); 
 
@@ -372,13 +372,14 @@ public class ManagementPage extends BasePage {
 			final String elementId = element.getId();
 
 			Field entityField = EntityUtil.getDeclaredField(entityClass, elementId);
-			Class<?> fieldType = entityField.getType();
+			Class<?> fieldClass = entityField.getType();
 			JLabel lableName = label(element.getLableName(), SwingConstants.LEFT); 
 			lableName.setSize(100, 20);
-			String elementType = element.getType();
+			
+			FieldType fieldType = ObjectUtil.getFieldTypeEnum(element.getType());
 			boolean skipFormField = false;
 			
-			if (elementType == null) {
+			if (fieldType == null) {
 				continue;
 			}
 
@@ -386,39 +387,39 @@ public class ManagementPage extends BasePage {
 			inputComponent.setFocusable(true);
 			inputComponent.requestFocus();
 
-			if (elementType.equals(FieldType.FIELD_TYPE_FIXED_LIST.value)) {
+			if (fieldType.equals(FieldType.FIELD_TYPE_FIXED_LIST)) {
  
-				inputComponent = helper.buildFixedComboBox(element, fieldType);
-			} else if (elementType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST.value)) {
+				inputComponent = helper.buildFixedComboBox(element, fieldClass);
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_DYNAMIC_LIST)) {
 				 
-				inputComponent = helper.buildDynamicComboBox(element, fieldType);
+				inputComponent = helper.buildDynamicComboBox(element, fieldClass);
 			} else if (element.isIdentity()) {
 				
 				inputComponent = textFieldDisabled("ID", 100, 20); 
 				setIdFieldName(elementId);
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_TEXTAREA.value)) {
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_TEXTAREA)) {
 
 				inputComponent = textArea(elementId);
 				((JTextArea) inputComponent).addKeyListener(helper.textAreaActionListener((JTextArea) inputComponent, elementId));
 				
-			} else if (elementType.equals("color")) {
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_COLOR)) {
 				skipFormField = true;
 				continue;
-			} else if (elementType.equals(FieldType.FIELD_TYPE_NUMBER.value)) {
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_NUMBER)) {
 
 				inputComponent = numberField(elementId);
 				((JTextField) inputComponent).addKeyListener(helper.crudTextFieldActionListener((JTextField) inputComponent, elementId));
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_DATE.value)) {
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_DATE)) {
 
 				inputComponent = dateChooser();
 				((JDateChooser) inputComponent).addPropertyChangeListener(helper.dateChooserPropertyChangeListener(
 						(JDateChooser) inputComponent, elementId ));
 				
-			} else if (elementType.equals(FieldType.FIELD_TYPE_IMAGE.value)) {
+			} else if (fieldType.equals(FieldType.FIELD_TYPE_IMAGE)) {
 				skipFormField = true;
-				inputComponent = getImageHelper().buildImageField(element, fieldType, element.isMultiple());
+				inputComponent = getImageHelper().buildImageField(element, fieldClass, element.isMultiple());
 				
 			} else {
 				inputComponent = textField(elementId);
@@ -499,7 +500,7 @@ public class ManagementPage extends BasePage {
 				
 				final EntityElement element = entityElements.get(i); 
 				final Field field = EntityUtil.getDeclaredField(entity.getClass(), element.getId());
-				final String fieldType = element.getType();
+				final FieldType fieldType = ObjectUtil.getFieldTypeEnum(element.getType());
 				Object value;
 				Log.log("ID FIELD IS: ", entityProperty.getIdField());
 				Log.log(field.getName(), " ALIAS ", element.getId(), "identity: ", element.isIdentity(), " or ", element.isIdField());
@@ -509,7 +510,7 @@ public class ManagementPage extends BasePage {
 					
 					if(null != value) {
 						
-						if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST.value, FieldType.FIELD_TYPE_FIXED_LIST.value)){
+						if( objectEquals(fieldType, FieldType.FIELD_TYPE_DYNAMIC_LIST, FieldType.FIELD_TYPE_FIXED_LIST)){
 							
 							String optionItemName = element.getOptionItemName();
 							
@@ -524,17 +525,17 @@ public class ManagementPage extends BasePage {
 								value = value.toString(); 
 							}
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE.value)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_IMAGE)) {
 						
 							value = value.toString().split("~")[0];
 							components[i + 1] = ComponentBuilder.imageLabel(UrlConstants.URL_IMAGE+value, 100, 100);
 							continue elementLoop;
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE.value)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_DATE)) {
 							
 							value = DateUtil.formatDate((Date)value, DATE_PATTERN);
 							
-						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER.value)) {
+						}else if(objectEquals(fieldType, FieldType.FIELD_TYPE_NUMBER)) {
 							
 							value = StringUtil.beautifyNominal(Long.valueOf(value.toString()));
 							
@@ -603,8 +604,9 @@ public class ManagementPage extends BasePage {
 			JPanel orderButtons = buildInlineComponent(45, buttonAsc, buttonDesc);
 			
 			JLabel columnLabel = label(elementId);
+			FieldType fieldType = ObjectUtil.getFieldTypeEnum(element.getType()); 
 			
-			if(element.getType().equals(FieldType.FIELD_TYPE_DATE.value)) {
+			if(fieldType.equals(FieldType.FIELD_TYPE_DATE)) {
 				
 				//DD
 				JTextField dateFilterDay = buildDateFilter(elementId, "day");
@@ -914,7 +916,9 @@ public class ManagementPage extends BasePage {
 				continue;
 			} 
 			
-			if(FieldType.FIELD_TYPE_IMAGE.value.equals(element.getType()) && element.isMultiple()) {
+			FieldType fieldType = ObjectUtil.getFieldTypeEnum(element.getType());
+			
+			if(FieldType.FIELD_TYPE_IMAGE.equals(fieldType) && element.isMultiple()) {
 				String[] rawValue = value.toString().split("~"); 
 				Log.log("rawValue length:",rawValue.length);
 				List<String> validValues = new ArrayList<>();
