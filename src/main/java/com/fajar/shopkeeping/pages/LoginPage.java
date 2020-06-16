@@ -72,7 +72,7 @@ public class LoginPage extends BasePage {
 	@Override
 	protected void setDefaultValues() {
 		setTypedUsername (usernameField.getText());
-		setTypedPassword (passwordField.getText());
+		setTypedPassword (String.valueOf(passwordField.getPassword()));
 		super.setDefaultValues();
 	}
 

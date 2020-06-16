@@ -43,16 +43,12 @@ public class ManagementHandler extends MainHandler {
 	public void getEnitiesFormDynamicDropdown(Class<?> entityClass, final String key, final Object value,
 			MyCallback callback) {
 
-		Map<String, Object> fieldsFilter = new HashMap<String, Object>() {
-			{
-				put(key, value);
-			}
-		};
+		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityListHashMapResponse(filter, entityClass, callback);
 	}
 	
-	public static Map getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
+	public static Map<Object, Object> getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
 		return MapUtil.getMapFromList(key, selectedValue, list);
 	}
 
@@ -87,7 +83,7 @@ public class ManagementHandler extends MainHandler {
 		if(confirm == 0) { 
 		
 			Map<String, Object> managedObject = getPage().getManagedObject();
-			String idField = getPage().getIdFieldName();
+//			String idField = getPage().getIdFieldName();
 			
 			Log.log("Submit managedObject: ", managedObject); 
 			 

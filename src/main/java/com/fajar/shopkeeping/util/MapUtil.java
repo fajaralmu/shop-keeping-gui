@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,18 +124,31 @@ public class MapUtil {
 	}
 	
 	
-	public static Map<?, ?> getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
+	public static Map<Object, Object> getMapFromList(Object key, Object selectedValue, List<Map<Object, Object>> list) {
 		if(null == list) {
 			Log.log("list is null");
 			return null;
 		}
-		for (Map<?, ?> map : list) {
-			if(map.get(key).equals(selectedValue)) {
+		for (Map<Object, Object> map : list) {
+			if(map.get(key) != null && map.get(key).equals(selectedValue)) {
 				return map;
 			}
 		}
 		
 		return null;
+	}
+
+	public static Map<String, Object> singleMap(String key, Object value) { 
+		return  new HashMap<String, Object>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -6374947770913294890L;
+
+			{
+				put(key, value);
+			}
+		}; 
 	}
 
 }

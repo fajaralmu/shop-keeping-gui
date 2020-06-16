@@ -19,6 +19,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ObjectUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -84,13 +85,13 @@ public class AccountService extends BaseService{
 				boolean success = false; 
 				try {
 					  
-					ResponseEntity<HashMap> response = callLogin(username, password);
+					ResponseEntity<HashMap<Object, Object>> response = callLogin(username, password);
 
 					if (response.getBody().get("code").equals("00") == false) {
 						throw new Exception("Invalid Response");
 					}
 
-					HashMap responseBody = response.getBody();
+					HashMap<Object, Object> responseBody = response.getBody();
 					HttpHeaders responseHeaders = response.getHeaders();
 					List<String> loginKey = responseHeaders.get(HEADER_LOGIN_KEY);
  
@@ -183,14 +184,14 @@ public class AccountService extends BaseService{
 		}
 	}
 	
-	private ResponseEntity<HashMap> callLogin(String username, String password) {
+	private ResponseEntity<HashMap<Object, Object>> callLogin(String username, String password) {
 		User user = User.builder().username(username).password(password).build();
 
 		final WebRequest loginRequest = WebRequest.builder().user(user).build();
 
 		try {
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_LOGIN,
-					RestComponent.buildAuthRequest(loginRequest, false), HashMap.class);
+			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(URL_LOGIN,
+					RestComponent.buildAuthRequest(loginRequest, false), ObjectUtil.getEmptyHashMapClass());
 			
 			return response;
 		}catch (Exception e) {
