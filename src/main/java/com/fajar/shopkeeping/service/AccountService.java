@@ -48,7 +48,7 @@ public class AccountService extends BaseService{
 
 	/**
 	 * requesting new app ID
-	 * @param callback params : JsonResponse
+	 * @param callback parameter #1 : WebResponse.class
 	 */
 	private void requestAppId(final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -75,7 +75,7 @@ public class AccountService extends BaseService{
 	 * 
 	 * @param username
 	 * @param password
-	 * @param callback params : (boolean success)
+	 * @param callback parameter #1 : Boolean.class
 	 */
 	public void doLogin(final String username, final String password, final MyCallback callback) {
 
@@ -125,7 +125,7 @@ public class AccountService extends BaseService{
 
 	/**
 	 * 
-	 * @param myCallback params: boolean successLogout
+	 * @param myCallback parameter #1 :  successLogout (Boolean.class)
 	 */
 	public void logout(final MyCallback callback) {
 

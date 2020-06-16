@@ -44,7 +44,7 @@ public class ReportService extends BaseService{
 	 * 
 	 * @param month
 	 * @param year
-	 * @param callback params : JsonResponse
+	 * @param callback parameter #1  : JSON response (WebResponse.class)
 	 */
 	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -69,7 +69,7 @@ public class ReportService extends BaseService{
 	 * @param day
 	 * @param month
 	 * @param year
-	 * @param callback
+	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void getDailyCashflowDetail(final int day, final int month, final int year, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -93,7 +93,7 @@ public class ReportService extends BaseService{
 	 * get cash flow from selected period to selected period
 	 * 
 	 * @param filter
-	 * @param callback
+	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void getPeriodicCashflow(final Filter filter, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -158,7 +158,8 @@ public class ReportService extends BaseService{
 	 * generate excel report
 	 * @param WebRequest
 	 * @param myCallback handle ResponseEntity<byte[]>
-	 * @param reportType
+	 * @param reportType parameter #1 : reportFile (ResponseEntity<byte[]>)
+	 * 					 parameter #2 : reportType (ReportType.class)
 	 */
 	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback myCallback, final ReportType reportType) {
 		ThreadUtil.runWithLoading(new Runnable() {

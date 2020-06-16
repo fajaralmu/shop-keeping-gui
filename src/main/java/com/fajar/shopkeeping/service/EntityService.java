@@ -40,6 +40,12 @@ public class EntityService extends BaseService {
 
 	}
 
+	/**
+	 * 
+	 * @param filter
+	 * @param entityClass
+	 * @param callback parameter #1 : response (WebResponse.class)
+	 */
 	public void getEntityList(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
@@ -57,11 +63,11 @@ public class EntityService extends BaseService {
 	} 
 	
 	/**
-	 * get single entity by id, returning hashmap response
+	 * get single entity by id, returning Map response
 	 * @param idField
 	 * @param id
 	 * @param entityClass
-	 * @param callback
+	 * @param callback parameter #1 : response (Map<Object, Object>)
 	 */
 	public void getSingleEntityByID(final String idField, final Object id, final Class<?> entityClass, final MyCallback callback) {
 		 
@@ -98,10 +104,10 @@ public class EntityService extends BaseService {
 	}
 	
 	/**
-	 * the given response is hashmap
+	 * the given response is Map
 	 * @param filter
 	 * @param entityClass
-	 * @param callback
+	 * @param callback parameter #1 : response (Map<Object, Object>)
 	 */
 	public void getEntityListHashMapResponse(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -124,7 +130,7 @@ public class EntityService extends BaseService {
 	 * the given response is java object [WebResponse]
 	 * @param filter
 	 * @param entityClass
-	 * @param callback
+	 * @param callback parameter #1 : JSON response, (WebResponse.class)
 	 */
 	public void getEntityListJsonResponse(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
@@ -152,7 +158,13 @@ public class EntityService extends BaseService {
 
 	}
 
-	
+	/**
+	 * 
+	 * @param entityObject
+	 * @param editMode
+	 * @param entityClass
+	 * @param myCallback parameter #1 : JSON response (WebResponse.class)
+	 */
 	public void updateEntity( final Map<String, Object> entityObject, final boolean editMode, final Class<?> entityClass, final MyCallback myCallback) { 
 		ThreadUtil.runWithLoading(new Runnable() {
 			
