@@ -54,7 +54,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected JButton buttonSubmitTransaction;
 	
 	
-	protected JComboBox productComboBox; 
+	protected JComboBox<String> productComboBox; 
 	protected JTextField inputQtyField; 
 	protected JLabel labelProductUnit;   
 	protected JLabel labelTotalPrice;
@@ -266,7 +266,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @param fieldName
 	 * @param dynamicComboBox
 	 */
-	protected static void populateDropdown(String dropdownValue, List objects, String fieldName, JComboBox dynamicComboBox) {
+	protected static void populateDropdown(String dropdownValue, List objects, String fieldName, JComboBox  dynamicComboBox) {
 		dynamicComboBox.removeAllItems();
 		
 		for (Object object : objects) { 
@@ -327,7 +327,7 @@ public abstract class BaseTransactionPage extends BasePage{
 			@Override
 			public void actionPerformed(ActionEvent e) { 
 				
-				 final JComboBox inputComponent = (JComboBox) e.getSource();
+				 final JComboBox<?> inputComponent = (JComboBox<?>) e.getSource();
 				 Object selectedValue = inputComponent.getSelectedItem();
 				 if(null == selectedValue) {
 						return;
@@ -344,13 +344,13 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @param dropDownType
 	 * @param componentText
 	 */
-	protected void handleDropDownKeyReleased(final JComboBox dynamicComboBox, final DropDownType dropDownType,
+	protected void handleDropDownKeyReleased(final JComboBox<?> dynamicComboBox, final DropDownType dropDownType,
 			final String componentText) {
 		
 		boolean typeCustomer = dropDownType.equals(CUSTOMER) ;
 		boolean typeSupplier = dropDownType.equals(SUPPLIER);
 		
-		Class entityClass = Product.class;
+		Class<? extends BaseEntity> entityClass = Product.class;
 		
 		if(typeSupplier) {
 			entityClass = Supplier.class;
@@ -408,7 +408,7 @@ public abstract class BaseTransactionPage extends BasePage{
 			public void keyPressed(KeyEvent e) { }
 			@Override
 			public void keyReleased(KeyEvent event) { 
-				final JComboBox dynamicComboBox = getComboBox(event);
+				final JComboBox<?> dynamicComboBox = getComboBox(event);
 				final String componentText = getComboBoxText(dynamicComboBox);  
 				handleDropDownKeyReleased(dynamicComboBox, dropDownType, componentText);
 			}
@@ -502,7 +502,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * remove all items and set selected value to "";
 	 * @param comboBox
 	 */
-	protected static void clearComboBox(JComboBox comboBox) {
+	protected static void clearComboBox(JComboBox<?> comboBox) {
 		comboBox.removeAllItems();
 		comboBox.setSelectedItem("");
 	}

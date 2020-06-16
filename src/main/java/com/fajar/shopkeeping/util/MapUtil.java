@@ -124,7 +124,7 @@ public class MapUtil {
 	}
 	
 	
-	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
+	public static Map getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
 		if(null == list) {
 			Log.log("list is null");
 			return null;

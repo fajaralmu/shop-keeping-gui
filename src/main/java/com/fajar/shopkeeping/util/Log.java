@@ -10,7 +10,7 @@ public class Log {
 			}
 			sb.append(" ").append(object);
 		}
-		System.out.println("## "+sb.toString());
+//		System.out.println("## "+sb.toString());
 	}
 	
 	public static void log(String[] strings) {

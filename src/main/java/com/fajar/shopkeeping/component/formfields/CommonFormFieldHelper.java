@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
+import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.ComponentUtil;
 import com.fajar.shopkeeping.util.Log;
@@ -78,7 +80,7 @@ public class CommonFormFieldHelper {
 		navButtons.add(prevButton);
 
 		for (int i = 0; i < buttonCount; i++) {
-			int buttonValue = i * 1 + 1;
+//			int buttonValue = i * 1 + 1;
 			boolean included = false;
 			for (int j = 0; j < displayed_buttons.size(); j++) {
 				if (displayed_buttons.get(j) == i && !included) {
@@ -161,19 +163,14 @@ public class CommonFormFieldHelper {
 		Set<String> inputKeys = inputs.keySet();
 		for (String key : inputKeys) {
 
-			Component formField = page.getFieldComponent(key);
-
-			if (formField instanceof JTextField)
-				try {
-					((JTextField) formField).setText("");
-				} catch (Exception e) {
+			Component formField = page.getFieldComponent(key); 
+			
+			try {
+				//JTextField AND JTextArea
+				if (formField instanceof JTextComponent) {
+					((JTextComponent) formField).setText("");
 				}
-
-			if (formField instanceof JTextArea)
-				try {
-					((JTextArea) formField).setText("");
-				} catch (Exception e) {
-				}
+			} catch (Exception e) { } 
 
 			if (formField instanceof JComboBox) {
 				// leave as it
@@ -209,7 +206,7 @@ public class CommonFormFieldHelper {
 	 * 
 	 * @param entity
 	 */
-	public void populateFormInputs(final Map entity) {
+	public void populateFormInputs(final Map<String, Object> entity) {
 		ThreadUtil.run(new Runnable() {
 
 			@Override
@@ -228,7 +225,7 @@ public class CommonFormFieldHelper {
 	 * 
 	 * @param entity
 	 */
-	public void doPopulateFormInputs(Map entity) {
+	public void doPopulateFormInputs(Map<String, Object> entity) {
 
 		doClearForm();
 		page.setManagedObject(entity);
@@ -251,26 +248,19 @@ public class CommonFormFieldHelper {
 			Component formField = page.getFieldComponent(key);
 			if (formField != null && !isImage) {
 
-				if (formField instanceof JTextField)
-					try {
-						((JTextField) formField).setText(value.toString());
-					} catch (Exception e) {
-					}
-
-				if (formField instanceof JTextArea)
-					try {
-						((JTextArea) formField).setText(value.toString());
-					} catch (Exception e) {
-					}
-
-				if (formField instanceof JComboBox)
-					try {
+				try {
+					//JTextField AND JTextArea
+					if (formField instanceof JTextComponent) {
+						((JTextComponent) formField).setText(value.toString());
+					} 
+									
+					if (formField instanceof JComboBox) {
 						Map valueMap = (Map) value;
 						EntityElement element = page.getEntityElement(key);
 						String optionItemName = element.getOptionItemName();
 						((JComboBox) formField).setSelectedItem(valueMap.get(optionItemName));
-					} catch (Exception e) {
 					}
+				} catch (Exception e) { }
 
 			} else if (isImage && entityElement.isMultiple() == false) {
 				formField = page.getSingleImagePreviewLabel(key);
@@ -331,7 +321,7 @@ public class CommonFormFieldHelper {
 	 * @param fieldType
 	 * @return
 	 */
-	public JComboBox buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
+	public JComboBox<?> buildDynamicComboBox(EntityElement element, Class<?> fieldType) {
 
 		String elementId = element.getId();
 		String optionItemName = element.getOptionItemName();
@@ -339,7 +329,7 @@ public class CommonFormFieldHelper {
 		KeyListener comboBoxKeyListener = dynamicComboBoxListener(optionItemName, fieldType, elementId);
 		ActionListener comboBoxActionListener = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
 
-		JComboBox inputComponent = ComponentBuilder.buildEditableComboBox("", comboBoxKeyListener,
+		JComboBox<?> inputComponent = ComponentBuilder.buildEditableComboBox("", comboBoxKeyListener,
 				comboBoxActionListener, "type something..");
 		inputComponent.setSize(150, 20);
 
@@ -354,50 +344,61 @@ public class CommonFormFieldHelper {
 	 * @param fieldType
 	 * @return
 	 */
-	public JComboBox buildFixedComboBox(EntityElement element, Class fieldType) {
+	public JComboBox<?> buildFixedComboBox(EntityElement element, Class<?> fieldType) {
 
 		String optionItemName = element.getOptionItemName();
 		String elementId = element.getId();
-		boolean hasDefaultValues = false;
+		Object defaultComboBoxValue;
+		Object[] comboBoxValues;
+		
 		/**
 		 * call API
 		 */
-		List<Map> objectList = new ArrayList<>();
+		List<Map<Object, Object>> objectList;
 		Log.log("element.getDefaultValues(): ", element.getDefaultValues());
-		if (element.getDefaultValues() == null || element.getDefaultValues().length == 0) {
+		
+		checkIfElementIsEnum(element);
+		
+		boolean notHavingDefaultValue = element.getDefaultValues() == null || element.getDefaultValues().length == 0;
+		
+		if (notHavingDefaultValue ) {
 			objectList = page.getHandler().getAllEntity(fieldType);
-
-		} else {
-			hasDefaultValues = true;
+			comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
+			defaultComboBoxValue = objectList.get(0).get(optionItemName);
+			
+		} else { 
+			objectList = new ArrayList<>();
 			String[] defaultComboBoxValues = element.getDefaultValues();
-			for (final String string : defaultComboBoxValues) {
-				objectList.add(new HashMap() {
+			for (final String defaultValue : defaultComboBoxValues) {
+				
+				objectList.add(new HashMap<Object, Object>() { 
+					private static final long serialVersionUID = -7134182338709991777L;
+
 					{
-						put("key", string);
-						put("value", string);
+						put("key", defaultValue);
+						put("value", defaultValue);
 					}
 				});
 			}
-		}
-
-		page.setComboBoxValuesContainer(elementId, objectList);
-
-		Object defaultValue = "";
-		Object[] comboBoxValues = new Object[] { "" };
-		if (!hasDefaultValues) {
-			comboBoxValues = ManagementPage.extractListOfSpecifiedField(objectList, optionItemName);
-			defaultValue = objectList.get(0).get(optionItemName);
-
-		} else {
+			
 			comboBoxValues = stringArrayToObject(element.getDefaultValues());
-			defaultValue = comboBoxValues[0];
+			defaultComboBoxValue = comboBoxValues[0]; 
 		}
+
+		page.setComboBoxValuesContainer(elementId, objectList);   
 
 		ActionListener comboBoxActionListener = comboBoxOnSelectListener(optionItemName, fieldType, elementId);
-
-		JComboBox inputComponent = ComponentBuilder.buildComboBox(defaultValue, comboBoxActionListener, comboBoxValues);
+		JComboBox<?> inputComponent = ComponentBuilder.buildComboBox(defaultComboBoxValue, comboBoxActionListener, comboBoxValues);
 
 		return inputComponent;
+	}
+
+	private void checkIfElementIsEnum(EntityElement element) {
+		 
+		if(element.getField().getType().isEnum()) {
+			Object[] enumConstants = element.getField().getType().getEnumConstants();
+			element.setDefaultValues(StringUtil.toArrayOfString(Arrays.asList(enumConstants)));
+		}
 	}
 
 	static Object[] stringArrayToObject(String... strings) {
@@ -410,7 +411,7 @@ public class CommonFormFieldHelper {
 	}
 
 	/**
-	 * button edit on datatable row
+	 * button edit on data table row
 	 * 
 	 * @param idFieldName2
 	 * @param idValue2
@@ -530,14 +531,9 @@ public class CommonFormFieldHelper {
 	public KeyListener crudTextFieldActionListener(final JTextField inputComponent, final String elementId) {
 
 		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
+ 
+			public void keyTyped(KeyEvent e) { } 
+			public void keyPressed(KeyEvent e) { }
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -558,14 +554,9 @@ public class CommonFormFieldHelper {
 	public KeyListener textAreaActionListener(final JTextArea inputComponent, final String elementId) {
 
 		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
+ 
+			public void keyTyped(KeyEvent e) { } 
+			public void keyPressed(KeyEvent e) { }
 
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -618,7 +609,7 @@ public class CommonFormFieldHelper {
 				final JComboBox inputComponent = (JComboBox) e.getSource();
 
 				Object selectedValue = inputComponent.getSelectedItem();
-				List<Map> rawList = page.getComboBoxValues(elementId);
+				List<Map<Object, Object>> rawList = page.getComboBoxValues(elementId);
 				Object selectedObjectFromList = null;
 
 				boolean emptyOptionItemName = false;
@@ -628,14 +619,16 @@ public class CommonFormFieldHelper {
 					mapKey = "key";
 					emptyOptionItemName = true;
 				}
-				selectedObjectFromList = ManagementHandler.getMapFromList(mapKey, selectedValue, rawList);
+				final Object rawObjectFromList = ManagementHandler.getMapFromList(mapKey, selectedValue, rawList);
 
-				if (null == selectedObjectFromList) {
+				if (null == rawObjectFromList) {
 					return;
 				}
 
 				if (emptyOptionItemName) {
-					selectedObjectFromList = ((Map) selectedObjectFromList).get("value");
+					selectedObjectFromList = ((Map) rawObjectFromList).get("value");
+				}else {
+					selectedObjectFromList = rawObjectFromList;
 				}
 
 				page.updateManagedObject(elementId, selectedObjectFromList);
@@ -688,7 +681,7 @@ public class CommonFormFieldHelper {
 	}
 
 	/**
-	 * when filechooser for multiple image clicked
+	 * action fired when file chooser for multiple image is clicked
 	 * 
 	 * @param jFileChooser
 	 * @param id
@@ -716,32 +709,42 @@ public class CommonFormFieldHelper {
 								JLabel imagePreview = page.getImagePreviewLabelForMultipleImages(elementId, index);
 								Icon icon = ComponentBuilder.imageIconFromFile(file.getCanonicalPath(),
 										imagePreview.getWidth(), imagePreview.getHeight());
+								
 								page.setIconOnMultipleImagePreviewLabel(elementId, index, icon);
 
-								String base64 = StringUtil.getBase64Image(file);
-								Object currentValue = page.getManagedObjectValue(elementId);
-								Log.log("currentValue: ", currentValue);
-
-								if (null == currentValue) {
-									page.updateManagedObject(elementId, base64);
-								} else {
-									String[] rawValues = currentValue.toString().split("~");
-									String finalValue = currentValue.toString();
-									if (rawValues.length >= index + 1) {
-										rawValues[index] = base64;
-										finalValue = String.join("~", rawValues);
-									} else {
-										finalValue += ("~" + base64);
-									}
-
-									page.updateManagedObject(elementId, finalValue);
-								}
-
-								Log.log(elementId, ":", page.getManagedObjectValue(elementId));
+								String base64 = StringUtil.getBase64Image(file); 
+								updateImageForObject(elementId, base64); 
 
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
+						}
+
+						private void updateImageForObject(String elementId, String base64) {
+							 
+							Object currentValue = page.getManagedObjectValue(elementId); 
+							Log.log("currentValue: ", currentValue);
+
+							if (null == currentValue) {
+								page.updateManagedObject(elementId, base64);
+							} else {
+								
+								String finalValue = getBase64ImageFinalValue(currentValue, base64); 
+								page.updateManagedObject(elementId, finalValue);
+							}
+							
+						}
+
+						private String getBase64ImageFinalValue(Object currentValue, String base64) {
+							String[] rawValues = currentValue.toString().split("~");
+							String finalValue = currentValue.toString();
+							if (rawValues.length >= index + 1) {
+								rawValues[index] = base64;
+								finalValue = String.join("~", rawValues);
+							} else {
+								finalValue += ("~" + base64);
+							}
+							return finalValue;
 						}
 					});
 				} else {
@@ -783,19 +786,16 @@ public class CommonFormFieldHelper {
 	public KeyListener dynamicComboBoxListener(final String optionItemName, final Class<?> fieldType,
 			final String elementId) {
 
-		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-
-			}
+		return new KeyListener() { 
+			public void keyPressed(KeyEvent e) { }
+			public void keyTyped(KeyEvent e) { }
 
 			@Override
 			public void keyReleased(KeyEvent event) {
 
-				final JComboBox dynamicComboBox = page.getComboBox(event);
-				final String componentText = page.getComboBoxText(dynamicComboBox);
-				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, componentText,
+				final JComboBox dynamicComboBox = BasePage.getComboBox(event);
+				final String comboBoxText = BasePage.getComboBoxText(dynamicComboBox);
+				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, comboBoxText,
 						new MyCallback() {
 
 							@Override
@@ -820,21 +820,17 @@ public class CommonFormFieldHelper {
 									Map mapItem = (Map) object;
 									dynamicComboBox.addItem(mapItem.get(optionItemName));
 								}
-								dynamicComboBox.setSelectedItem(componentText);
+								dynamicComboBox.setSelectedItem(comboBoxText);
 								((JTextComponent) dynamicComboBox.getEditor().getEditorComponent())
-										.setSelectionStart(componentText.length());
+										.setSelectionStart(comboBoxText.length());
 								((JTextComponent) dynamicComboBox.getEditor().getEditorComponent())
-										.setSelectionEnd(componentText.length());
+										.setSelectionEnd(comboBoxText.length());
 								dynamicComboBox.showPopup();
 							}
 						});
 
 			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-
-			}
+ 
 		};
 	}
 
@@ -846,12 +842,10 @@ public class CommonFormFieldHelper {
 	 */
 	public KeyListener filterFieldKeyListener(final String key) {
 		return new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
+ 
+			public void keyTyped(KeyEvent e) { } 
+			public void keyPressed(KeyEvent e) { } 
+			
 			public void keyReleased(KeyEvent e) {
 				String value = ((JTextField) e.getComponent()).getText();
 
@@ -859,11 +853,7 @@ public class CommonFormFieldHelper {
 				page.setCurrentElementIdFocus(key);
 //				page.getHandler().getEntities();
 
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
+			} 
 		};
 	}
 }

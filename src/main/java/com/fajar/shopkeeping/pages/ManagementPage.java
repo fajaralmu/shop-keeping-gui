@@ -93,7 +93,7 @@ public class ManagementPage extends BasePage {
 	private final Map<String, JTextField> columnFilterTextFields = new HashMap<>(); //list of data table column filter inputs
 	private final Map<String, Component> formInputFields = new HashMap<>(); 
  
-	private final Map<String, List<Map>> comboBoxListContainer = new HashMap<>(); 
+	private final Map<String, List<Map<Object, Object>>> comboBoxListContainer = new HashMap<>(); 
 	private final Map<String, Object> fieldsFilter = new HashMap<>();
 	private final Map<String, JLabel> singleImagePreviews = new HashMap<>(); 
 	private final Map<String, List<JLabel>> multipleImagePreviews = new HashMap<>(); 
@@ -711,7 +711,7 @@ public class ManagementPage extends BasePage {
 
 	
 
-	public void setComboBoxValuesContainer(String elementId, List<Map> objectList) { 
+	public void setComboBoxValuesContainer(String elementId, List<Map<Object, Object>> objectList) { 
 		comboBoxListContainer.put(elementId, objectList);
 	}
 
@@ -732,16 +732,16 @@ public class ManagementPage extends BasePage {
 		managedObject.put(elementId, value);
 	}
 	
-	public List<Map> getComboBoxValues(String elementId){
+	public List<Map<Object, Object>> getComboBoxValues(String elementId){
 		return comboBoxListContainer.get(elementId); 
 	}
 	
 	
 	
-	public static Object[] extractListOfSpecifiedField(List<Map> objectList, String optionItemName) {
+	public static Object[] extractListOfSpecifiedField(List<Map<Object, Object>> objectList, String optionItemName) {
 		Object[] result = new Object[objectList.size()];
 		for (int i = 0; i < objectList.size(); i++) {
-			Map item = objectList.get(i);
+			Map<Object, Object> item = objectList.get(i);
 			result[i] = item.get(optionItemName);
 		}
 		return result;

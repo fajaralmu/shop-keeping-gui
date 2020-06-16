@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -296,9 +294,9 @@ public class ComponentBuilder {
 	 * @param actionListener
 	 * @return
 	 */
-	public static JComboBox buildEditableComboBox(Object defaultValue, KeyListener keyListener, ActionListener actionListener, Object... values) {
+	public static <T> JComboBox<T> buildEditableComboBox(Object defaultValue, KeyListener keyListener, ActionListener actionListener, Object... values) {
 		
-		JComboBox comboBox=  buildComboBox(defaultValue, actionListener, values);
+		JComboBox<T> comboBox=  buildComboBox(defaultValue, actionListener, values);
 		comboBox.setEditable(true);
 		comboBox.getEditor().getEditorComponent() .addKeyListener(keyListener);
 //		comboBox.addActionListener(actionListener);
@@ -312,7 +310,7 @@ public class ComponentBuilder {
 	 * @param values
 	 * @return
 	 */
-	public static JComboBox buildComboBox(Object defaultValue, Object... values) {
+	public static <T> JComboBox<T> buildComboBox(Object defaultValue, Object... values) {
 		return buildComboBox(defaultValue, null, values);
 	}
 	
@@ -322,21 +320,24 @@ public class ComponentBuilder {
 	 * @param values
 	 * @return
 	 */
-	public static JComboBox buildComboBox(Object defaultValue, ActionListener actionListener, Object... values) {
+	@SuppressWarnings("unchecked")
+	public static <T> JComboBox<T> buildComboBox(Object defaultValue, ActionListener actionListener, Object... values) {
 
-		ComboBoxModel model = new DefaultComboBoxModel<>();
-		JComboBox comboBox = new JComboBox();
+		//ComboBoxModel<T> model = new DefaultComboBoxModel<T>();
+		JComboBox<T> comboBox = new JComboBox<T>();
 
 		int maxSize = 0;
 
 		for (Object object : values) {
-
-			
-			comboBox.addItem(object);
-			
-			JLabel label = label(object);
-			if (label.getWidth() > maxSize) {
-				maxSize = label.getWidth();
+			try {
+				comboBox.addItem((T)object);
+				
+				JLabel label = label(object);
+				if (label.getWidth() > maxSize) {
+					maxSize = label.getWidth();
+				}
+			}catch (Exception e) {
+				continue;
 			}
 		}
 
@@ -421,7 +422,7 @@ public class ComponentBuilder {
 			return false;
 		}
 
-		Class objectType = o.getClass();
+		Class<?> objectType = o.getClass();
 
 		if (objectType.equals(int.class) || objectType.equals(Integer.class)) {
 			return true;

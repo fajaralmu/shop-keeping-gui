@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
@@ -21,6 +20,9 @@ import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class EntityService extends BaseService {
 
 	private static EntityService app;
@@ -36,7 +38,7 @@ public class EntityService extends BaseService {
 
 	}
 
-	public void getEntityList(final Filter filter, final Class entityClass, final MyCallback callback) {
+	public void getEntityList(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -46,7 +48,7 @@ public class EntityService extends BaseService {
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.error("Error getEntityList: " + e.getMessage());
+					Dialogs.error("getEntityList Error getEntityList: " + e.getMessage());
 				} finally { }
 			} 
 		}); 
@@ -59,39 +61,38 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback
 	 */
-	public void getSingleEntityByID(final String idField, final Object id, final Class entityClass, final MyCallback callback) {
-		Loadings.start();
+	public void getSingleEntityByID(final String idField, final Object id, final Class<?> entityClass, final MyCallback callback) {
+		 
 		final Filter filter = new Filter();
 		filter.setLimit(1);
 		filter.setPage(0);
 		filter.setExacts(true);
 		filter.setContains(false);
-		filter.setFieldsFilter(new HashMap<String, Object>(){
+		filter.setFieldsFilter(new HashMap<String, Object>(){ 
+			private static final long serialVersionUID = -681085436003560728L;
+
 			{
 				put(idField, id);
 			}
 		});
 		
-		Thread thread = new Thread(new Runnable() {
+		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
 				try {
 					
-					HashMap response = callGetEntity(filter , entityClass);
+					Map<Object, Object> response = callGetEntity(filter , entityClass);
 					List<Map> theEntities  = (List) response.get("entities");
 					Map theEntity = theEntities.get(0);
 					callback.handle(theEntity);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.error("Error getEntityList: " + e.getMessage());
-				} finally {
-					Loadings.end();
-				}
-			}
-
+					Dialogs.error("getSingleEntityByID Error getEntityList: " + e.getMessage());
+				} finally { }
+			} 
 		});
-		thread.start();
+		 
 	}
 	
 	/**
@@ -100,17 +101,17 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback
 	 */
-	public void getEntityListHashMapResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
+	public void getEntityListHashMapResponse(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
 
 				try {
-					HashMap response = callGetEntity(filter, entityClass);
+					Map<Object, Object> response = callGetEntity(filter, entityClass);
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.error("Error getEntityList: " + e.getMessage());
+					Dialogs.error("getEntityListHashMapResponse Error getEntityList: " + e.getMessage());
 				} finally { 	}
 			}
 
@@ -123,7 +124,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback
 	 */
-	public void getEntityListJsonResponse(final Filter filter, final Class entityClass, final MyCallback callback) {
+	public void getEntityListJsonResponse(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -133,16 +134,16 @@ public class EntityService extends BaseService {
 					callback.handle(response);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Dialogs.error("Error getEntityList: " + e.getMessage());
+					Dialogs.error("getEntityListJsonResponse Error getEntityList: " + e.getMessage());
 				} finally { }
 			}
 
 		}); 
 	}
 
-	public List< Map> getAllEntityOnlyList(Class entityClass) {
+	public List< Map<Object, Object>> getAllEntityOnlyList(Class<?> entityClass) {
 
-		HashMap response = callGetEntity(Filter.builder().page(1).limit(0).build(), entityClass); 
+		Map<Object, Object> response = callGetEntity(Filter.builder().page(1).limit(0).build(), entityClass); 
 		List rawEntityList = (List) response.get("entities");
 
 		return rawEntityList;
@@ -150,13 +151,13 @@ public class EntityService extends BaseService {
 	}
 
 	
-	public void updateEntity( final Map entityObject, final boolean editMode, final Class entityClass, final MyCallback myCallback) { 
+	public void updateEntity( final Map<String, Object> entityObject, final boolean editMode, final Class<?> entityClass, final MyCallback myCallback) { 
 		ThreadUtil.runWithLoading(new Runnable() {
 			
 			@Override
 			public void run() {
 				try {
-					HashMap response = new HashMap();
+					Map<Object, Object> response = new HashMap<Object, Object>();
 					
 					if(editMode) {
 						response = callModifyEntity(entityObject, entityClass);
@@ -174,9 +175,9 @@ public class EntityService extends BaseService {
 		 
 	}
 
-	private WebResponse getEntityListFullResponse(Filter filter, Class entityClass) {
+	private WebResponse getEntityListFullResponse(Filter filter, Class<?> entityClass) {
 
-		HashMap response = callGetEntity(filter, entityClass);
+		Map<Object, Object> response = callGetEntity(filter, entityClass);
 
 		if (response.get("code").equals("00") == false) {
 			return WebResponse.failed();
@@ -210,25 +211,26 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @return
 	 */
-	private HashMap callGetEntity(Filter filter, Class entityClass) {
+	private Map<Object, Object> callGetEntity(Filter filter, Class<?> entityClass) {
 		try {
 
 			WebRequest shopApiRequest = WebRequest.builder().entity(entityClass.getSimpleName().toLowerCase())
 					.filter(filter).build();
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_GET,
-					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
+			ResponseEntity<Map> response = restTemplate.postForEntity(URL_ENTITY_GET,
+					RestComponent.buildAuthRequest(shopApiRequest, true), Map.class);
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {
+			log.error("callGetEntity #ERROR");
 			e.printStackTrace();
 			throw e;
 		}
 	}
 	
-	private HashMap callAddEntity(Map entityObject, Class entityClass) {
+	private HashMap<Object, Object> callAddEntity(Map<String, Object> entityObject, Class<?> entityClass) {
 		
 		try {
-			Map shopApiRequest = new HashMap<>();
+			Map<Object, Object> shopApiRequest = new HashMap<>();
 			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
 			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
 			
@@ -237,16 +239,17 @@ public class EntityService extends BaseService {
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {
+			log.error("callAddEntity #ERROR");
 			e.printStackTrace();
 			throw e;
 		}
 		
 	}
 	
-	private HashMap callModifyEntity(Map entityObject, Class entityClass) {
+	private HashMap<Object, Object> callModifyEntity(Map<String, Object> entityObject, Class<?> entityClass) {
 		
 		try {
-			Map shopApiRequest = new HashMap<>();
+			Map<Object, Object> shopApiRequest = new HashMap<>();
 			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
 			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
 			
@@ -255,6 +258,7 @@ public class EntityService extends BaseService {
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {
+			log.error("callModifyEntity #ERROR");
 			e.printStackTrace();
 			throw e;
 		}

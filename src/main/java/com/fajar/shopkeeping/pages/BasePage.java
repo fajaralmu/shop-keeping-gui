@@ -199,8 +199,8 @@ public abstract class BasePage {
 		return ComponentBuilder.buildPanel(panelRequest, components);
 	}
 	
-	protected JPanel buildPanelV2(PanelRequest panelRequest, Component... components) {
-		return ComponentBuilder.buildPanelV2(panelRequest, components);
+	protected JPanel buildPanelV2(PanelRequest panelRequest,  Component... components) {
+		return  ComponentBuilder.buildPanelV2(panelRequest, (Object[]) components);
 	}
 
 	public void refresh() {
@@ -506,7 +506,7 @@ public abstract class BasePage {
 		try {
 			final Field field = EntityUtil.getDeclaredField(getClass(), fieldName);
 			final Object origin = this;
-			final Class fieldType = field.getType();
+			final Class<?> fieldType = field.getType();
 			field.setAccessible(true);
 			
 			return new KeyListener() {
@@ -564,7 +564,7 @@ public abstract class BasePage {
 	 * @param fieldName
 	 * @return
 	 */
-	protected ActionListener comboBoxListener(final JComboBox comboBox, String fieldName) {
+	protected ActionListener comboBoxListener(final JComboBox<?> comboBox, String fieldName) {
 		try {
 			final Field field = this.getClass().getDeclaredField(fieldName);
 			final Object origin = this;
@@ -701,7 +701,7 @@ public abstract class BasePage {
 	protected static void addKeyListener(JTextField textfield, KeyListener actionListener ) {
 		addKeyListener(textfield, actionListener, true);
 	}
-	protected static void addActionListener(JComboBox comboBox, ActionListener actionListener) {
+	protected static void addActionListener(JComboBox<?> comboBox, ActionListener actionListener) {
 		if( comboBox.getActionListeners().length == 0) {
 			comboBox.addActionListener(actionListener);
 		}
@@ -731,8 +731,8 @@ public abstract class BasePage {
 	 * @param event
 	 * @return
 	 */
-	public static JComboBox getComboBox(KeyEvent event) {
-		return (JComboBox) ((Component)event.getSource()).getParent();
+	public static JComboBox<?> getComboBox(KeyEvent event) {
+		return (JComboBox<?>) ((Component)event.getSource()).getParent();
 	}
 	
 	/**
@@ -740,7 +740,7 @@ public abstract class BasePage {
 	 * @param comboBox
 	 * @return
 	 */
-	public static String getComboBoxText(JComboBox comboBox) {
+	public static String getComboBoxText(JComboBox<?> comboBox) {
 		return ((JTextComponent) (comboBox).getEditor().getEditorComponent()).getText(); 
 	}
 	

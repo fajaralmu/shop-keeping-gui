@@ -25,14 +25,12 @@ public class MyCustomPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -9045915483807077198L;
-	int row;
-	int margin;
+	
+	
+	int row, margin, customHeight, customWidth;
+	private boolean centerAligment; 
 	@Setter(value = AccessLevel.NONE)
-	final int[] colSizes;
-
-	int customHeight;
-	int customWidth;
-	boolean centerAligment;
+	final int[] colSizes;  
 
 	public MyCustomPanel(int... colSizes) {
 		super();

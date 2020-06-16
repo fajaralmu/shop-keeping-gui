@@ -69,8 +69,8 @@ public class DashboardPage extends BasePage {
 	private JPanel panelMonthlySummary;
 	private JPanel panelPeriodFilter;
 	
-	private JComboBox comboBoxMonth;
-	private JComboBox comboBoxYear; 
+	private JComboBox<?> comboBoxMonth;
+	private JComboBox<?> comboBoxYear; 
 	
 	private int minTransactionYear;
 	private int selectedMonth;  
@@ -405,8 +405,8 @@ public class DashboardPage extends BasePage {
 		if(minTransactionYear == 0)
 		 minTransactionYear = DateUtil.getCurrentYear();
 
-		JComboBox _comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
-		JComboBox _comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
+		JComboBox<?> _comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
+		JComboBox<?> _comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));
 		
 		setComboBoxMonth(_comboBoxMonth);
 		setComboBoxYear(_comboBoxYear);
@@ -478,7 +478,7 @@ public class DashboardPage extends BasePage {
 		super.initEvent();
 	}
 	
-	private ActionListener managementListener(Class _class) {
+	private ActionListener managementListener(Class<?> _class) {
 		return getHandler().managementNavigationListener(_class);
 	}
 

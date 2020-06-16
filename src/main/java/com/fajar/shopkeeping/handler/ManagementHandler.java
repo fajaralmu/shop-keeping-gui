@@ -27,9 +27,9 @@ public class ManagementHandler extends MainHandler {
 		page = new ManagementPage();
 	}
 
-	public List<Map> getAllEntity(Class<?> fieldType) {
+	public List<Map<Object, Object>> getAllEntity(Class<?> fieldType) {
 
-		List<Map> resultList = entityService.getAllEntityOnlyList(fieldType);
+		List<Map<Object, Object>> resultList = entityService.getAllEntityOnlyList(fieldType);
 		return resultList;
 	}
 
@@ -52,7 +52,7 @@ public class ManagementHandler extends MainHandler {
 		entityService.getEntityListHashMapResponse(filter, entityClass, callback);
 	}
 	
-	public static Map getMapFromList(String key, Object selectedValue, List<Map> list) {
+	public static Map getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
 		return MapUtil.getMapFromList(key, selectedValue, list);
 	}
 
