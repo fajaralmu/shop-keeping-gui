@@ -25,12 +25,15 @@ public class MyCustomPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -9045915483807077198L;
-	
-	
+
 	int row, margin, customHeight, customWidth;
-	private boolean centerAligment; 
+	int currentHeight;
+	
+	private boolean centerAligment;
 	@Setter(value = AccessLevel.NONE)
-	final int[] colSizes;  
+	final int[] colSizes;
+	
+	final List<Component> lastComponentEachRow = new ArrayList<Component>();
 
 	public MyCustomPanel(int... colSizes) {
 		super();
@@ -75,40 +78,39 @@ public class MyCustomPanel extends JPanel {
 			}
 		}
 	}
-	
+
 	private int getXPosition(int columnIndex, Component component) {
 		int xPosition = margin;
-		for(int i = 0; i<  columnIndex; i++) {
+		for (int i = 0; i < columnIndex; i++) {
 			xPosition = xPosition + colSizes[i];
 			xPosition += margin;
-			 
+
 		}
-		if(centerAligment) {
+		if (centerAligment) {
 			int columnWidth = colSizes[columnIndex];
 			int gap = columnWidth - component.getWidth();
-			xPosition +=  new BigDecimal(gap /2 ).intValue();
-		} 
+			xPosition += new BigDecimal(gap / 2).intValue();
+		}
 		return xPosition;
 	}
-	
-	
 
 	private void calculateComponentsPosition() {
 
-		int currentHeight = 0;
-		final Set<Integer> rows = componentsMap.keySet();
-		final List<Component> lastComponentEachRow = new ArrayList<Component>();
-		 
+		resetDimensions(); 
+		
+		final Set<Integer> rows = componentsMap.keySet(); 
+		lastComponentEachRow.clear();
+
 //		Log.log("----------------------start-------------------");
 		for (Integer key : rows) {
 //			Log.log(">>>>>>>>>>>>>>>ROW:", key);
 			PanelRow panelRow = componentsMap.get(key);
-			
+
 			int rowHeight = panelRow.getHeight();
 			List<Component> components = panelRow.getComponents();
 
 			loop: for (int i = 0; i < components.size(); i++) {
-				 
+
 				final Component component = components.get(i);
 				if (component == null) {
 					continue loop;
@@ -117,29 +119,45 @@ public class MyCustomPanel extends JPanel {
 				int y = currentHeight + margin;
 				int x = 0;
 				final int columnSize = colSizes[i];
-				
-				try { 
+
+				try {
 					Log.log("columnSize: ", columnSize);
-					x = getXPosition(i, component); 
-					
+					x = getXPosition(i, component);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 					continue loop;
-				} 
-			 
+				}
+
 				// update location
 				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
 
 			}
-			lastComponentEachRow.add(componentsMap.get(key).getComponents().get(components.size()-1));
-			currentHeight = currentHeight + margin + rowHeight; 
+			lastComponentEachRow.add(componentsMap.get(key).getComponents().get(components.size() - 1));
+			currentHeight = currentHeight + margin + rowHeight;
 		}
-		customHeight = currentHeight + margin*2;
-		customWidth = calculateWidth(lastComponentEachRow);
+		 
+		calculateWidthAndHeight();
 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
 	}
- 
+
+	private void resetDimensions() {
+		 
+		currentHeight = 0;
+		customHeight = 0;
+		customWidth = 0;
+	}
+
+	private void calculateWidthAndHeight() {
+		 
+		customHeight = calculateHeight();
+		customWidth = calculateWidth();
+	}
+
+	private int calculateHeight() { 
+		return currentHeight + margin * 2; 
+	}
 
 	private void setHeightsForEachRows() {
 		final Set<Integer> rows = componentsMap.keySet();
@@ -156,12 +174,12 @@ public class MyCustomPanel extends JPanel {
 
 	}
 
-	private int calculateWidth(List<Component> lastComponentEachRow) { 
+	private int calculateWidth() {
 
 		int width = 0;
 		for (Component component : lastComponentEachRow) {
 			int componentWidth = component.getX() + component.getWidth();
-			if(componentWidth > width) {
+			if (componentWidth > width) {
 				width = componentWidth;
 			}
 		}
@@ -180,7 +198,7 @@ public class MyCustomPanel extends JPanel {
 		int maxHeight = Integer.MIN_VALUE;
 
 		for (Component component : components) {
-			if(null == component) {
+			if (null == component) {
 				continue;
 			}
 			int componentHeight = component.getHeight();
@@ -191,7 +209,5 @@ public class MyCustomPanel extends JPanel {
 
 		return maxHeight;
 	}
- 
- 
 
 }

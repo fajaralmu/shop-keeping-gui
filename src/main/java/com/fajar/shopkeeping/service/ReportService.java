@@ -221,7 +221,7 @@ public class ReportService extends BaseService{
 			WebRequest webRequest = WebRequest.builder().filter(filter).build();
 	
 			ResponseEntity<HashMap<Object, Object> > response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
-					RestComponent.buildAuthRequest(webRequest, true), ObjectUtil.getClass(HashMap.class));
+					RestComponent.buildAuthRequest(webRequest, true), ObjectUtil.getEmptyHashMapClass());
 	
 			return response.getBody();
 			 

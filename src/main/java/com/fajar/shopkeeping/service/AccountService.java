@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.service;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGIN;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGOUT;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_REQIEST_APP;
+import static com.fajar.shopkeeping.util.ObjectUtil.getEmptyHashMapClass;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,6 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
-import com.fajar.shopkeeping.util.ObjectUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -191,7 +191,7 @@ public class AccountService extends BaseService{
 
 		try {
 			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(URL_LOGIN,
-					RestComponent.buildAuthRequest(loginRequest, false), ObjectUtil.getEmptyHashMapClass());
+					RestComponent.buildAuthRequest(loginRequest, false), getEmptyHashMapClass());
 			
 			return response;
 		}catch (Exception e) {

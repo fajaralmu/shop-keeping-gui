@@ -10,7 +10,7 @@ public class ObjectUtil {
 
 
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T> getClass(Object o){
+	private static <T> Class<T> getClass(Object o){
 		return (Class<T>) o.getClass();
 	}
 	
