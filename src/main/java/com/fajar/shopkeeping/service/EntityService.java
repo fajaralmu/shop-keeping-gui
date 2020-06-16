@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.service;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_ADD;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_GET;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_UPDATE;
+import static com.fajar.shopkeeping.util.ObjectUtil.getEmptyHashMapClass;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
+import com.fajar.shoppingmart.util.CollectionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +40,7 @@ public class EntityService extends BaseService {
 
 	}
 
-	public void getEntityList(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
+	public void getEntityList(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -83,8 +85,8 @@ public class EntityService extends BaseService {
 				try {
 					
 					Map<Object, Object> response = callGetEntity(filter , entityClass);
-					List<Map> theEntities  = (List) response.get("entities");
-					Map theEntity = theEntities.get(0);
+					List<Map<?, ?>> theEntities  = (List<Map<?, ?>>) response.get("entities");
+					Map<?, ?> theEntity = theEntities.get(0);
 					callback.handle(theEntity);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -124,7 +126,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback
 	 */
-	public void getEntityListJsonResponse(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
+	public void getEntityListJsonResponse(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -144,7 +146,7 @@ public class EntityService extends BaseService {
 	public List< Map<Object, Object>> getAllEntityOnlyList(Class<?> entityClass) {
 
 		Map<Object, Object> response = callGetEntity(Filter.builder().page(1).limit(0).build(), entityClass); 
-		List rawEntityList = (List) response.get("entities");
+		List<Map<Object, Object>> rawEntityList = (List) response.get("entities");
 
 		return rawEntityList;
 
@@ -175,7 +177,7 @@ public class EntityService extends BaseService {
 		 
 	}
 
-	private WebResponse getEntityListFullResponse(Filter filter, Class<?> entityClass) {
+	private WebResponse getEntityListFullResponse(Filter filter, Class<? extends BaseEntity> entityClass) {
 
 		Map<Object, Object> response = callGetEntity(filter, entityClass);
 
@@ -183,13 +185,13 @@ public class EntityService extends BaseService {
 			return WebResponse.failed();
 		}
 
-		List rawEntityList = (List) response.get("entities");
+		List<Map<?, ?>> rawEntityList = (List<Map<?, ?>>) response.get("entities");
 
-		List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, entityClass);
+		List<? extends BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, entityClass);
 
 		WebResponse jsonResponse = new WebResponse();
 
-		jsonResponse.setEntities(resultList);
+		jsonResponse.setEntities(CollectionUtil.convertList(resultList));
 		jsonResponse.setTotalData((Integer) response.get("totalData"));
 
 		return jsonResponse;
@@ -206,7 +208,7 @@ public class EntityService extends BaseService {
 	 */
 	
 	/**
-	 * call endpoint api/entity/get
+	 * call end point "api/entity/get"
 	 * @param filter
 	 * @param entityClass
 	 * @return
@@ -216,8 +218,8 @@ public class EntityService extends BaseService {
 
 			WebRequest shopApiRequest = WebRequest.builder().entity(entityClass.getSimpleName().toLowerCase())
 					.filter(filter).build();
-			ResponseEntity<Map> response = restTemplate.postForEntity(URL_ENTITY_GET,
-					RestComponent.buildAuthRequest(shopApiRequest, true), Map.class);
+			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(URL_ENTITY_GET,
+					RestComponent.buildAuthRequest(shopApiRequest, true), getEmptyHashMapClass());
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {
@@ -234,8 +236,8 @@ public class EntityService extends BaseService {
 			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
 			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
 			
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_ADD,
-					RestComponent.buildAuthRequest(shopApiRequest , true), HashMap.class);
+			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(URL_ENTITY_ADD,
+					RestComponent.buildAuthRequest(shopApiRequest , true), getEmptyHashMapClass());
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {
@@ -253,8 +255,8 @@ public class EntityService extends BaseService {
 			shopApiRequest.put("entity", entityClass.getSimpleName().toLowerCase());
 			shopApiRequest.put(entityClass.getSimpleName().toLowerCase(), entityObject);
 			
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_ENTITY_UPDATE,
-					RestComponent.buildAuthRequest(shopApiRequest , true), HashMap.class);
+			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(URL_ENTITY_UPDATE,
+					RestComponent.buildAuthRequest(shopApiRequest , true), getEmptyHashMapClass());
 			Log.log("response: ",response);
 			return response.getBody();
 		} catch (Exception e) {

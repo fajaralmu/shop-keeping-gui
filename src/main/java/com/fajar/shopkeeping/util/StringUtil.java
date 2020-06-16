@@ -43,7 +43,7 @@ public class StringUtil {
 		return random;
 	}
 
-	public static String[] toArrayOfString(List list) {
+	public static String[] toArrayOfString(List<?> list) {
 		
 		String[] array = new String[list.size()];
 		

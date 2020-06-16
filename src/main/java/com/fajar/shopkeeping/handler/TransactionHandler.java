@@ -10,6 +10,7 @@ import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.SupplyTransactionPage;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
@@ -33,7 +34,7 @@ public class TransactionHandler extends MainHandler {
 	 * @param value
 	 * @param callback
 	 */
-	public void getEntitiesFromDynamicDropdown(Class<?> entityClass, final String key, final Object value,
+	public void getEntitiesFromDynamicDropdown(Class<? extends BaseEntity> entityClass, final String key, final Object value,
 			MyCallback callback) {
 
 		Map<String, Object> fieldsFilter = new HashMap<String, Object>() {

@@ -17,6 +17,7 @@ import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ObjectUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
@@ -101,7 +102,7 @@ public class ReportService extends BaseService{
 
 				try { 
 
-					HashMap mapResponse = callPeriodicCashflow(filter);
+					HashMap<Object, Object> mapResponse = callPeriodicCashflow(filter);
 
 					WebResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
 
@@ -120,15 +121,20 @@ public class ReportService extends BaseService{
 	 * @param mapResponse
 	 * @return
 	 */
-	private WebResponse parseCashflowPeriodicResponse(HashMap mapResponse) {
-		List supplies = (List) mapResponse.get("supplies");
-		List purchases = (List) mapResponse.get("purchases");
-		
-		List<BaseEntity> suppliesList = mapListToCashflowList(supplies);
-		List<BaseEntity> purchasesList = mapListToCashflowList(purchases); 
-		 
-		WebResponse parsedResponse = WebResponse.builder().supplies(suppliesList).purchases(purchasesList).build();
-		return parsedResponse;
+	private WebResponse parseCashflowPeriodicResponse(HashMap<Object, Object> mapResponse) {
+		try {
+			List supplies = (List) mapResponse.get("supplies");
+			List purchases = (List) mapResponse.get("purchases");
+			
+			List<BaseEntity> suppliesList = mapListToCashflowList(supplies);
+			List<BaseEntity> purchasesList = mapListToCashflowList(purchases); 
+			 
+			WebResponse parsedResponse = WebResponse.builder().supplies(suppliesList).purchases(purchasesList).build();
+			return parsedResponse;
+		}catch (Exception e) {
+			Dialogs.error("Error getting response : ", e);
+			throw e;
+		}
 	}
 	
 	/**
@@ -209,13 +215,13 @@ public class ReportService extends BaseService{
 	}
 	
 
-	private HashMap callPeriodicCashflow(Filter filter) {
+	private HashMap<Object, Object> callPeriodicCashflow(Filter filter) {
 		
 		try {
 			WebRequest webRequest = WebRequest.builder().filter(filter).build();
 	
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
-					RestComponent.buildAuthRequest(webRequest, true), HashMap.class);
+			ResponseEntity<HashMap<Object, Object> > response = restTemplate.postForEntity(URL_PERIODIC_CASHFOW,
+					RestComponent.buildAuthRequest(webRequest, true), ObjectUtil.getClass(HashMap.class));
 	
 			return response.getBody();
 			 
@@ -223,9 +229,7 @@ public class ReportService extends BaseService{
 			e.printStackTrace();
 			throw e;
 		}
-	}
- 
-	
+	}  
 	private WebResponse callDailyCashflow(int day, int month, int year) {
 		try {
 			WebRequest webRequest = WebRequest.builder()

@@ -848,7 +848,7 @@ public class ManagementPage extends BasePage {
 			
 			@Override
 			public void handle(Object... params) throws Exception {
-				 Map entity = (Map) params[0];
+				 Map<String, Object> entity = (Map<String, Object>) params[0];
 				 helper.populateFormInputs(entity);
 				 setEditMode(true);
 				

@@ -14,6 +14,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ObjectUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
@@ -23,6 +24,7 @@ import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
+import com.fajar.shoppingmart.util.CollectionUtil;
 
 public class TransactionService extends BaseService{ 
 
@@ -107,23 +109,23 @@ public class TransactionService extends BaseService{
 	}
 	
 	/**
-	 * get product detail json parsed from hashmap
+	 * get product detail JSON parsed from HashMap
 	 * @param productCode
 	 * @return
 	 */
-	private WebResponse getProductDetail(String productCode) {
+	private WebResponse getProductDetail(final String productCode) {
 
 		try {
-			HashMap response = callProductDetail(productCode);
+			HashMap<Object, Object> response = callProductDetail(productCode);
 	
 			if (response.get("code").equals("00") == false) {
 				return WebResponse.failed();
 			}
 	
-			List rawEntityList = (List) response.get("entities"); 
-			List<BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, Product.class); 
+			List<Map<?, ?>> rawEntityList = (List) response.get("entities"); 
+			List<? extends BaseEntity> resultList = MapUtil.convertMapList(rawEntityList, Product.class); 
 			WebResponse jsonResponse = new WebResponse(); 
-			jsonResponse.setEntities(resultList);  
+			jsonResponse.setEntities(CollectionUtil.convertList(resultList));  
 			return jsonResponse;
 			
 		}catch (Exception e) {
@@ -180,10 +182,12 @@ public class TransactionService extends BaseService{
 	}
 	
 	
-	private HashMap callProductDetail(final String productCode) throws Exception {
+	private HashMap<Object, Object> callProductDetail(final String productCode) throws Exception {
 		
 		try {
-			Map<String, Object> fieldsFilter = new HashMap<String, Object>(){
+			Map<String, Object> fieldsFilter = new HashMap<String, Object>(){ 
+				private static final long serialVersionUID = -2370303952097303347L;
+
 				{
 					put("code", productCode);
 					put("withStock", true);
@@ -193,8 +197,8 @@ public class TransactionService extends BaseService{
 			Filter filter = Filter.builder().exacts(true).contains(false).limit(1).fieldsFilter(fieldsFilter ).build();
 			WebRequest shopApiRequest = WebRequest.builder().entity("product").filter(filter ).build();
 	
-			ResponseEntity<HashMap> response = restTemplate.postForEntity(WebServiceConstants.URL_PUBLIC_GET,
-					RestComponent.buildAuthRequest(shopApiRequest, true), HashMap.class);
+			ResponseEntity<HashMap<Object, Object>> response = restTemplate.postForEntity(WebServiceConstants.URL_PUBLIC_GET,
+					RestComponent.buildAuthRequest(shopApiRequest, true), ObjectUtil.getEmptyHashMapClass());
 			return response.getBody();
 			
 		}catch (Exception e) { 

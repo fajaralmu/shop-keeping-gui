@@ -1,12 +1,21 @@
 package com.fajar.shopkeeping.util;
 
+import java.util.HashMap;
+
 import com.fajar.shoppingmart.dto.FieldType;
 
-public class ObjectUtil {
+public class ObjectUtil { 
 	
-	public static <T> T castTo(Object object ) {
-		
-		return ( T) object;
+	private final static Object HASHMAP_EMPTY = new HashMap<Object, Object>();
+
+
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getClass(Object o){
+		return (Class<T>) o.getClass();
+	}
+	
+	public static <T> Class<T> getEmptyHashMapClass() {
+		return getClass(HASHMAP_EMPTY );
 	}
 	
 	public static FieldType getFieldTypeEnum(String value) {
@@ -18,6 +27,7 @@ public class ObjectUtil {
 		}
 		return null;
 	}
+	 
 	
 	public static void main(String[] sdd) {
 		System.out.println(getFieldTypeEnum("textarea"));

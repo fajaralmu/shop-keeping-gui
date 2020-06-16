@@ -12,12 +12,12 @@ import com.fajar.shoppingmart.util.EntityUtil;
 
 public class MapUtil {
 	
-	public static <T> List convertMapList(List mapList, Class objectClass) {
+	public static <T> List<T> convertMapList(List<Map<?, ?>> mapList, Class<T> objectClass) {
 		
-		List result = new ArrayList<>();
+		List<T> result = new ArrayList<T>();
 		
 		for (Object object : mapList) {
-			result.add(mapToObject( (Map) object, objectClass));
+			result.add(mapToObject((Map<?, ?>) object, objectClass));
 		} 
 		
 		return result;
@@ -30,9 +30,8 @@ public class MapUtil {
 		}
 	}
 
-	public static Object mapToObject(Map map, Class objectClass) {
-		Set mapKeys = map.keySet();
-
+	public static  <T> T mapToObject(Map<?, ?> map, Class<T> objectClass) {
+		Set<?> mapKeys = map.keySet(); 
 		try {
 			Object result = objectClass.newInstance();
 
@@ -44,7 +43,7 @@ public class MapUtil {
 					
 					if (value != null && field != null) {
 
-						Class  fieldType = field.getType();
+						Class<?>  fieldType = field.getType();
 						boolean isEnum = fieldType.isEnum();
 						
 						/**
@@ -88,7 +87,7 @@ public class MapUtil {
 							 * ENUM
 							 */
 							if(isEnum) {
-								value = Enum.valueOf(fieldType, value.toString());
+								value = Enum.valueOf((Class) fieldType, value.toString());
 							}
 							
 
@@ -103,7 +102,7 @@ public class MapUtil {
 				}
 			}
 
-			return result;
+			return (T) result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -124,12 +123,12 @@ public class MapUtil {
 	}
 	
 	
-	public static Map getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
+	public static Map<?, ?> getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
 		if(null == list) {
 			Log.log("list is null");
 			return null;
 		}
-		for (Map map : list) {
+		for (Map<?, ?> map : list) {
 			if(map.get(key).equals(selectedValue)) {
 				return map;
 			}

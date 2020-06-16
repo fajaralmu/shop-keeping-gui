@@ -670,8 +670,8 @@ public class ComponentBuilder {
 		return panel ;
 	}
 
-	public static JButton editButton(String string) {
+	public static JButton editButton(String text) {
 		// TODO Auto-generated method stub
-		return button("Edit", Color.orange);
+		return button(text, Color.orange);
 	}
 }
