@@ -76,13 +76,7 @@ public class EntityService extends BaseService {
 		filter.setPage(0);
 		filter.setExacts(true);
 		filter.setContains(false);
-		filter.setFieldsFilter(new HashMap<String, Object>(){ 
-			private static final long serialVersionUID = -681085436003560728L;
-
-			{
-				put(idField, id);
-			}
-		});
+		filter.setFieldsFilter(MapUtil.singleMap(idField, id));
 		
 		ThreadUtil.runWithLoading(new Runnable() {
 
