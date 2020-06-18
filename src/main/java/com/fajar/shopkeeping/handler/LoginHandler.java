@@ -3,11 +3,11 @@ package com.fajar.shopkeeping.handler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.BooleanCallback;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LoginPage;
 
-public class LoginHandler extends MainHandler { 
+public class LoginHandler extends MainHandler<LoginPage> { 
 
 	@Override
 	protected void init() {
@@ -26,15 +26,11 @@ public class LoginHandler extends MainHandler {
 
 			} 
 		};
-	}
+	} 
 	
-	private LoginPage getPage() {
-		return (LoginPage) page;
-	}
-
 	private void doLogin(String username, String password) {
 		
-		accountService.doLogin(username, password, new MyCallback<Boolean>() {
+		accountService.doLogin(username, password, new BooleanCallback() {
 			
 			public void handle(Boolean success) throws Exception {
 				  

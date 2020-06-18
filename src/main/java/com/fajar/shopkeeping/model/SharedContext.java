@@ -2,6 +2,8 @@ package com.fajar.shopkeeping.model;
 
 import java.io.Serializable;
 
+import com.fajar.shoppingmart.entity.BaseEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +24,7 @@ public class SharedContext implements Serializable {
 	
 	private int minTransactionYear;
 	private int code;
-	private Class entityClass;
+	private Class<? extends BaseEntity> entityClass;
 	
 	public SharedContext(int d, int m, int y) {
 		day = d;

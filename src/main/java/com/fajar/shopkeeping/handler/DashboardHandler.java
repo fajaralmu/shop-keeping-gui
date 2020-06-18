@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import org.springframework.http.ResponseEntity;
 
+import com.fajar.shopkeeping.callbacks.BooleanCallback;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;
@@ -19,8 +20,9 @@ import com.fajar.shopkeeping.service.AppContext;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
 
-public class DashboardHandler extends MainHandler {
+public class DashboardHandler extends MainHandler<DashboardPage> {
 
 	public DashboardHandler() {
 		super();
@@ -38,7 +40,7 @@ public class DashboardHandler extends MainHandler {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				accountService.logout(new MyCallback<Boolean>() {
+				accountService.logout(new BooleanCallback() {
 
 					@Override
 					public void handle(Boolean success) throws Exception { 
@@ -137,11 +139,7 @@ public class DashboardHandler extends MainHandler {
 				reportService.getMonthlyCashflowDetail(toInt(month), toInt(year), callback);
 			}
 		};
-	}
-	
-	private DashboardPage getPage() {
-		return (DashboardPage) page;
-	}
+	} 
 
 	private int toInt(Object o) {
 		try {
@@ -159,7 +157,7 @@ public class DashboardHandler extends MainHandler {
 		return navigationListener(PageConstants.PAGE_MANAGEMENT);
 	}
 	
-	public ActionListener managementNavigationListener( final Class<?> entityClass) {
+	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass) {
 		return new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

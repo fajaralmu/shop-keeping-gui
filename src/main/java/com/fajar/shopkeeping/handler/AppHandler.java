@@ -25,13 +25,11 @@ public class AppHandler {
 
 	private static AppHandler handler;
 	private AccountService accountService = AccountService.getInstance();
+ 
 
+	private static MainHandler<?> activeHandler;
 
-	
-
-	private static MainHandler activeHandler;
-
-	private final Map<PageConstants, MainHandler> handlers = new HashMap<PageConstants, MainHandler>();
+	private final Map<PageConstants, MainHandler<?>> handlers = new HashMap<PageConstants, MainHandler<?>>();
 
 	public static AppHandler getInstance() {
 
@@ -67,7 +65,7 @@ public class AppHandler {
 
 		System.out.println("navigating to: " + handlerCode);
 
-		MainHandler nextHandler = handlers.get(handlerCode);
+		MainHandler<?> nextHandler = handlers.get(handlerCode);
 		
 		if(null == nextHandler) {
 			Log.log("Handler is NULL");

@@ -33,6 +33,7 @@ import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
+import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Capital;
 import com.fajar.shoppingmart.entity.CapitalFlow;
 import com.fajar.shoppingmart.entity.CashBalance;
@@ -478,7 +479,7 @@ public class DashboardPage extends BasePage {
 		super.initEvent();
 	}
 	
-	private ActionListener managementListener(Class<?> _class) {
+	private ActionListener managementListener(Class<? extends BaseEntity> _class) {
 		return getHandler().managementNavigationListener(_class);
 	}
 

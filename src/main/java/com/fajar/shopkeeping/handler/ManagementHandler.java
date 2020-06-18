@@ -15,7 +15,7 @@ import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
 
-public class ManagementHandler extends MainHandler {
+public class ManagementHandler extends MainHandler<ManagementPage> {
 
 	public ManagementHandler() {
 		super();
@@ -68,11 +68,7 @@ public class ManagementHandler extends MainHandler {
 			} 
 			
 		};
-	}
-	
-	private ManagementPage getPage() {
-		return (ManagementPage) this.page;
-	}
+	} 
 	
 	/**
 	 * submit update / add new record

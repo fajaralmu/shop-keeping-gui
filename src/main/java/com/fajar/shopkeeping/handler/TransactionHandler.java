@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.handler;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +15,8 @@ import com.fajar.shoppingmart.entity.Customer;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 
-public class TransactionHandler extends MainHandler {
-
-	
+public class TransactionHandler extends MainHandler<BaseTransactionPage> {
+ 
 	
 	public TransactionHandler(BaseTransactionPage transactionPage) {
 		super(transactionPage);

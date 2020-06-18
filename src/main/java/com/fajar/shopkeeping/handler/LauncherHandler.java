@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LauncherPage;
 
-public class LauncherHandler extends MainHandler {
+public class LauncherHandler extends MainHandler<LauncherPage> {
 
 	public LauncherHandler() {
 		super();
@@ -16,9 +16,7 @@ public class LauncherHandler extends MainHandler {
 	protected void init() {
 		super.init();  
 		page = new LauncherPage();
-	}
-
-	
+	} 
 
 	public ActionListener showLoginPage() { 
 		

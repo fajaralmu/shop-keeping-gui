@@ -12,7 +12,7 @@ import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 
-public class PeriodicReportHandler extends MainHandler {
+public class PeriodicReportHandler extends MainHandler<PeriodicReportPage> {
 
 	public PeriodicReportHandler() {
 		super();
@@ -49,13 +49,6 @@ public class PeriodicReportHandler extends MainHandler {
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.DAILY);
 
-	}  
-	
-	private PeriodicReportPage getPage() {
-
-		return (PeriodicReportPage) page;
-	}
-	
-	
+	}   
 
 }

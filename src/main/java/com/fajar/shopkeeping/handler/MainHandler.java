@@ -21,9 +21,9 @@ import com.fajar.shopkeeping.service.TransactionService;
 import com.fajar.shopkeeping.util.FileUtil;
 import com.fajar.shopkeeping.util.Log;
 
-public class MainHandler {
+public class MainHandler<T extends BasePage> {
 
-	protected BasePage page;
+	protected T page;
 	protected static final AppHandler APP_HANDLER = AppHandler.getInstance();
 	protected final AccountService accountService = AccountService.getInstance();
 	protected final ReportService reportService = ReportService.getInstance();
@@ -34,9 +34,13 @@ public class MainHandler {
 		init();
 	}
 	
-	public MainHandler(BasePage page) {
+	public MainHandler(T page) {
 		this.page = page;
 		init();
+	}
+	
+	protected T getPage() {
+		return page;
 	}
 
 	protected void init() {  }
