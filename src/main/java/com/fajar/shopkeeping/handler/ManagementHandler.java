@@ -2,13 +2,13 @@ package com.fajar.shopkeeping.handler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
@@ -137,7 +137,7 @@ public class ManagementHandler extends MainHandler {
 		entityService.getEntityList(
 				filter,
 				getPage().getEntityClass(),
-				new MyCallback<WebResponse>() {
+				new WebResponseCallback() {
 					
 					@Override
 					public void handle(WebResponse response) throws Exception { 

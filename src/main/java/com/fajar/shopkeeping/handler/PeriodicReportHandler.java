@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.handler;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.model.ReportResponse;
@@ -10,7 +11,6 @@ import com.fajar.shopkeeping.pages.PeriodicReportPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
-import com.fajar.shoppingmart.dto.WebResponse;
 
 public class PeriodicReportHandler extends MainHandler {
 
@@ -24,7 +24,7 @@ public class PeriodicReportHandler extends MainHandler {
 		page = new PeriodicReportPage();
 	}
 
-	public void getPeriodicCashflow(Filter filter, MyCallback<WebResponse> callback) {
+	public void getPeriodicCashflow(Filter filter, WebResponseCallback callback) {
 		Log.log("filter: ", filter);
 		reportService.getPeriodicCashflow(filter, callback);
 

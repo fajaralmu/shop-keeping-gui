@@ -11,7 +11,7 @@ import static com.fajar.shopkeeping.constant.PageConstants.PAGE_TRAN_SUPPLY;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
@@ -101,7 +101,7 @@ public class AppHandler {
 	}
 
 	private void getAppId() throws Exception {
-		accountService.getAppId(new MyCallback<WebResponse>() {
+		accountService.getAppId(new WebResponseCallback() {
 
 			public void handle(WebResponse params) throws Exception {
 				 

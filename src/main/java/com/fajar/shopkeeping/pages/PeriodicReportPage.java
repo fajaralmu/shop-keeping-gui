@@ -15,7 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.handler.PeriodicReportHandler;
@@ -156,9 +156,9 @@ public class PeriodicReportPage extends BasePage {
 		};
 	}
 
-	private MyCallback<WebResponse> callbackGetPeriodicCashflow() {
+	private WebResponseCallback callbackGetPeriodicCashflow() {
 		 
-		return new MyCallback<WebResponse>() {
+		return new WebResponseCallback() {
 			
 			@Override
 			public void handle(WebResponse response) throws Exception { 

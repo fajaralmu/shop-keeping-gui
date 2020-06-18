@@ -19,7 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;
@@ -205,9 +205,9 @@ public class DashboardPage extends BasePage {
  
 	}
 	
-	private MyCallback<WebResponse> callbackUpdateMonthlyCashflow() {
+	private WebResponseCallback callbackUpdateMonthlyCashflow() {
 		 
-		return new MyCallback<WebResponse>() {
+		return new WebResponseCallback() {
 
 			@Override
 			public void handle(WebResponse jsonResponse) throws Exception { 

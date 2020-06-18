@@ -24,12 +24,10 @@ public class MapUtil {
 		return result;
 	}
 	
-	public static void printMap(Map map) {
-		Log.log("printing map");
-		for(Object key:map.keySet()) {
-			Log.log("key:", key,":",map.get(key));
-		}
-	}
+	/*
+	 * public static void printMap(Map map) { Log.log("printing map"); for(Object
+	 * key:map.keySet()) { Log.log("key:", key,":",map.get(key)); } }
+	 */
 
 	public static  <T> T mapToObject(Map<?, ?> map, Class<T> objectClass) {
 		Set<?> mapKeys = map.keySet(); 

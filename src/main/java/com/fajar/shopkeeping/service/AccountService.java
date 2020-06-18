@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
+import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
@@ -40,7 +41,7 @@ public class AccountService extends BaseService{
 
 	}
 
-	public void getAppId(MyCallback<WebResponse> callback) {
+	public void getAppId(WebResponseCallback callback) {
 
 		requestAppId(callback);
 
@@ -50,7 +51,7 @@ public class AccountService extends BaseService{
 	 * requesting new app ID
 	 * @param callback parameter #1 : WebResponse.class
 	 */
-	private void requestAppId(final MyCallback<WebResponse> callback) {
+	private void requestAppId(final WebResponseCallback callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
