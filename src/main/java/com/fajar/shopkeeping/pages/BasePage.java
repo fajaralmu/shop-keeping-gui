@@ -78,7 +78,7 @@ public abstract class BasePage {
 	protected boolean closeOtherPage = true;
 
 	@Setter(value = AccessLevel.NONE)
-	protected MainHandler appHandler;
+	protected MainHandler<? extends BasePage> appHandler;
 
 	public BasePage(String title, int w, int h) {
 		this.frame = new MyCustomFrame(title, w, h);
@@ -123,7 +123,7 @@ public abstract class BasePage {
 	 * 
 	 * @param mainHandler
 	 */
-	public void setAppHandler(MainHandler mainHandler) {
+	public void setAppHandler(MainHandler<? extends BasePage> mainHandler) {
 		System.out.println("mainHandler: " + mainHandler);
 		this.appHandler = mainHandler;
 		initEvent();
