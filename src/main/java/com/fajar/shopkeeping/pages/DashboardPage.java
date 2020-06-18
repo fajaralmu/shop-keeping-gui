@@ -205,13 +205,13 @@ public class DashboardPage extends BasePage {
  
 	}
 	
-	private MyCallback callbackUpdateMonthlyCashflow() {
+	private MyCallback<WebResponse> callbackUpdateMonthlyCashflow() {
 		 
-		return new MyCallback() {
+		return new MyCallback<WebResponse>() {
 
 			@Override
-			public void handle(Object... params) throws Exception {
-				WebResponse jsonResponse = (WebResponse) params[0];
+			public void handle(WebResponse jsonResponse) throws Exception { 
+				
 				callbackMonthlyCashflow(jsonResponse);
 			}
 		};

@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
+import com.fajar.shopkeeping.model.ReportResponse;
 import com.fajar.shopkeeping.pages.PeriodicReportPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
+import com.fajar.shoppingmart.dto.WebResponse;
 
 public class PeriodicReportHandler extends MainHandler {
 
@@ -22,7 +24,7 @@ public class PeriodicReportHandler extends MainHandler {
 		page = new PeriodicReportPage();
 	}
 
-	public void getPeriodicCashflow(Filter filter, MyCallback callback) {
+	public void getPeriodicCashflow(Filter filter, MyCallback<WebResponse> callback) {
 		Log.log("filter: ", filter);
 		reportService.getPeriodicCashflow(filter, callback);
 
@@ -33,12 +35,12 @@ public class PeriodicReportHandler extends MainHandler {
 		Filter filter = Filter.builder().month(month).year(year).build();
 		WebRequest webRequest = WebRequest.builder().filter(filter).build(); 
 
-		MyCallback myCallback = new MyCallback() {
+		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
 
 			@Override
-			public void handle(Object... params) throws Exception {
-				Log.log("Response daily excel: ", params[0]);
-				ResponseEntity<byte[]> response = (ResponseEntity<byte[]>) params[0];
+			public void handle(ReportResponse reportResponse) throws Exception {
+				Log.log("Response daily excel: ", reportResponse.getReportType());
+				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
 				Loadings.end();
 				 
 				String fileName = getFileName(response);

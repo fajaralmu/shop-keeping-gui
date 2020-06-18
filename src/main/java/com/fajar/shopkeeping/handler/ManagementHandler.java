@@ -41,7 +41,7 @@ public class ManagementHandler extends MainHandler {
 	 * @param callback
 	 */
 	public void getEnitiesFormDynamicDropdown(Class<?> entityClass, final String key, final Object value,
-			MyCallback callback) {
+			MyCallback<Map<Object, Object>> callback) {
 
 		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
@@ -88,11 +88,10 @@ public class ManagementHandler extends MainHandler {
 			Log.log("Submit managedObject: ", managedObject); 
 			 
 			getPage().validateEntity();
-			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(), new MyCallback() {
+			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(), new MyCallback<Map<Object, Object>>() {
 				
 				@Override
-				public void handle(Object... params) throws Exception {
-					HashMap response = (HashMap) params[0]; 
+				public void handle(Map<Object, Object> response) throws Exception { 
 					
 					getPage().callbackUpdateEntity(response);
 				}
@@ -138,11 +137,11 @@ public class ManagementHandler extends MainHandler {
 		entityService.getEntityList(
 				filter,
 				getPage().getEntityClass(),
-				new MyCallback() {
+				new MyCallback<WebResponse>() {
 					
 					@Override
-					public void handle(Object... params) throws Exception {
-						WebResponse response = (WebResponse) params[0];
+					public void handle(WebResponse response) throws Exception { 
+						
 						getPage().callbackGetFilteredEntities(response);
 					}
 				});

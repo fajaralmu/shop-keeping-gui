@@ -763,7 +763,7 @@ public class ManagementPage extends BasePage {
 	 * handle response when add/update entity
 	 * @param response
 	 */
-	public void callbackUpdateEntity(HashMap response) {
+	public void callbackUpdateEntity(Map<Object, Object> response) {
 		Object code = response.get("code");
 		
 		if(code.equals("00")) {
@@ -843,18 +843,26 @@ public class ManagementPage extends BasePage {
 	 * callback when edit button pressed
 	 * @return
 	 */
-	public MyCallback callbackGetSingleEntity() { 
-		return new MyCallback() {
+	public MyCallback<Map<Object, Object>> callbackGetSingleEntity() { 
+		return new MyCallback<Map<Object, Object>>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception {
-				 Map<String, Object> entity = (Map<String, Object>) params[0];
-				 helper.populateFormInputs(entity);
+			public void handle(Map<Object, Object> entity) throws Exception { 
+				 helper.populateFormInputs(toStringObjectMap(entity));
 				 setEditMode(true);
 				
 			} 
 			
 		};
+	}
+	
+	private static Map<String, Object> toStringObjectMap(Map<?, ?> map) {
+		Set<?> keys = map.keySet();
+		Map<String, Object> newMap = new HashMap<>();
+		for (Object key : keys) {
+			newMap.put(key.toString(), map.get(key));
+		}
+		return newMap;
 	}
 	
 	/**

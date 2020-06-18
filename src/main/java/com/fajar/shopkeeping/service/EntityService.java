@@ -46,7 +46,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback parameter #1 : response (WebResponse.class)
 	 */
-	public void getEntityList(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
+	public void getEntityList(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -69,7 +69,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback parameter #1 : response (Map<Object, Object>)
 	 */
-	public void getSingleEntityByID(final String idField, final Object id, final Class<?> entityClass, final MyCallback callback) {
+	public void getSingleEntityByID(final String idField, final Object id, final Class<?> entityClass, final MyCallback<Map<Object, Object>> callback) {
 		 
 		final Filter filter = new Filter();
 		filter.setLimit(1);
@@ -85,8 +85,8 @@ public class EntityService extends BaseService {
 				try {
 					
 					Map<Object, Object> response = callGetEntity(filter , entityClass);
-					List<Map<?, ?>> theEntities  = (List<Map<?, ?>>) response.get("entities");
-					Map<?, ?> theEntity = theEntities.get(0);
+					List<Map<Object, Object>> theEntities  = (List<Map<Object, Object>>) response.get("entities");
+					Map<Object, Object> theEntity = theEntities.get(0);
 					callback.handle(theEntity);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -103,7 +103,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback parameter #1 : response (Map<Object, Object>)
 	 */
-	public void getEntityListHashMapResponse(final Filter filter, final Class<?> entityClass, final MyCallback callback) {
+	public void getEntityListHashMapResponse(final Filter filter, final Class<?> entityClass, final MyCallback<Map<Object, Object>> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -126,7 +126,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param callback parameter #1 : JSON response, (WebResponse.class)
 	 */
-	public void getEntityListJsonResponse(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback callback) {
+	public void getEntityListJsonResponse(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -159,7 +159,7 @@ public class EntityService extends BaseService {
 	 * @param entityClass
 	 * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	 */
-	public void updateEntity( final Map<String, Object> entityObject, final boolean editMode, final Class<?> entityClass, final MyCallback myCallback) { 
+	public void updateEntity( final Map<String, Object> entityObject, final boolean editMode, final Class<?> entityClass, final MyCallback<Map<Object, Object>> myCallback) { 
 		ThreadUtil.runWithLoading(new Runnable() {
 			
 			@Override

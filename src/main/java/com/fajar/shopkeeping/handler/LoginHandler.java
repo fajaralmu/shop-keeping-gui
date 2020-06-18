@@ -34,11 +34,10 @@ public class LoginHandler extends MainHandler {
 
 	private void doLogin(String username, String password) {
 		
-		accountService.doLogin(username, password, new MyCallback() {
+		accountService.doLogin(username, password, new MyCallback<Boolean>() {
 			
-			public void handle(Object... params) throws Exception {
-				 
-				boolean success = (Boolean) params[0];
+			public void handle(Boolean success) throws Exception {
+				  
 				if(success) {
 					APP_HANDLER.navigate(PageConstants.PAGE_DASHBOARD);
 				}

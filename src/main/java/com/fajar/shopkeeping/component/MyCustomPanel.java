@@ -19,6 +19,7 @@ import lombok.Setter;
 @Data
 public class MyCustomPanel extends JPanel {
 
+	
 	private Map<Integer, PanelRow> componentsMap;
 
 	/**

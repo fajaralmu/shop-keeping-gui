@@ -358,11 +358,11 @@ public abstract class BaseTransactionPage extends BasePage{
 			entityClass = Customer.class;
 		}
 		
-		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new MyCallback() {
+		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception { 
-				WebResponse response = (WebResponse) params[0];
+			public void handle(WebResponse response) throws Exception { 
+				
 				Log.log("entities: ", response.getEntities()); 
 				
 				if(dropDownType.equals(PRODUCT)) {	

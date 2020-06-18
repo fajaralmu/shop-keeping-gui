@@ -796,13 +796,12 @@ public class CommonFormFieldHelper {
 				final JComboBox dynamicComboBox = BasePage.getComboBox(event);
 				final String comboBoxText = BasePage.getComboBoxText(dynamicComboBox);
 				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, comboBoxText,
-						new MyCallback() {
+						new MyCallback< Map<Object, Object>>() {
 
 							@Override
-							public void handle(Object... params) throws Exception {
-
-								HashMap WebResponse = (HashMap) params[0];
-								populateDynamicDropdown(WebResponse);
+							public void handle(Map<Object, Object> params) throws Exception {
+ 
+								populateDynamicDropdown(params);
 							}
 
 							/**
@@ -810,7 +809,7 @@ public class CommonFormFieldHelper {
 							 * 
 							 * @param WebResponse
 							 */
-							private void populateDynamicDropdown(HashMap WebResponse) {
+							private void populateDynamicDropdown( Map<Object, Object> WebResponse) {
 								List entities = (List) WebResponse.get("entities");
 								page.setComboBoxValuesContainer(elementId, entities);
 

@@ -15,6 +15,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
+import com.fajar.shopkeeping.model.ReportResponse;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ObjectUtil;
@@ -46,7 +47,7 @@ public class ReportService extends BaseService{
 	 * @param year
 	 * @param callback parameter #1  : JSON response (WebResponse.class)
 	 */
-	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback callback) {
+	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -71,7 +72,7 @@ public class ReportService extends BaseService{
 	 * @param year
 	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
-	public void getDailyCashflowDetail(final int day, final int month, final int year, final MyCallback callback) {
+	public void getDailyCashflowDetail(final int day, final int month, final int year, final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -95,7 +96,7 @@ public class ReportService extends BaseService{
 	 * @param filter
 	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
-	public void getPeriodicCashflow(final Filter filter, final MyCallback callback) {
+	public void getPeriodicCashflow(final Filter filter, final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -161,7 +162,7 @@ public class ReportService extends BaseService{
 	 * @param reportType parameter #1 : reportFile (ResponseEntity<byte[]>)
 	 * 					 parameter #2 : reportType (ReportType.class)
 	 */
-	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback myCallback, final ReportType reportType) {
+	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback<ReportResponse> myCallback, final ReportType reportType) {
 		ThreadUtil.runWithLoading(new Runnable() {
 			
 			@Override
@@ -172,17 +173,19 @@ public class ReportService extends BaseService{
 				try {
 					ResponseEntity<byte[]> response = null;
 					switch (reportType) {
-					case DAILY:
-						response = callDownloadExcelDaily(WebRequest);
-						break;
-					case MONTHLY:
-						response = callDownloadExcelMonthly(WebRequest);
-						break;
-					default:
-						throw new IllegalArgumentException("Invalid Report Type");
+						case DAILY:
+							response = callDownloadExcelDaily(WebRequest);
+							break;
+						case MONTHLY:
+							response = callDownloadExcelMonthly(WebRequest);
+							break;
+						default:
+							throw new IllegalArgumentException("Invalid Report Type");
 					}
 					
-					myCallback.handle(response, reportType);
+					ReportResponse reportResponse = new ReportResponse(reportType, response);
+					
+					myCallback.handle(reportResponse);
 					
 				}catch (Exception e) {
 					Dialogs.error("Error generating report: ", e.getMessage());

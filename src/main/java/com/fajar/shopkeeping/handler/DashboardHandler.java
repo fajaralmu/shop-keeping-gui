@@ -11,11 +11,11 @@ import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.ReportType;
+import com.fajar.shopkeeping.model.ReportResponse;
 import com.fajar.shopkeeping.model.SharedContext;
 import com.fajar.shopkeeping.pages.DailyCashflowPage;
 import com.fajar.shopkeeping.pages.DashboardPage;
 import com.fajar.shopkeeping.service.AppContext;
-import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -38,12 +38,10 @@ public class DashboardHandler extends MainHandler {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				accountService.logout(new MyCallback() {
+				accountService.logout(new MyCallback<Boolean>() {
 
 					@Override
-					public void handle(Object... params) throws Exception {
-
-						boolean success = (Boolean) params[0];
+					public void handle(Boolean success) throws Exception { 
 						if (success) {
 							APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
 						}
@@ -53,7 +51,7 @@ public class DashboardHandler extends MainHandler {
 		};
 	}
 
-	public void getTodayMonthlyCashflow(MyCallback callback) {
+	public void getTodayMonthlyCashflow(MyCallback<WebResponse> callback) {
 
 		Calendar calendar = Calendar.getInstance();
 		int month = calendar.get(Calendar.MONTH) + 1; // January is 1
@@ -70,12 +68,10 @@ public class DashboardHandler extends MainHandler {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				reportService.getDailyCashflowDetail(day, month, year, new MyCallback() {
+				reportService.getDailyCashflowDetail(day, month, year, new MyCallback<WebResponse>() {
 
 					@Override
-					public void handle(Object... params) throws Exception {
-
-						WebResponse response = (WebResponse) params[0];
+					public void handle(WebResponse response) throws Exception { 
 						handleResponseDailyCashflow(response);
 					}
 				});
@@ -114,12 +110,12 @@ public class DashboardHandler extends MainHandler {
 		Filter filter = Filter.builder().year(year).build();
 		WebRequest webRequest =  WebRequest.builder().filter(filter).build(); 
 
-		MyCallback myCallback = new MyCallback() {
+		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
 
 			@Override
-			public void handle(Object... params) throws Exception {
-				Log.log("Response daily excel: ", params[0]);
-				ResponseEntity<byte[]> response = (ResponseEntity<byte[]>) params[0];
+			public void handle(ReportResponse reportResponse) throws Exception {
+				 
+				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
 				Loadings.end();
 				 
 				String fileName = getFileName(response);
@@ -130,7 +126,7 @@ public class DashboardHandler extends MainHandler {
 
 	}
 
-	public ActionListener getMonthlyCashflow(final MyCallback callback) {
+	public ActionListener getMonthlyCashflow(final MyCallback<WebResponse> callback) {
 
 		return new ActionListener() {
 

@@ -40,7 +40,7 @@ public class AccountService extends BaseService{
 
 	}
 
-	public void getAppId(MyCallback callback) {
+	public void getAppId(MyCallback<WebResponse> callback) {
 
 		requestAppId(callback);
 
@@ -50,7 +50,7 @@ public class AccountService extends BaseService{
 	 * requesting new app ID
 	 * @param callback parameter #1 : WebResponse.class
 	 */
-	private void requestAppId(final MyCallback callback) {
+	private void requestAppId(final MyCallback<WebResponse> callback) {
 		ThreadUtil.runWithLoading(new Runnable() {
 
 			public void run() {
@@ -77,7 +77,7 @@ public class AccountService extends BaseService{
 	 * @param password
 	 * @param callback parameter #1 : Boolean.class
 	 */
-	public void doLogin(final String username, final String password, final MyCallback callback) {
+	public void doLogin(final String username, final String password, final MyCallback<Boolean> callback) {
 
 		ThreadUtil.runWithLoading(new Runnable() {
 
@@ -127,7 +127,7 @@ public class AccountService extends BaseService{
 	 * 
 	 * @param myCallback parameter #1 :  successLogout (Boolean.class)
 	 */
-	public void logout(final MyCallback callback) {
+	public void logout(final MyCallback<Boolean> callback) {
 
 		ThreadUtil.runWithLoading(new Runnable() {
 

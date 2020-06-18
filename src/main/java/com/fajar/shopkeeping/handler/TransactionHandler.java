@@ -8,6 +8,7 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.BaseTransactionPage;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.SupplyTransactionPage;
+import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
@@ -35,23 +36,20 @@ public class TransactionHandler extends MainHandler {
 	 * @param callback
 	 */
 	public void getEntitiesFromDynamicDropdown(Class<? extends BaseEntity> entityClass, final String key, final Object value,
-			MyCallback callback) {
+			MyCallback<WebResponse> callback) {
 
-		Map<String, Object> fieldsFilter = new HashMap<String, Object>() {
-			{
-				put(key, value);
-			}
-		};
+		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
+		
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityListJsonResponse(filter, entityClass, callback);
 	}
 	
 	public void transactionSupply(List<ProductFlow> productFlows, Supplier supplier) {
-		MyCallback myCallback = new MyCallback() {
+		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception {
-				WebResponse response = (WebResponse) params[0];
+			public void handle(WebResponse response) throws Exception {
+				
 				getSupplyPage().callbackTransactionSupply(response);
 			}
 		};
@@ -68,11 +66,11 @@ public class TransactionHandler extends MainHandler {
 	 
 	
 	public void getProductDetail(final String productCode) {
-		MyCallback callback = new MyCallback() {
+		MyCallback<WebResponse> callback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception {
-				WebResponse response = (WebResponse) params[0];
+			public void handle(WebResponse response) throws Exception {
+				
 				getSellingPage().callbackGetProductDetail(response);
 			}
 		};
@@ -80,11 +78,11 @@ public class TransactionHandler extends MainHandler {
 	}
 	
 	public void transactionSell(List<ProductFlow> productFlows, Customer customer) {
-		MyCallback myCallback = new MyCallback() {
+		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception {
-				WebResponse response = (WebResponse) params[0];
+			public void handle(WebResponse response) throws Exception {
+				
 				getSellingPage().callbackTransactionSell(response);
 			}
 		};

@@ -101,18 +101,18 @@ public class AppHandler {
 	}
 
 	private void getAppId() throws Exception {
-		accountService.getAppId(new MyCallback() {
+		accountService.getAppId(new MyCallback<WebResponse>() {
 
-			public void handle(Object... params) throws Exception {
-				// TODO Auto-generated method stub
+			public void handle(WebResponse params) throws Exception {
+				 
 				try {
-					WebResponse response = (WebResponse) params[0];
+					WebResponse response = (WebResponse) params ;
 					String applicationId = response.getMessage();
 				
 					AppSession.setApplicationID(applicationId);
 					startActiveHandler();
 				} catch (Exception e) {
-					// TODO: handle exception
+					 
 					throw new Exception("App id not generated");
 					 
 				}

@@ -156,13 +156,13 @@ public class PeriodicReportPage extends BasePage {
 		};
 	}
 
-	private MyCallback callbackGetPeriodicCashflow() {
+	private MyCallback<WebResponse> callbackGetPeriodicCashflow() {
 		 
-		return new MyCallback() {
+		return new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(Object... params) throws Exception {
-				 WebResponse response = (WebResponse) params[0];
+			public void handle(WebResponse response) throws Exception { 
+				
 				 callbackPeriodicCashflow(response);
 			} 
 			
