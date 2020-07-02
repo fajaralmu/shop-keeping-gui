@@ -14,6 +14,7 @@ import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -34,7 +35,7 @@ import com.toedter.calendar.JDateChooser;
 import lombok.Data;
 
 @Data
-public class SupplyTransactionPage extends BaseTransactionPage {   
+public class PurchasingTransactionPage extends BaseTransactionPage {   
 	
 	private long supplierId;
 	private long unitPrice;
@@ -45,9 +46,10 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 	//fields
 	private JComboBox supplierComboBox;  
 	private JTextField inputUnitPriceField;
+	private JLabel labelCurrentPrice;
 	private JDateChooser inputExpiredDateField; 
 
-	public SupplyTransactionPage() { 
+	public PurchasingTransactionPage() { 
 		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Supply");
 		
 	}  
@@ -128,6 +130,8 @@ public class SupplyTransactionPage extends BaseTransactionPage {
  		labelProductUnit.setSize(200, 20); 
  		labelTotalPrice = label("total price", LEFT);
  		labelTotalPrice.setSize(300, 20);
+ 		labelCurrentPrice = label("");
+ 		labelCurrentPrice.setSize(300, 20);
  		
 		PanelRequest panelRequest = getFormFieldPanelRequest();
 		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
@@ -135,6 +139,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 				label("Product", LEFT), productComboBox,
 				label("Quantity", LEFT), inputQtyField,
 				label("Unit", LEFT), labelProductUnit,
+				label("Curr Price", LEFT), labelCurrentPrice,
 				label("Unit Price", LEFT), inputUnitPriceField,
 				label("Expired Date", LEFT), inputExpiredDateField,
 				buttonSubmitCart, buttonClearCart,
@@ -161,6 +166,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 		clearTextField(inputUnitPriceField);
 		clearDateChooser(inputExpiredDateField);
 		clearLabel(labelProductUnit);
+		clearLabel(labelCurrentPrice);
 		
 		if(clearSupplier) {
 			selectedSupplier = null;
@@ -229,6 +235,7 @@ public class SupplyTransactionPage extends BaseTransactionPage {
 	public void setSelectedProduct (Product product) { 
 		this.selectedProduct = product;
 		labelProductUnit.setText(product.getUnit().getName());
+		labelCurrentPrice.setText(StringUtil.beautifyNominal(product.getPrice()));
 	}
 	
 	@Override

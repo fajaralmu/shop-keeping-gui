@@ -6,7 +6,7 @@ import com.fajar.shoppingmart.util.EntityUtil;
 
 public class TestEntityProp {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		EntityProperty entityProp = EntityUtil.createEntityProperty(Product.class, null);
 		System.out.println("entityPropID: "+entityProp.getIdField());
 	}

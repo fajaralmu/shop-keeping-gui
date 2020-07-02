@@ -297,12 +297,17 @@ public class ManagementPage extends BasePage {
 
 			@Override
 			public void run() {
-				setFormPanel(generateEntityForm());
-				helper.doClearForm();
-				getHandler().getEntities();
+				try {
+					setFormPanel(generateEntityForm());
+					helper.doClearForm();
+					getHandler().getEntities(); 
+					preInitComponent();
+					initEvent(); 
+				} catch (Exception e) {
+					 
+					e.printStackTrace();
+				}
 				
-				preInitComponent();
-				initEvent(); 
 			}
 		}); 
 
@@ -355,8 +360,9 @@ public class ManagementPage extends BasePage {
 	 * CRUD Form Generation
 	 * 
 	 * @return
+	 * @throws Exception 
 	 */
-	private JPanel generateEntityForm() { 
+	private JPanel generateEntityForm() throws Exception { 
 
 		List<Component> formComponents = new ArrayList<Component>();
  

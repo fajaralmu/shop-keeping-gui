@@ -6,7 +6,7 @@ import java.util.Map;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.BaseTransactionPage;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
-import com.fajar.shopkeeping.pages.SupplyTransactionPage;
+import com.fajar.shopkeeping.pages.PurchasingTransactionPage;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -54,8 +54,8 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		transactionService.transactionSupply(productFlows, supplier, myCallback );
 	}
 	
-	private SupplyTransactionPage getSupplyPage() {
-		return (SupplyTransactionPage) page;
+	private PurchasingTransactionPage getSupplyPage() {
+		return (PurchasingTransactionPage) page;
 	}
 	
 	private SellingTransactionPage getSellingPage() {
