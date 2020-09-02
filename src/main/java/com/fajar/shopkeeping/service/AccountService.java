@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.service;
 
+import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_GET;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGIN;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGOUT;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_REQIEST_APP;
@@ -19,6 +20,7 @@ import org.springframework.web.client.ResourceAccessException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
@@ -91,15 +93,12 @@ public class AccountService extends BaseService{
 					if (response.getBody().get("code").equals("00") == false) {
 						throw new Exception("Invalid Response");
 					}
-
-					HashMap<Object, Object> responseBody = response.getBody();
+ 
 					HttpHeaders responseHeaders = response.getHeaders();
 					List<String> loginKey = responseHeaders.get(HEADER_LOGIN_KEY);
- 
-					User responseUser = (User) MapUtil.mapToObject((Map) responseBody.get("entity"), User.class);
-
+  
 					AppSession.setLoginKey(loginKey.get(0));
-					AppSession.setUser(responseUser);
+					getLoggedUser();
 
 					Dialogs.info("Login Success!");
 
@@ -120,10 +119,28 @@ public class AccountService extends BaseService{
 					}
 				}
 			}
+
 		});
 
 	}
 
+
+	private void getLoggedUser() {
+		 
+		try {
+
+			WebRequest shopApiRequest = new WebRequest();
+			ResponseEntity<User> response = restTemplate.postForEntity(WebServiceConstants.URL_LOGGED_USER,
+					RestComponent.buildAuthRequest(shopApiRequest, true), User.class);
+			Log.log("response: ",response);
+			 AppSession.setUser(response.getBody());
+		} catch (Exception e) {
+			Log.log("callGetEntity #ERROR");
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
 	/**
 	 * 
 	 * @param myCallback parameter #1 :  successLogout (Boolean.class)
@@ -204,7 +221,7 @@ public class AccountService extends BaseService{
 
 	private WebResponse callRequestAppId() {
 		ResponseEntity<WebResponse> response = restTemplate.postForEntity(URL_REQIEST_APP,
-				new WebRequest(), WebResponse.class);
+				RestComponent.buildAuthRequest(new WebRequest(), false), WebResponse.class);
 		return response.getBody();
 	}
 

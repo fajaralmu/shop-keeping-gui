@@ -4,7 +4,7 @@ import com.fajar.shoppingmart.entity.User;
 
 public class AppSession {
 	
-	private static String applicationId = "";
+	private static String applicationId = "1234";
 	private static String loginKey = "";
 	private static User loggedUser;
 	

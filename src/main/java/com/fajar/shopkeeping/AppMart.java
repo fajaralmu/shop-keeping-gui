@@ -6,7 +6,7 @@ import com.fajar.shopkeeping.handler.AppHandler;
  * Hello world!
  *
  */ 
-public class App 
+public class AppMart 
 {
     public static void main( String[] args )
     {
