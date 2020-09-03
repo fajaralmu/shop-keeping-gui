@@ -20,7 +20,7 @@ import lombok.Setter;
 public class MyCustomPanel extends JPanel {
 
 	
-	private Map<Integer, PanelRow> componentsMap;
+	private transient Map<Integer, PanelRow> componentsMap;
 
 	/**
 	 * 
@@ -131,16 +131,28 @@ public class MyCustomPanel extends JPanel {
 				}
 
 				// update location
-				componentsMap.get(key).getComponents().get(i).setLocation(x, y);
+				updateComponentLocation(key, i, x, y);
 
 			}
-			lastComponentEachRow.add(componentsMap.get(key).getComponents().get(components.size() - 1));
+			lastComponentEachRow.add(getPanelRowComponents(key).get(components.size() - 1));
 			currentHeight = currentHeight + margin + rowHeight;
 		}
 		 
 		calculateWidthAndHeight();
 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
+	}
+	
+	private void updateComponentLocation(int key, int listIndex, int x, int y) { 
+		componentsMap.get(key).getComponents().get(listIndex).setLocation(x, y);
+	}
+
+	private PanelRow getPanelRow(Integer key) {
+		return componentsMap.get(key);
+	}
+	
+	private List<Component> getPanelRowComponents(Integer key) {
+		return getPanelRow(key).getComponents();
 	}
 
 	private void resetDimensions() {

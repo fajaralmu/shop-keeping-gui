@@ -9,8 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -24,7 +22,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import com.fajar.shopkeeping.model.PanelRequest;
-import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;

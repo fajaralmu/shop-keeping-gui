@@ -13,6 +13,9 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.Log;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PanelBuilderv2 {
 
 	private final PanelRequest panelRequest;
@@ -38,14 +41,14 @@ public class PanelBuilderv2 {
 	public PanelBuilderv2(PanelRequest panelRequest, Object[] components) {
 		this.panelRequest = panelRequest;
 		this.components = components;
-		this.Size = components.length;
+		this.Size = components.length ;
 		boolean useColSizes = panelRequest.column == 0;
 		this.COLUMN_COUNT = useColSizes ? panelRequest.colSizes.length : panelRequest.column;
 		/**
 		 * set column sizes
 		 */
 		this.colSizes = useColSizes ? panelRequest.colSizes : ComponentBuilder.fillArray(COLUMN_COUNT, panelRequest.width);
-
+//		log.debug("COLUMN SIZES: {} - {}", colSizes,  panelRequest.colSizes );
 		init();
 	}
 
@@ -69,18 +72,18 @@ public class PanelBuilderv2 {
 	}
 
 	public MyCustomPanel buildPanel() {
-		currentColumn = 0;
-		for (int i = 0; i < Size; i++, currentColumn++) {
+		 
+		for (int i = 0; i < Size; i++) {
 
 			Component currentComponent; 
 			try {
-				currentComponent = (Component) components[i] == null ? (Component) components[i] : new JLabel();
+				currentComponent = (Component) components[i] != null ? (Component) components[i] : new JLabel();
 			} catch (Exception e) {
 				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
 			}
- 
-			tempComponents.add(currentComponent);
-
+			currentColumn++;
+			
+			addToTemporaryComponent(currentComponent); 
 			checkIfSwitchRow();
 //			printComponentLayout(currentComponent);
 		}
@@ -88,9 +91,17 @@ public class PanelBuilderv2 {
 		addRemainingComponents();
 
 		customPanel.update(); 
-		return returnPanel();
+		return generatePanelPhysical();
 	}
 	
+	private void addToTemporaryComponent(Component currentComponent) {
+		if(null == currentComponent) {
+			log.info( "currentComponent IS NULL");
+			currentComponent = new JLabel();
+		}
+		tempComponents.add(currentComponent);
+	}
+
 	private void addRemainingComponents() { 
 		/**
 		 * adding remaining components
@@ -112,7 +123,7 @@ public class PanelBuilderv2 {
 		}
 	}
 
-	private MyCustomPanel returnPanel() {
+	private MyCustomPanel generatePanelPhysical() {
 		/**
 		 * setting panel physical appearance
 		 */
