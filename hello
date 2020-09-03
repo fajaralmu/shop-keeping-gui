@@ -1,2 +1,4 @@
 /target/
 /build/
+
+mvn sonar:sonar -Dsonar.host.url=http://localhost:9000  -Dsonar.login=5b3f7f7de864eeea328edaae3c02066cfb68ae5d

@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Loadings;
@@ -211,7 +212,7 @@ public class DashboardPage extends BasePage {
 		return new WebResponseCallback() {
 
 			@Override
-			public void handle(WebResponse jsonResponse) throws Exception { 
+			public void handle(WebResponse jsonResponse) throws ApplicationException { 
 				
 				callbackMonthlyCashflow(jsonResponse);
 			}
@@ -345,7 +346,7 @@ public class DashboardPage extends BasePage {
 	 */
 	private JPanel buildCashflowSummaryTableRow(int day, CashFlow income, CashFlow cost) {
 
-		Color color = day % 2 == 0 ? Color.WHITE : Color.WHITE;
+		Color color = Color.WHITE;//day % 2 == 0 ? Color.WHITE : Color.WHITE;
 		Filter filter = responseTodayCashflow.getFilter();
 
 		JButton buttonDetail = button("Detail");

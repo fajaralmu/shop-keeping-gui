@@ -1,8 +1,8 @@
 package com.fajar.shopkeeping.callbacks;
 
-public interface MyCallback<ResponseObject> {
+public interface MyCallback<R> {
 	
 	
-	public void handle (ResponseObject responseObject) throws Exception;
+	public void handle (R responseObject) throws ApplicationException;
 
 }

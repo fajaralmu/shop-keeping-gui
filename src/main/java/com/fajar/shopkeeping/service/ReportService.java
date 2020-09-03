@@ -179,6 +179,9 @@ public class ReportService extends BaseService{
 						case MONTHLY:
 							response = callDownloadExcelMonthly(WebRequest);
 							break;
+						case ENTITY:
+							response = callDownloadEntityReport(WebRequest);
+							break;
 						default:
 							throw new IllegalArgumentException("Invalid Report Type");
 					}
@@ -273,6 +276,21 @@ public class ReportService extends BaseService{
 		try { 
 	
 			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_MONTHLY,
+					RestComponent.buildAuthRequest(WebRequest, true),  byte[] .class);
+	
+			return response;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	
+	private  ResponseEntity<byte[]>  callDownloadEntityReport(WebRequest WebRequest) {
+		try { 
+	
+			ResponseEntity< byte[] > response = restTemplate.postForEntity(WebServiceConstants.URL_REPORT_ENTITY,
 					RestComponent.buildAuthRequest(WebRequest, true),  byte[] .class);
 	
 			return response;

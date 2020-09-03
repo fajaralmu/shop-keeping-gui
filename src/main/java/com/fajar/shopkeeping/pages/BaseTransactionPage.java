@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
@@ -361,7 +362,7 @@ public abstract class BaseTransactionPage extends BasePage{
 		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new WebResponseCallback() {
 			
 			@Override
-			public void handle(WebResponse response) throws Exception { 
+			public void handle(WebResponse response) throws ApplicationException { 
 				
 				Log.log("entities: ", response.getEntities()); 
 				

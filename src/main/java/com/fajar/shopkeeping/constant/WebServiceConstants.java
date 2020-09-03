@@ -16,6 +16,7 @@ public class WebServiceConstants {
 	//excel
 	public static final String URL_REPORT_DAILY = WS_HOST + "api/report/daily";
 	public static final String URL_REPORT_MONTHLY = WS_HOST + "api/report/monthly"; 
+	public static final String URL_REPORT_ENTITY = WS_HOST + "api/report/entity"; 
 	
 	//ENTITY
 	public static final String URL_ENTITY_GET = WS_HOST + "api/entity/get";

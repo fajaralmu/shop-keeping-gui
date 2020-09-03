@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import org.springframework.http.ResponseEntity;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.BooleanCallback;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
@@ -43,7 +44,7 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 				accountService.logout(new BooleanCallback() {
 
 					@Override
-					public void handle(Boolean success) throws Exception { 
+					public void handle(Boolean success) throws ApplicationException { 
 						if (success) {
 							APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
 						}
@@ -73,7 +74,7 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 				reportService.getDailyCashflowDetail(day, month, year, new MyCallback<WebResponse>() {
 
 					@Override
-					public void handle(WebResponse response) throws Exception { 
+					public void handle(WebResponse response) throws ApplicationException { 
 						handleResponseDailyCashflow(response);
 					}
 				});
@@ -115,13 +116,18 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
 
 			@Override
-			public void handle(ReportResponse reportResponse) throws Exception {
+			public void handle(ReportResponse reportResponse) throws ApplicationException {
 				 
 				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
 				Loadings.end();
 				 
 				String fileName = getFileName(response);
+				try {
 				saveFile(response.getBody(), fileName);
+				}catch (Exception e) {
+					// TODO: handle exception
+					throw new ApplicationException(e);
+				}
 			}
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.MONTHLY);

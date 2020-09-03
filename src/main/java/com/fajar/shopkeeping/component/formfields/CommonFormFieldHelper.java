@@ -30,6 +30,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -582,7 +583,7 @@ public class CommonFormFieldHelper {
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				Date selectedDate = inputComponent.getDate();
-				String convertedDate = ManagementPage.SIMPLE_DATE_FORMAT.format(selectedDate);
+				String convertedDate = page.dateFormat.format(selectedDate);
 				Log.log("selected date converted: ", convertedDate);
 
 				page.updateManagedObject(elementId, convertedDate);
@@ -799,7 +800,7 @@ public class CommonFormFieldHelper {
 						new MyCallback< Map<Object, Object>>() {
 
 							@Override
-							public void handle(Map<Object, Object> params) throws Exception {
+							public void handle(Map<Object, Object> params) throws ApplicationException {
  
 								populateDynamicDropdown(params);
 							}

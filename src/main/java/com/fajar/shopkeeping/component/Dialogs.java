@@ -43,4 +43,8 @@ public class Dialogs {
 		return confirm;
 	}
 
+	public static String input(String string) {
+		return JOptionPane.showInputDialog(string); 
+	}
+
 }

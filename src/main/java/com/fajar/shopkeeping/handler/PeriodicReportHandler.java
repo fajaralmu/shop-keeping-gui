@@ -2,6 +2,7 @@ package com.fajar.shopkeeping.handler;
 
 import org.springframework.http.ResponseEntity;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
@@ -38,13 +39,18 @@ public class PeriodicReportHandler extends MainHandler<PeriodicReportPage> {
 		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
 
 			@Override
-			public void handle(ReportResponse reportResponse) throws Exception {
-				Log.log("Response daily excel: ", reportResponse.getReportType());
-				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
-				Loadings.end();
-				 
-				String fileName = getFileName(response);
-				saveFile(response.getBody(), fileName);
+			public void handle(ReportResponse reportResponse) throws ApplicationException {
+				
+				try {
+					Log.log("Response daily excel: ", reportResponse.getReportType());
+					ResponseEntity<byte[]> response = reportResponse.getFileResponse();
+					Loadings.end(); 
+					String fileName = getFileName(response);
+					saveFile(response.getBody(), fileName);
+				}catch (Exception e) {
+					// TODO: handle exception
+					throw new ApplicationException(e);
+				}
 			}
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.DAILY);

@@ -11,6 +11,7 @@ import static com.fajar.shopkeeping.constant.PageConstants.PAGE_TRAN_SUPPLY;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
@@ -101,7 +102,7 @@ public class AppHandler {
 	private void getAppId() throws Exception {
 		accountService.getAppId(new WebResponseCallback() {
 
-			public void handle(WebResponse params) throws Exception {
+			public void handle(WebResponse params) throws ApplicationException {
 				 
 				try {
 					WebResponse response = (WebResponse) params ;
@@ -111,7 +112,7 @@ public class AppHandler {
 					startActiveHandler();
 				} catch (Exception e) {
 					 
-					throw new Exception("App id not generated");
+					throw new ApplicationException("App id not generated");
 					 
 				}
 			}

@@ -5,14 +5,16 @@
 
 	<groupId>com.fajar</groupId>
 	<artifactId>shop-keeping</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<!-- <packaging>jar</packaging> -->
+	<version>1.0.0-SNAPSHOT</version> 
 
 	<name>shop-keeping</name>
 	<url>http://maven.apache.org</url>
  
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+			<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -52,4 +54,23 @@
 
 
 	</dependencies>
+	<profiles>
+		 <profile>
+            <id>sonar</id>
+            <properties>
+                <!-- Optional URL to server. Default value is http://localhost:9000 -->
+                <sonar.host.url>http://localhost:9000</sonar.host.url>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>3.6.0.1398</version>
+
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+	</profiles>
 </project>

@@ -13,7 +13,7 @@ public class StringUtil {
 
 	static final Random rand = new Random();
 	
-	public static final String[] months = new String[] {
+	protected static final String[] months = new String[] {
 		"January",
 		"February",
 		"March",

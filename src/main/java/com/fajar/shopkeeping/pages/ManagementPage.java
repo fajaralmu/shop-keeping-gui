@@ -35,10 +35,10 @@ import javax.swing.SwingConstants;
 
 import org.springframework.util.StringUtils;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.component.formfields.CommonFormFieldHelper;
 import com.fajar.shopkeeping.component.formfields.ImageFormFieldHelper;
 import com.fajar.shopkeeping.constant.ContextConstants;
@@ -83,7 +83,8 @@ public class ManagementPage extends BasePage {
 
 	private final JButton buttonSubmit = submitButton("Submit");
 	private final JButton buttonClear = button("Clear");
-	private final JButton buttonFilterEntity = button("SEARCH");
+	private final JButton buttonFilterEntity = button("Search");
+	private final JButton buttonPrintExcel = button("Print Xlsx");
 	private final JButton buttonClearDataTableFilter = button("Clear");
 	private final JButton buttonRefresh = button("Refresh");
 
@@ -200,7 +201,7 @@ public class ManagementPage extends BasePage {
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
 		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
-		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, label("input page"), inputPage);
+		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, buttonPrintExcel, label("input page"), inputPage);
 		return buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
 	} 
 
@@ -218,6 +219,7 @@ public class ManagementPage extends BasePage {
 		addKeyListener(inputPage, textFieldKeyListener(inputPage, "selectedPage"), false);
 		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit"), false); 
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
+		addActionListener(buttonPrintExcel, getHandler().printExcel()); 
 		addActionListener(buttonRefresh, buttonRefreshListener()); 
 		addActionListener(buttonClear, clearListener());
 		addActionListener(buttonClearDataTableFilter, clearDataTableFilterListener());
@@ -853,7 +855,7 @@ public class ManagementPage extends BasePage {
 		return new MyCallback<Map<Object, Object>>() {
 			
 			@Override
-			public void handle(Map<Object, Object> entity) throws Exception { 
+			public void handle(Map<Object, Object> entity) throws ApplicationException { 
 				 helper.populateFormInputs(toStringObjectMap(entity));
 				 setEditMode(true);
 				

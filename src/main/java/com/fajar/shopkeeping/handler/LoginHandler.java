@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.handler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.BooleanCallback;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.pages.LoginPage;
@@ -32,7 +33,7 @@ public class LoginHandler extends MainHandler<LoginPage> {
 		
 		accountService.doLogin(username, password, new BooleanCallback() {
 			
-			public void handle(Boolean success) throws Exception {
+			public void handle(Boolean success) throws ApplicationException {
 				  
 				if(success) {
 					APP_HANDLER.navigate(PageConstants.PAGE_DASHBOARD);

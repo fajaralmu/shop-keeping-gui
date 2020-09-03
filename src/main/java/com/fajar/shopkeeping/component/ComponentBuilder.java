@@ -31,18 +31,22 @@ import com.fajar.shopkeeping.util.ThreadUtil;
 
 public class ComponentBuilder {
 
-	
+	private ComponentBuilder() {
+
+	}
+
 	public static int[] fillArray(int length, int valueForAllItem) {
-		 
+
 		int[] array = new int[length];
-		for(int i =0 ;i< length; i++) {
+		for (int i = 0; i < length; i++) {
 			array[i] = valueForAllItem;
 		}
-		return array ;
+		return array;
 	}
-	
+
 	/**
 	 * build grid panel v1
+	 * 
 	 * @param panelRequest
 	 * @param components
 	 * @return
@@ -53,13 +57,13 @@ public class ComponentBuilder {
 		int width = panelRequest.width;
 		int height = panelRequest.height;
 		int margin = panelRequest.margin;
-		Color color = panelRequest.color;
+		Color color = panelRequest.getColor();
 
 		int panelX = panelRequest.panelX;
 		int panelY = panelRequest.panelY;
 		int panelW = panelRequest.panelW;
 		int panelH = panelRequest.panelH;
-		boolean autoScroll = panelRequest.autoScroll;
+		boolean autoScroll = panelRequest.isAutoScroll();
 
 		JPanel panel = new JPanel();
 		int currentColumn = 0;
@@ -70,53 +74,18 @@ public class ComponentBuilder {
 
 			Component component = components[i];
 
-			if (null != component) {
-
-				// C.setBounds(CurrentCol * Margin + (W * CurrentCol), CurrentRow * Margin + H *
-				// CurrentRow, W, H);
-
-				component.setLocation(currentColumn * margin + (width * currentColumn),
-						currentRow * margin + height * currentRow);
-				component.setSize(width, height);
-
-				if (component.getClass().equals(BlankComponent.class)) {
-					BlankComponent blankComponent = (BlankComponent) component;
-
-					switch (blankComponent.reserved) {
-
-					case BEFORE_HOR:
-
-						Component beforeContHor = components[i - 1];
-
-						beforeContHor.setBounds(beforeContHor.getX(), beforeContHor.getY(),
-								beforeContHor.getWidth() + blankComponent.getWidth(), beforeContHor.getHeight());
-
-						panel.remove(beforeContHor);
-						components[i] = beforeContHor;
-						component = beforeContHor;
-						break;
-
-					case BEFORE_VER:
-						Component beforeContVer = components[i - column];
-
-						beforeContVer.setBounds(beforeContVer.getX(), beforeContVer.getY(), beforeContVer.getWidth(),
-								beforeContVer.getHeight() + blankComponent.getHeight());
-
-						panel.remove(beforeContVer);
-						components[i] = beforeContVer;
-						component = beforeContVer;
-						break;
-
-					case AFTER_HOR:
-					case AFTER_VER:
-					default:
-						break;
-					}
-				}
-
-			} else {
+			if (null == component) {
 				component = new JLabel();
 			}
+			
+			component.setLocation(currentColumn * margin + (width * currentColumn),
+					currentRow * margin + height * currentRow);
+			component.setSize(width, height);
+
+			if (component.getClass().equals(BlankComponent.class)) {
+				component = processBlankComponent(component, panel, components, i, column);
+			}
+
 			currentColumn++;
 
 			if (currentColumn == column) {
@@ -139,125 +108,66 @@ public class ComponentBuilder {
 		panel.setBounds(X, Y, finalW, finalH);
 		panel.setSize(finalW, finalH);
 
-		if (autoScroll) {
+//		if (autoScroll) {
 			panel.setAutoscrolls(false);
-			panel.setAutoscrolls(true);
-		}
+			panel.setAutoscrolls(autoScroll);
+//		}
 		System.out.println("Generated Panel x:" + X + ", y:" + Y + ", width:" + finalW + ", height:" + finalH);
 
 		return panel;
 	}
 
+	private static Component processBlankComponent(Component component, JPanel panel, Component[] components, int i,
+			int column) {
+		BlankComponent blankComponent = (BlankComponent) component;
+
+		switch (blankComponent.reserved) {
+
+		case BEFORE_HOR:
+
+			Component beforeContHor = components[i - 1];
+
+			beforeContHor.setBounds(beforeContHor.getX(), beforeContHor.getY(),
+					beforeContHor.getWidth() + blankComponent.getWidth(), beforeContHor.getHeight());
+
+			panel.remove(beforeContHor);
+			components[i] = beforeContHor;
+			component = beforeContHor;
+			break;
+
+		case BEFORE_VER:
+			Component beforeContVer = components[i - column];
+
+			beforeContVer.setBounds(beforeContVer.getX(), beforeContVer.getY(), beforeContVer.getWidth(),
+					beforeContVer.getHeight() + blankComponent.getHeight());
+
+			panel.remove(beforeContVer);
+			components[i] = beforeContVer;
+			component = beforeContVer;
+			break;
+
+		case AFTER_HOR:
+		case AFTER_VER:
+		default:
+			break;
+		}
+		return component;
+	}
+
 	/**
 	 * build grid panel v2
+	 * 
 	 * @param panelRequest
 	 * @param components
 	 * @return
 	 */
 	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
 
-		boolean useColSizes = panelRequest.column == 0;
-		Log.log("useColSizes: ",useColSizes);
-		int column = useColSizes ? panelRequest.colSizes.length : panelRequest.column;
-		
-//		int height = panelRequest.height;
-		int margin = panelRequest.margin;
-		Color color = panelRequest.color;
+		PanelBuilderv2 panelBuilder = new PanelBuilderv2(panelRequest, components);
 
-		int panelX = panelRequest.panelX;
-		int panelY = panelRequest.panelY;
-		int panelW = panelRequest.panelW;
-		int panelH = panelRequest.panelH;
-		boolean autoScroll = panelRequest.autoScroll;
-
-		/**
-		 * set column sizes
-		 */
-		int[] colSizes = useColSizes ? panelRequest.colSizes : fillArray(column, panelRequest.width);
-		 
-		
-		MyCustomPanel customPanel = new MyCustomPanel(colSizes);
-		customPanel.setMargin(margin);
-		customPanel.setCenterAlignment(panelRequest.isCenterAligment());
-
-		int currentColumn = 0;
-		int currentRow = 0;
-		int Size = components.length;
-
-		List<Component> tempComponents = new ArrayList<Component>();
-
-		for (int i = 0; i < Size; i++) {
-
-			Component currentComponent = null;
-			
-			if(components[i] == null) {
-				components[i] = new JLabel();
-			}
-			
-			try {
-				currentComponent = (Component) components[i];
-			} catch ( Exception  e) {
-				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
-			}
-
-			currentColumn++;
-
-			tempComponents.add(currentComponent);
-
-			if (currentColumn == column) {
-				currentColumn = 0;
-				for (Component component : tempComponents) {
-					customPanel.addComponent(component, currentRow);
-				}
-				currentRow++;
-
-				tempComponents.clear();
-
-			}
-			printComponentLayout(currentComponent);
-		}
-
-		/**
-		 * adding remaining components
-		 */
-		for (Component component : tempComponents) {
-			customPanel.addComponent(component, currentRow);
-		}
-
-		customPanel.update();
-
-		/**
-		 * setting panel physical appearance
-		 */
-
-		final int xPos = panelX == 0 ? margin : panelX;
-		final int yPos = panelY == 0 ? margin : panelY;
-
-		final int finalWidth = customPanel.getCustomWidth();
-		final int finalHeight = customPanel.getCustomHeight();
- 
-		customPanel.setLayout(null);
-		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight); 
-		customPanel.setBackground(color);
-
-		if (autoScroll && panelH > 0) {
-
-			customPanel.setPreferredSize(new Dimension(customPanel.getCustomWidth(), customPanel.getCustomHeight())); 
-			customPanel.setSize(new Dimension());
-			BasePage.printSize(customPanel); 
-			 
-			MyCustomPanel panel  = buildScrolledPanel(customPanel, (panelW > 0? panelW : finalWidth), panelH);
-			Log.log("scrollPane count: ",((JScrollPane)panel.getComponent(0)).getViewport().getView());
-			printComponentLayout(panel);
-			return panel;
-
-		}
-//		System.out.println(
-//				"Generated Panel V2 x:" + xPos + ", y:" + yPos + ", width:" + finalWidth + ", height:" + finalHeight);
-
-		return customPanel;
+		return panelBuilder.buildPanel();
 	}
-	
+
 	/**
 	 * 
 	 * @param component main component enabling scroll
@@ -266,10 +176,11 @@ public class ComponentBuilder {
 	 * @return
 	 */
 	public static MyCustomPanel buildScrolledPanel(Component mainComponent, int width, int height) {
-		
-		JScrollPane scrollPane = new JScrollPane(mainComponent, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setPreferredSize(new Dimension(width, height)); 
-		
+
+		JScrollPane scrollPane = new JScrollPane(mainComponent, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new Dimension(width, height));
+
 		MyCustomPanel panel = new MyCustomPanel();
 		panel.setBounds(0, 0, width, height);
 		panel.add(scrollPane);
@@ -288,24 +199,27 @@ public class ComponentBuilder {
 
 	/**
 	 * dynamic comboBox
+	 * 
 	 * @param defaultValue
 	 * @param values
 	 * @param keyListener
 	 * @param actionListener
 	 * @return
 	 */
-	public static <T> JComboBox<T> buildEditableComboBox(Object defaultValue, KeyListener keyListener, ActionListener actionListener, Object... values) {
-		
-		JComboBox<T> comboBox=  buildComboBox(defaultValue, actionListener, values);
+	public static <T> JComboBox<T> buildEditableComboBox(Object defaultValue, KeyListener keyListener,
+			ActionListener actionListener, Object... values) {
+
+		JComboBox<T> comboBox = buildComboBox(defaultValue, actionListener, values);
 		comboBox.setEditable(true);
-		comboBox.getEditor().getEditorComponent() .addKeyListener(keyListener);
+		comboBox.getEditor().getEditorComponent().addKeyListener(keyListener);
 //		comboBox.addActionListener(actionListener);
-		
+
 		return comboBox;
 	}
-	
+
 	/**
 	 * common comboBox without action listener
+	 * 
 	 * @param defaultValue
 	 * @param values
 	 * @return
@@ -313,9 +227,10 @@ public class ComponentBuilder {
 	public static <T> JComboBox<T> buildComboBox(Object defaultValue, Object... values) {
 		return buildComboBox(defaultValue, null, values);
 	}
-	
+
 	/**
 	 * common comboBox with action listener
+	 * 
 	 * @param defaultValue
 	 * @param values
 	 * @return
@@ -323,31 +238,31 @@ public class ComponentBuilder {
 	@SuppressWarnings("unchecked")
 	public static <T> JComboBox<T> buildComboBox(Object defaultValue, ActionListener actionListener, Object... values) {
 
-		//ComboBoxModel<T> model = new DefaultComboBoxModel<T>();
+		// ComboBoxModel<T> model = new DefaultComboBoxModel<T>();
 		JComboBox<T> comboBox = new JComboBox<T>();
 
 		int maxSize = 0;
 
 		for (Object object : values) {
 			try {
-				comboBox.addItem((T)object);
-				
+				comboBox.addItem((T) object);
+
 				JLabel label = label(object);
 				if (label.getWidth() > maxSize) {
 					maxSize = label.getWidth();
 				}
-			}catch (Exception e) {
+			} catch (Exception e) {
 				continue;
 			}
 		}
 
 		comboBox.setSize(maxSize + 20, 20);
-		
-		if(null != actionListener) {
+
+		if (null != actionListener) {
 			comboBox.addActionListener(actionListener);
 		}
-		
-		if(null != defaultValue) {
+
+		if (null != defaultValue) {
 			comboBox.setSelectedItem(defaultValue);
 		}
 		return comboBox;
@@ -355,65 +270,66 @@ public class ComponentBuilder {
 
 	/**
 	 * common jLabel
+	 * 
 	 * @param text
 	 * @param horizontalAligment SwingConstants
 	 * @return
 	 */
 	public static JLabel label(Object text, int horizontalAligment) {
-		if(null == text) {
+		if (null == text) {
 			text = "";
 		}
 
 		if (isNumber(text)) {
 			try {
 				text = StringUtil.beautifyNominal(Long.parseLong(text.toString()));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				text = StringUtil.beautifyNominal(Long.parseLong(text.toString()));
 			}
 		}
-		 
-		
 
 		JLabel label = new JLabel(text.toString(), horizontalAligment);
 		label.setFont(new Font("Arial", Font.PLAIN, 15));
-		int width = text.toString().length() * (label.getFont().getSize() * 2/3);
+		int width = text.toString().length() * (label.getFont().getSize() * 2 / 3);
 		label.setSize(width, label.getFont().getSize());
 		return label;
 	}
-	
+
 	/**
 	 * JLabel for info only
+	 * 
 	 * @param title
 	 * @param horizontalAligment
 	 * @return
 	 */
 	public static MyInfoLabel infoLabel(Object title, int horizontalAligment) {
-		if(null == title) {
+		if (null == title) {
 			title = "";
 		}
 
 		if (isNumber(title)) {
 			try {
 				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				title = StringUtil.beautifyNominal(Long.parseLong(title.toString()));
 			}
 		}
-		 
+
 		int width = title.toString().length() * 10;
 
 		MyInfoLabel label = new MyInfoLabel(title.toString(), horizontalAligment);
-		
+
 		label.setSize(width, 20);
 		return label;
 	}
-	
+
 	public static JLabel label(Object title) {
 		return label(title, SwingConstants.CENTER);
 	}
 
 	/**
 	 * is the given object integer, double, long ?
+	 * 
 	 * @param o
 	 * @return
 	 */
@@ -439,52 +355,56 @@ public class ComponentBuilder {
 
 	/**
 	 * jLabel with specified fontSize
+	 * 
 	 * @param title
 	 * @param fontSize
 	 * @return
 	 */
 	public static JLabel title(String title, int fontSize) {
-		 
+
 		int width = title.length() * (fontSize + 10);
-		
+
 		JLabel label = new JLabel(title, SwingConstants.CENTER);
 		Font font = new Font("Arial", Font.BOLD, fontSize);
 		label.setFont(font);
-		label.setSize(width, new BigDecimal(fontSize * 1.5).intValue()); 
+		label.setSize(width, BigDecimal.valueOf(fontSize * 1.5).intValue());
 		return label;
 	}
-	
+
 	/**
 	 * build horizontally aligned components wrapped in JPanel
+	 * 
 	 * @param colWidth
 	 * @param components
 	 * @return
 	 */
-	public static JPanel buildInlineComponent(int colWidth, Object...components) {
+	public static JPanel buildInlineComponent(int colWidth, Object... components) {
 		for (Object object : components) {
 			try {
 				Component component = (Component) object;
-				if(component.getWidth() > colWidth) {
+				if (component.getWidth() > colWidth) {
 					component.setSize(colWidth, component.getHeight());
 				}
-			} catch (Exception e) { }
+			} catch (Exception e) {
+			}
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(components.length, colWidth, 3, null);
 		Object[] componentsClone = components;
-		return buildPanelV2(panelRequest, componentsClone );
+		return buildPanelV2(panelRequest, componentsClone);
 	}
-	
+
 	/**
 	 * build vertically in line components wrapped in JPanel
+	 * 
 	 * @param colWidth
 	 * @param components
 	 * @return
 	 */
-	public static JPanel buildVerticallyInlineComponent(int colWidth, Object...components) {
+	public static JPanel buildVerticallyInlineComponent(int colWidth, Object... components) {
 		for (Object object : components) {
 			try {
 				Component component = (Component) object;
-				if(component.getWidth() > colWidth) {
+				if (component.getWidth() > colWidth) {
 					component.setSize(colWidth, component.getHeight());
 				}
 			} catch (Exception e) {
@@ -494,20 +414,21 @@ public class ComponentBuilder {
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, colWidth, 5, null);
 		panelRequest.setCenterAligment(true);
 		Object[] components_ = components;
-		return buildPanelV2(panelRequest, components_ );
+		return buildPanelV2(panelRequest, components_);
 	}
-	
+
 	/**
 	 * build vertically in line components wrapped in JPanel scroll enabled
+	 * 
 	 * @param colWidth
 	 * @param components
 	 * @return
 	 */
-	public static JPanel buildVerticallyInlineComponentScroll(int colWidth, int height, Object...components) {
+	public static JPanel buildVerticallyInlineComponentScroll(int colWidth, int height, Object... components) {
 		for (Object object : components) {
 			try {
 				Component component = (Component) object;
-				if(component.getWidth() > colWidth) {
+				if (component.getWidth() > colWidth) {
 					component.setSize(colWidth, component.getHeight());
 				}
 			} catch (Exception e) {
@@ -516,36 +437,38 @@ public class ComponentBuilder {
 		}
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, colWidth, 5, null, height);
 		Object[] components_ = components;
-		return buildPanelV2(panelRequest, components_ );
+		return buildPanelV2(panelRequest, components_);
 	}
-	
+
 	/**
 	 * common textArea, size: 100 x 100
+	 * 
 	 * @param defaultValue
 	 * @return
 	 */
 	public static JTextArea textarea(Object defaultValue) {
-		if(null == defaultValue) {
+		if (null == defaultValue) {
 			defaultValue = "";
 		}
-		
+
 		JTextArea textArea = new JTextArea(defaultValue.toString());
 		textArea.setSize(100, 50);
 		textArea.setColumns(10);
-		textArea.setRows(3); 
+		textArea.setRows(3);
 		textArea.setBackground(Color.LIGHT_GRAY);
-		return textArea ;
+		return textArea;
 	}
-	
+
 	/**
 	 * label with image from website
+	 * 
 	 * @param url
 	 * @param width
 	 * @param height
 	 * @return
 	 */
 	public static JLabel imageLabel(final String url, final int width, final int height) {
-		
+
 		final JLabel label = new JLabel("No Preview");
 		label.setSize(width, height);
 		label.setBorder(BorderFactory.createLineBorder(Color.green));
@@ -554,33 +477,33 @@ public class ComponentBuilder {
 			@Override
 			public void run() {
 				Icon icon = imageIcon(url, width, height);
-				label.setIcon(icon ); 
+				label.setIcon(icon);
 			}
-			
+
 		});
-		
+
 		return label;
 	}
-	
-	 
-	
+
 	/**
 	 * image icon from website
+	 * 
 	 * @param url
 	 * @param width
 	 * @param height
 	 * @return
 	 */
 	public static ImageIcon imageIcon(String url, int width, int height) {
-		 
+
 		URL location;
 		try {
 			location = new URL(url);
 			ImageIcon imageIcon = new ImageIcon(location);
-			Image image = imageIcon.getImage(); // transform it 
-			Image newimg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
-			imageIcon = new ImageIcon(newimg);  // transform it back
-		 
+			Image image = imageIcon.getImage(); // transform it
+			Image newimg = image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH); // scale it the smooth
+																								// way
+			imageIcon = new ImageIcon(newimg); // transform it back
+
 			return imageIcon;
 		} catch (Exception e) {
 			Log.log("Error creating image icon");
@@ -588,77 +511,80 @@ public class ComponentBuilder {
 		}
 		return new ImageIcon();
 	}
-	
+
 	/**
 	 * build imageicon
+	 * 
 	 * @param fileName
 	 * @param width
 	 * @param height
 	 * @return
 	 */
-	public static ImageIcon imageIconFromFile(String fileName, int width, int height) {  
-		 
+	public static ImageIcon imageIconFromFile(String fileName, int width, int height) {
+
 		try {
 			ImageIcon imageIcon = new ImageIcon(fileName);
-			Image image = imageIcon.getImage(); // transform it 
-			Image newimg = image.getScaledInstance(width, height,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
-			imageIcon = new ImageIcon(newimg);  // transform it back
-		 
+			Image image = imageIcon.getImage(); // transform it
+			Image newimg = image.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH); // scale it the smooth
+																								// way
+			imageIcon = new ImageIcon(newimg); // transform it back
+
 			return imageIcon;
-		}catch (Exception e) { 
+		} catch (Exception e) {
 			return new ImageIcon();
 		}
-		 
+
 	}
-	
-	public static JButton button(Object text) { 
-		return button(text, Color.LIGHT_GRAY) ;
+
+	public static JButton button(Object text) {
+		return button(text, Color.LIGHT_GRAY);
 	}
-	
+
 	public static JButton button(Object text, Color color) {
-		return button(text, 0, 0, color, null) ;
+		return button(text, 0, 0, color, null);
 	}
-	
+
 	public static JButton button(Object text, int width, ActionListener actionListener) {
 		return button(text, width, Color.LIGHT_GRAY, actionListener);
 	}
-	
-	public static JButton button(Object text, int width, Color color,  ActionListener actionListener) {
-		return button(text, width, 0, color,  actionListener);
+
+	public static JButton button(Object text, int width, Color color, ActionListener actionListener) {
+		return button(text, width, 0, color, actionListener);
 	}
-	
-	public static JButton button(Object text, int width, int height, Color color, ActionListener actionListener) { 
-			
-		if(width == 0) {
+
+	public static JButton button(Object text, int width, int height, Color color, ActionListener actionListener) {
+
+		if (width == 0) {
 			width = String.valueOf(text).length() * 10 + 30;
 		}
-		if(height == 0) {
-			height =25;
+		if (height == 0) {
+			height = 25;
 		}
-		
+
 		JButton jButton = new RoundedButton(String.valueOf(text), 10);
-		jButton.setSize(width, height); 
+		jButton.setSize(width, height);
 		jButton.setBackground(color);
 		jButton.setFont(new Font("Arial", Font.PLAIN, 14));
 		jButton.setBorder(new RoundedBorder(10));
-		
-		if(null != actionListener)
+
+		if (null != actionListener)
 			jButton.addActionListener(actionListener);
-		
-		return jButton ;
+
+		return jButton;
 	}
-	
+
 	/**
 	 * build JButton with specified width & height
+	 * 
 	 * @param text
 	 * @param width
 	 * @param height
 	 * @return
 	 */
-	public static JButton button(Object text, int width, int height, Color color) {  
-		return button(text, width, height, color, null) ;
+	public static JButton button(Object text, int width, int height, Color color) {
+		return button(text, width, height, color, null);
 	}
-	
+
 	public static JButton button(Object text, int width, int height) {
 		return button(text, width, height, Color.LIGHT_GRAY);
 	}
@@ -667,7 +593,7 @@ public class ComponentBuilder {
 		JPanel panel = new JPanel();
 		panel.setSize(i, j);
 //		panel.setBackground(Color.green);
-		return panel ;
+		return panel;
 	}
 
 	public static JButton editButton(String text) {

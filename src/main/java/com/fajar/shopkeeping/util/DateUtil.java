@@ -5,7 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
-	public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+	private  static SimpleDateFormat getSimpleDateFormat() {
+		return new SimpleDateFormat();
+	}
 
 	/**
 	 * get current month starting from 1
@@ -46,6 +48,7 @@ public class DateUtil {
 	
 	public static String formatDate(Date date, String pattern) {
 		try {
+			SimpleDateFormat simpleDateFormat = getSimpleDateFormat();
 			simpleDateFormat.applyPattern(pattern);
 			return simpleDateFormat.format(date);
 		}catch (Exception e) { 

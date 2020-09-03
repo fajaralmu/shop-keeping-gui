@@ -7,12 +7,20 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import org.springframework.http.ResponseEntity;
+
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
+import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.constant.ReportType;
+import com.fajar.shopkeeping.model.ReportResponse;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
+import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
 
 public class ManagementHandler extends MainHandler<ManagementPage> {
@@ -35,6 +43,7 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 
 	/**
 	 * populate dynamic comboBox items
+	 * 
 	 * @param entityClass
 	 * @param key
 	 * @param value
@@ -47,113 +56,160 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 		Filter filter = Filter.builder().page(0).limit(10).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityListHashMapResponse(filter, entityClass, callback);
 	}
-	
+
 	public static Map<Object, Object> getMapFromList(String key, Object selectedValue, List<Map<Object, Object>> list) {
 		return MapUtil.getMapFromList(key, selectedValue, list);
 	}
 
 	/**
 	 * when button submit clicked
+	 * 
 	 * @return
 	 */
 	public ActionListener submit() {
-		 
+
 		return new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Log.log("ACTION PERFORMED:",e.getActionCommand());
+				Log.log("ACTION PERFORMED:", e.getActionCommand());
 				submitEntity();
-				
-			} 
-			
+
+			}
+
 		};
-	} 
-	
+	}
+
 	/**
 	 * submit update / add new record
 	 */
 	private void submitEntity() {
 		int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?");
-		
-		if(confirm == 0) { 
-		
+
+		if (confirm == 0) {
+
 			Map<String, Object> managedObject = getPage().getManagedObject();
 //			String idField = getPage().getIdFieldName();
-			
-			Log.log("Submit managedObject: ", managedObject); 
-			 
+
+			Log.log("Submit managedObject: ", managedObject);
+
 			getPage().validateEntity();
-			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(), new MyCallback<Map<Object, Object>>() {
-				
-				@Override
-				public void handle(Map<Object, Object> response) throws Exception { 
-					
-					getPage().callbackUpdateEntity(response);
-				}
-			});
-			 
-		}  
-		else {
-			Log.log("Operation aborted"); 
+			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(),
+					new MyCallback<Map<Object, Object>>() {
+
+						@Override
+						public void handle(Map<Object, Object> response) throws ApplicationException {
+
+							getPage().callbackUpdateEntity(response);
+						}
+					});
+
+		} else {
+			Log.log("Operation aborted");
 		}
 	}
-	
+
 	/**
 	 * when filter entity button pressed
+	 * 
 	 * @return
 	 */
 	public ActionListener filterEntity() {
-		
+
 		return new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getEntities();				
+				getEntities();
 			}
 		};
 	}
-	
+
 	/**
 	 * get entities for populating data table
+	 * 
 	 * @param fieldFilter
 	 * @param callback
 	 */
-	public void getEntities( ) {	
-		
-		Log.log("Page: ",getPage().getSelectedPage(), "Limit: ", getPage().getSelectedLimit());
-		
+	public void getEntities() {
+
+		Log.log("Page: ", getPage().getSelectedPage(), "Limit: ", getPage().getSelectedLimit());
+
 		Filter filter = new Filter();
 		filter.setPage(getPage().getSelectedPage());
 		filter.setLimit(getPage().getSelectedLimit());
 		filter.setFieldsFilter(getPage().getFieldsFilter());
 		filter.setOrderBy(getPage().getOrderBy());
 		filter.setOrderType(getPage().getOrderType());
-		
-		entityService.getEntityList(
-				filter,
-				getPage().getEntityClass(),
-				new WebResponseCallback() {
-					
-					@Override
-					public void handle(WebResponse response) throws Exception { 
-						
-						getPage().callbackGetFilteredEntities(response);
-					}
-				});
+
+		entityService.getEntityList(filter, getPage().getEntityClass(), new WebResponseCallback() {
+
+			@Override
+			public void handle(WebResponse response) throws ApplicationException {
+
+				getPage().callbackGetFilteredEntities(response);
+			}
+		});
 	}
-	
+
 	/**
 	 * get entity by ID
 	 */
 	public void getSingleEntity(String idFieldName, Object idValue) {
-		
-		entityService.getSingleEntityByID(
-				idFieldName, 
-				idValue, 
-				getPage().getEntityClass(), 
+
+		entityService.getSingleEntityByID(idFieldName, idValue, getPage().getEntityClass(),
 				getPage().callbackGetSingleEntity());
 	}
 
+	public ActionListener printExcel() {
+
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+
+				WebRequest webRequest = getExcelReportRequest();
+				MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
+
+					@Override
+					public void handle(ReportResponse reportResponse) throws ApplicationException {
+						Log.log("Response daily excel: ", reportResponse.getReportType());
+						ResponseEntity<byte[]> response = reportResponse.getFileResponse();
+						Loadings.end();
+
+						String fileName = getFileName(response);
+						try {
+							saveFile(response.getBody(), fileName);
+						} catch (Exception e) {
+							throw new ApplicationException(e);
+						}
+					}
+				};
+				reportService.downloadReportExcel(webRequest, myCallback, ReportType.ENTITY);
+			}
+
+		};
+	}
+
+	private WebRequest getExcelReportRequest() {
+		Filter filter = new Filter();
+		filter.setPage(getPage().getSelectedPage());
+
+		String limit = Dialogs.input("please input limit");
+		try {
+			filter.setLimit(Integer.valueOf(limit));
+		} catch (Exception e) {
+			e.printStackTrace();
+			filter.setLimit(5);
+		}
+		filter.setFieldsFilter(getPage().getFieldsFilter());
+		filter.setOrderBy(getPage().getOrderBy());
+		filter.setOrderType(getPage().getOrderType());
+		WebRequest webRequest = new WebRequest();
+		webRequest.setFilter(filter);
+		webRequest.setEntity(getPage().getEntityClass().getSimpleName().toLowerCase());
+		return webRequest;
+	}
 
 }

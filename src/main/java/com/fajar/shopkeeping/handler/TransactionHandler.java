@@ -3,6 +3,7 @@ package com.fajar.shopkeeping.handler;
 import java.util.List;
 import java.util.Map;
 
+import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.BaseTransactionPage;
 import com.fajar.shopkeeping.pages.SellingTransactionPage;
@@ -46,9 +47,12 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(WebResponse response) throws Exception {
-				
-				getSupplyPage().callbackTransactionSupply(response);
+			public void handle(WebResponse response) throws ApplicationException {
+				try {
+					getSupplyPage().callbackTransactionSupply(response);
+				}catch (Exception e) { 
+					throw new ApplicationException(e);
+				}
 			}
 		};
 		transactionService.transactionSupply(productFlows, supplier, myCallback );
@@ -67,9 +71,12 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		MyCallback<WebResponse> callback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(WebResponse response) throws Exception {
-				
-				getSellingPage().callbackGetProductDetail(response);
+			public void handle(WebResponse response) throws ApplicationException {
+				try {
+					getSellingPage().callbackGetProductDetail(response);
+				}catch (Exception e) { 
+					throw new ApplicationException(e);
+				}
 			}
 		};
 		transactionService.getProductDetail(productCode, callback );
@@ -79,9 +86,13 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
 			
 			@Override
-			public void handle(WebResponse response) throws Exception {
-				
-				getSellingPage().callbackTransactionSell(response);
+			public void handle(WebResponse response) throws ApplicationException {
+				try {
+					getSellingPage().callbackTransactionSell(response);
+				}catch (Exception e) {
+					
+					throw new ApplicationException(e);
+				}
 			}
 		};
 		transactionService.transactionSell(productFlows, customer, myCallback);

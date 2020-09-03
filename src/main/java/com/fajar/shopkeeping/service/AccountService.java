@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.service;
 
-import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_ENTITY_GET;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGIN;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_LOGOUT;
 import static com.fajar.shopkeeping.constant.WebServiceConstants.URL_REQIEST_APP;
@@ -8,9 +7,6 @@ import static com.fajar.shopkeeping.util.ObjectUtil.getEmptyHashMapClass;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.activity.InvalidActivityException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +18,6 @@ import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.WebServiceConstants;
 import com.fajar.shopkeeping.util.Log;
-import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.WebRequest;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -90,7 +85,7 @@ public class AccountService extends BaseService{
 					  
 					ResponseEntity<HashMap<Object, Object>> response = callLogin(username, password);
 
-					if (response.getBody().get("code").equals("00") == false) {
+					if (response == null || response.getBody() ==null || response.getBody().get("code").equals("00") == false) {
 						throw new Exception("Invalid Response");
 					}
  
@@ -157,7 +152,7 @@ public class AccountService extends BaseService{
 					WebResponse response  = callLogout();
 
 					if (response. getCode().equals("00") == false) {
-						throw new InvalidActivityException("Invalid Response: "+response. getCode());
+						throw new RuntimeException("Invalid Response: "+response. getCode());
 					}
   
 					AppSession.removeLoginKey(); 
@@ -198,7 +193,7 @@ public class AccountService extends BaseService{
 			return response.getBody();
 		}catch (Exception e) { 
 			e.printStackTrace();
-			return null;
+			return WebResponse.failed(e.getMessage());
 		}
 	}
 	

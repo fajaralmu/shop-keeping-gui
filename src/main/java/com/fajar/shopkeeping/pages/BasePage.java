@@ -55,7 +55,7 @@ public abstract class BasePage {
 
 	public static final int BASE_HEIGHT = 700;
 	public static final int BASE_WIDTH = 800;
-	public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public final SimpleDateFormat dateFormat = getDateFormat();
 
 	public static final JLabel BLANK_LABEL = label("");
 
@@ -89,6 +89,11 @@ public abstract class BasePage {
 		initMainComponent();
 		preInitComponent();
 
+	}
+
+	private static SimpleDateFormat getDateFormat() {
+		 
+		return new SimpleDateFormat("yyyy-MM-dd");
 	}
 
 	protected void preInitComponent() {

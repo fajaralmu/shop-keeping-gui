@@ -10,8 +10,8 @@ public class PanelRequest {
 	public final int width;
 	public final int height;
 	public final int margin;
-	public Color color;
-	public boolean autoScroll;
+	private Color color;
+	private boolean autoScroll;
 
 	public final int panelX;
 	public final int panelY;
