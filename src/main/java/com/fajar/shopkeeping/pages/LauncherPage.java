@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import javax.swing.JButton;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.handler.LauncherHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 

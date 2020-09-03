@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+import com.fajar.shopkeeping.component.builder.PanelRow;
 import com.fajar.shopkeeping.util.Log;
 
 import lombok.AccessLevel;

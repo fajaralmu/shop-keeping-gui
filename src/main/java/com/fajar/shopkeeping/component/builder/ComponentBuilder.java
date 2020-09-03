@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.component;
+package com.fajar.shopkeeping.component.builder;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -21,6 +21,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import com.fajar.shopkeeping.component.MyCustomPanel;
+import com.fajar.shopkeeping.component.MyInfoLabel;
+import com.fajar.shopkeeping.component.RoundedBorder;
+import com.fajar.shopkeeping.component.RoundedButton;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;

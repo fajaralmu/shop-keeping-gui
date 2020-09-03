@@ -1,6 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;

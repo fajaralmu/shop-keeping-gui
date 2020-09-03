@@ -1,7 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.fillArray;
-import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.fillArray;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -31,11 +31,11 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
-import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.BlankActionListener;
 import com.fajar.shopkeeping.handler.MainHandler;

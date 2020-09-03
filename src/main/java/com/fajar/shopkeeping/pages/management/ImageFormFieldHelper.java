@@ -1,9 +1,9 @@
-package com.fajar.shopkeeping.component.formfields;
+package com.fajar.shopkeeping.pages.management;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.buildInlineComponent;
-import static com.fajar.shopkeeping.component.ComponentBuilder.buildVerticallyInlineComponent;
-import static com.fajar.shopkeeping.component.ComponentBuilder.button;
-import static com.fajar.shopkeeping.component.ComponentModifier.updateScrollPane;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildVerticallyInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
+import static com.fajar.shopkeeping.component.builder.ComponentModifier.updateScrollPane;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
-import com.fajar.shopkeeping.component.ComponentModifier;
 import com.fajar.shopkeeping.component.MyInfoLabel;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.entity.setting.EntityElement;

@@ -5,6 +5,7 @@ import java.awt.Color;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 
 public class Loadings {

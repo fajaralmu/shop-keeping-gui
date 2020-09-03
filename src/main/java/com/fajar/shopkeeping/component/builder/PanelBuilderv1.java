@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.component;
+package com.fajar.shopkeeping.component.builder;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -6,6 +6,7 @@ import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.fajar.shopkeeping.component.BlankComponent;
 import com.fajar.shopkeeping.model.PanelRequest;
 
 public class PanelBuilderv1 {

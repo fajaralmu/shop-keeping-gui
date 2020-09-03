@@ -1,6 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 
 import java.awt.Color;
@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
-import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.handler.PeriodicReportHandler;
 import com.fajar.shopkeeping.model.PanelRequest;

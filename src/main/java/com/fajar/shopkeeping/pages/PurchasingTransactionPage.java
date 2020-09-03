@@ -1,6 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
@@ -18,8 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;

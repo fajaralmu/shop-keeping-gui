@@ -1,8 +1,8 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.ComponentBuilder.buildInlineComponent;
-import static com.fajar.shopkeeping.component.ComponentBuilder.buildVerticallyInlineComponent;
-import static com.fajar.shopkeeping.component.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildVerticallyInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
@@ -37,10 +37,8 @@ import org.springframework.util.StringUtils;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.ComponentBuilder;
 import com.fajar.shopkeeping.component.Dialogs;
-import com.fajar.shopkeeping.component.formfields.CommonFormFieldHelper;
-import com.fajar.shopkeeping.component.formfields.ImageFormFieldHelper;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -48,6 +46,8 @@ import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
+import com.fajar.shopkeeping.pages.management.CommonFormFieldHelper;
+import com.fajar.shopkeeping.pages.management.ImageFormFieldHelper;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ObjectUtil;

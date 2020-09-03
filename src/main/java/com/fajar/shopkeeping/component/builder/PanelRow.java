@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.component;
+package com.fajar.shopkeeping.component.builder;
 
 import java.awt.Component;
 import java.util.ArrayList;

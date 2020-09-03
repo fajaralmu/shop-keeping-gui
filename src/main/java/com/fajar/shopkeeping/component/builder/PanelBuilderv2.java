@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.component;
+package com.fajar.shopkeeping.component.builder;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
+import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.Log;

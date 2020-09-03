@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.component.formfields;
+package com.fajar.shopkeeping.pages.management;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -32,7 +32,7 @@ import javax.swing.text.JTextComponent;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.component.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.pages.BasePage;
