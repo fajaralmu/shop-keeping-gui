@@ -69,18 +69,16 @@ public class PanelBuilderv2 {
 	}
 
 	public MyCustomPanel buildPanel() {
+		currentColumn = 0;
+		for (int i = 0; i < Size; i++, currentColumn++) {
 
-		for (int i = 0; i < Size; i++) {
-
-			Component currentComponent;
-
+			Component currentComponent; 
 			try {
 				currentComponent = (Component) components[i] == null ? (Component) components[i] : new JLabel();
 			} catch (Exception e) {
 				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
 			}
-
-			currentColumn++; 
+ 
 			tempComponents.add(currentComponent);
 
 			checkIfSwitchRow();

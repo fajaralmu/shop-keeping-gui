@@ -53,107 +53,11 @@ public class ComponentBuilder {
 	 */
 	public static JPanel buildPanel(PanelRequest panelRequest, Component... components) {
 
-		int column = panelRequest.column;
-		int width = panelRequest.width;
-		int height = panelRequest.height;
-		int margin = panelRequest.margin;
-		Color color = panelRequest.getColor();
-
-		int panelX = panelRequest.panelX;
-		int panelY = panelRequest.panelY;
-		int panelW = panelRequest.panelW;
-		int panelH = panelRequest.panelH;
-		boolean autoScroll = panelRequest.isAutoScroll();
-
-		JPanel panel = new JPanel();
-		int currentColumn = 0;
-		int currentRow = 0;
-		int size = components.length;
-
-		for (int i = 0; i < size; i++) {
-
-			Component component = components[i];
-
-			if (null == component) {
-				component = new JLabel();
-			}
-			
-			component.setLocation(currentColumn * margin + (width * currentColumn),
-					currentRow * margin + height * currentRow);
-			component.setSize(width, height);
-
-			if (component.getClass().equals(BlankComponent.class)) {
-				component = processBlankComponent(component, panel, components, i, column);
-			}
-
-			currentColumn++;
-
-			if (currentColumn == column) {
-				currentColumn = 0;
-				currentRow++;
-
-			}
-			// printComponentLayout(C);
-			panel.add(component);
-		}
-
-		final int X = panelX == 0 ? margin : panelX;
-		final int Y = panelY == 0 ? margin : panelY;
-		final int finalW = panelW != 0 ? panelW : column * width + column * margin;
-		final int finalH = panelH != 0 ? panelH : (currentRow + 1) * height + (currentRow + 1) * margin;
-
-		panel.setBackground(color);
-		panel.setBounds(X, Y, finalW, finalH);
-		panel.setLayout(null);
-		panel.setBounds(X, Y, finalW, finalH);
-		panel.setSize(finalW, finalH);
-
-//		if (autoScroll) {
-			panel.setAutoscrolls(false);
-			panel.setAutoscrolls(autoScroll);
-//		}
-		System.out.println("Generated Panel x:" + X + ", y:" + Y + ", width:" + finalW + ", height:" + finalH);
-
-		return panel;
+		PanelBuilderv1 panelBuilderv1 = new PanelBuilderv1(panelRequest, components);
+		return panelBuilderv1.buildPanel();
 	}
 
-	private static Component processBlankComponent(Component component, JPanel panel, Component[] components, int i,
-			int column) {
-		BlankComponent blankComponent = (BlankComponent) component;
-
-		switch (blankComponent.reserved) {
-
-		case BEFORE_HOR:
-
-			Component beforeContHor = components[i - 1];
-
-			beforeContHor.setBounds(beforeContHor.getX(), beforeContHor.getY(),
-					beforeContHor.getWidth() + blankComponent.getWidth(), beforeContHor.getHeight());
-
-			panel.remove(beforeContHor);
-			components[i] = beforeContHor;
-			component = beforeContHor;
-			break;
-
-		case BEFORE_VER:
-			Component beforeContVer = components[i - column];
-
-			beforeContVer.setBounds(beforeContVer.getX(), beforeContVer.getY(), beforeContVer.getWidth(),
-					beforeContVer.getHeight() + blankComponent.getHeight());
-
-			panel.remove(beforeContVer);
-			components[i] = beforeContVer;
-			component = beforeContVer;
-			break;
-
-		case AFTER_HOR:
-		case AFTER_VER:
-		default:
-			break;
-		}
-		return component;
-	}
-
+	
 	/**
 	 * build grid panel v2
 	 * 
