@@ -603,38 +603,34 @@ public class CommonFormFieldHelper {
 	public ActionListener comboBoxOnSelectListener(final String optionItemName, final Class<?> fieldType,
 			final String elementId) {
 
-		return new ActionListener() {
+		return (ActionEvent e)->{
+			final JComboBox inputComponent = (JComboBox) e.getSource();
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				final JComboBox inputComponent = (JComboBox) e.getSource();
+			Object selectedValue = inputComponent.getSelectedItem();
+			List<Map<Object, Object>> rawList = page.getComboBoxValues(elementId);
+			Object selectedObjectFromList = null;
 
-				Object selectedValue = inputComponent.getSelectedItem();
-				List<Map<Object, Object>> rawList = page.getComboBoxValues(elementId);
-				Object selectedObjectFromList = null;
+			boolean emptyOptionItemName = false;
+			String mapKey = optionItemName;
 
-				boolean emptyOptionItemName = false;
-				String mapKey = optionItemName;
-
-				if ("".equals(optionItemName) || null == optionItemName) {
-					mapKey = "key";
-					emptyOptionItemName = true;
-				}
-				final Object rawObjectFromList = ManagementHandler.getMapFromList(mapKey, selectedValue, rawList);
-
-				if (null == rawObjectFromList) {
-					return;
-				}
-
-				if (emptyOptionItemName) {
-					selectedObjectFromList = ((Map) rawObjectFromList).get("value");
-				}else {
-					selectedObjectFromList = rawObjectFromList;
-				}
-
-				page.updateManagedObject(elementId, selectedObjectFromList);
-				Log.log("managedObject: ", page.getManagedObject());
+			if ("".equals(optionItemName) || null == optionItemName) {
+				mapKey = "key";
+				emptyOptionItemName = true;
 			}
+			final Object rawObjectFromList = ManagementHandler.getMapFromList(mapKey, selectedValue, rawList);
+
+			if (null == rawObjectFromList) {
+				return;
+			}
+
+			if (emptyOptionItemName) {
+				selectedObjectFromList = ((Map) rawObjectFromList).get("value");
+			}else {
+				selectedObjectFromList = rawObjectFromList;
+			}
+
+			page.updateManagedObject(elementId, selectedObjectFromList);
+			Log.log("managedObject: ", page.getManagedObject()); 
 
 		};
 	}
@@ -648,13 +644,8 @@ public class CommonFormFieldHelper {
 	 */
 	public ActionListener removeImageSelectionListener(final EntityElement element, final int index,
 			final JScrollPane imageSelectionScrollableWrapper) {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				imageFormFieldHelper().removeImageSelectionItem(element, index, imageSelectionScrollableWrapper);
-
-			}
+		return  (ActionEvent e)->{
+			imageFormFieldHelper().removeImageSelectionItem(element, index, imageSelectionScrollableWrapper); 
 		};
 	}
 
@@ -666,18 +657,12 @@ public class CommonFormFieldHelper {
 	 * @return
 	 */
 	public ActionListener buttonClearMultipleImageClick(final String elementId, final int index) {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					page.setIconOnMultipleImagePreviewLabel(elementId, index, new ImageIcon());
+		return (ActionEvent e)->{
+			try {
+				page.setIconOnMultipleImagePreviewLabel(elementId, index, new ImageIcon());
 //					multipleImagePreviews.get(elementId).get(index).setIcon(new ImageIcon());
 //					updateManagedObject(elementId, null);
-				} catch (Exception e2) {
-				}
-
-			}
+			} catch (Exception e2) { } 
 		};
 	}
 
@@ -692,10 +677,7 @@ public class CommonFormFieldHelper {
 	public ActionListener onChooseMultipleImageFileClick(final JFileChooser fileChooser, final String elementId,
 			final int index) {
 
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		return (ActionEvent e)->{
 				int returnVal = fileChooser.showOpenDialog(page.getParentPanel());
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -750,8 +732,7 @@ public class CommonFormFieldHelper {
 					});
 				} else {
 					System.out.println("Open command cancelled by user.");
-				}
-			}
+				} 
 
 		};
 	}
@@ -766,13 +747,9 @@ public class CommonFormFieldHelper {
 	public ActionListener buttonAddImageFieldListener(final EntityElement element,
 			final JPanel imageSelectionScrollableWrapper) {
 
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JScrollPane scrollableWrapper = (JScrollPane) imageSelectionScrollableWrapper.getComponent(0);
-				imageFormFieldHelper().addNewImageSelectionField(element, scrollableWrapper);
-			}
+		return (ActionEvent e)->{
+			JScrollPane scrollableWrapper = (JScrollPane) imageSelectionScrollableWrapper.getComponent(0);
+			imageFormFieldHelper().addNewImageSelectionField(element, scrollableWrapper); 
 		};
 	}
 
