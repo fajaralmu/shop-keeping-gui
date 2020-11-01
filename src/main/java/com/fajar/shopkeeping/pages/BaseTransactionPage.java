@@ -211,10 +211,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected ActionListener editProductFlow(final ProductFlow productFlow) { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
+		return (ActionEvent e)->{ 
 				final ProductFlow selectedProductFlow = getProductFlow(productFlow.getProduct().getId());
 				if(selectedProductFlow == null) {
 					Dialogs.error("selected product does not exist");
@@ -223,9 +220,7 @@ public abstract class BaseTransactionPage extends BasePage{
 				ThreadUtil.run(()->{
 					populateForm(selectedProductFlow, null);
 					setEditMode(true); 
-				});
-				
-			}
+				}); 
 		};
 	} 
 
@@ -329,40 +324,38 @@ public abstract class BaseTransactionPage extends BasePage{
 			entityClass = Customer.class;
 		}
 		
-		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText, new WebResponseCallback() {
+		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText,  
+		(WebResponse response) -> { 
 			
-			@Override
-			public void handle(WebResponse response) throws ApplicationException { 
+			Log.log("entities: ", response.getEntities()); 
+			
+			if(dropDownType.equals(PRODUCT)) {	
 				
-				Log.log("entities: ", response.getEntities()); 
-				
-				if(dropDownType.equals(PRODUCT)) {	
-					
-					productDropdownValues.clear();
-					for(BaseEntity product:response.getEntities()) {
-						productDropdownValues.add((Product) product);
-					}
-					
-					populateDropdown(componentText, productDropdownValues, "name", dynamicComboBox);
-					
-				}else if(dropDownType.equals(SUPPLIER)) {
-					
-					supplierDropdownValues.clear();
-					for(BaseEntity product:response.getEntities()) {
-						supplierDropdownValues.add((Supplier) product);
-					}
-					
-					populateDropdown(componentText, supplierDropdownValues, "name", dynamicComboBox);
-				}else if(dropDownType.equals(CUSTOMER)) {
-					
-					customerDopdownValues.clear();
-					for(BaseEntity customer:response.getEntities()) {
-						customerDopdownValues.add((Customer) customer);
-					}
-					
-					populateDropdown(componentText, customerDopdownValues, "name", dynamicComboBox);
+				productDropdownValues.clear();
+				for(BaseEntity product:response.getEntities()) {
+					productDropdownValues.add((Product) product);
 				}
-			} 
+				
+				populateDropdown(componentText, productDropdownValues, "name", dynamicComboBox);
+				
+			}else if(dropDownType.equals(SUPPLIER)) {
+				
+				supplierDropdownValues.clear();
+				for(BaseEntity product:response.getEntities()) {
+					supplierDropdownValues.add((Supplier) product);
+				}
+				
+				populateDropdown(componentText, supplierDropdownValues, "name", dynamicComboBox);
+			}else if(dropDownType.equals(CUSTOMER)) {
+				
+				customerDopdownValues.clear();
+				for(BaseEntity customer:response.getEntities()) {
+					customerDopdownValues.add((Customer) customer);
+				}
+				
+				populateDropdown(componentText, customerDopdownValues, "name", dynamicComboBox);
+			}
+			
 		});
 		
 	}

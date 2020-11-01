@@ -146,11 +146,9 @@ public abstract class BasePage {
 	}
 
 	private KeyListener frameKeyListener() {
-		return new KeyListener() {
-
+		return new KeyListener() { 
 			@Override
-			public void keyTyped(KeyEvent e) { }
-
+			public void keyTyped(KeyEvent e) { } 
 			@Override
 			public void keyReleased(KeyEvent e) { }
 
@@ -346,12 +344,9 @@ public abstract class BasePage {
 			return new KeyListener() {
 
 				@Override
-				public void keyTyped(KeyEvent e) {
-				}
-
+				public void keyTyped(KeyEvent e) { } 
 				@Override
-				public void keyPressed(KeyEvent e) {
-				}
+				public void keyPressed(KeyEvent e) { }
 
 				@Override
 				public void keyReleased(KeyEvent e) {
@@ -406,20 +401,15 @@ public abstract class BasePage {
 			final Field field = this.getClass().getDeclaredField(fieldName);
 			final Object origin = this;
 			field.setAccessible(true);
-			return new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					Object value = comboBox.getSelectedItem();
-					try {
-						field.set(origin, value);
-						log(field.getName(), ":", value);
-					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						log("Error setting value for field: ", field.getName(), " the value :", value);
-						e1.printStackTrace();
-					}
-
-				}
+			return  (ActionEvent e)->{
+				Object value = comboBox.getSelectedItem();
+				try {
+					field.set(origin, value);
+					log(field.getName(), ":", value);
+				} catch (IllegalArgumentException | IllegalAccessException e1) {
+					log("Error setting value for field: ", field.getName(), " the value :", value);
+					e1.printStackTrace();
+				} 
 			};
 		} catch (NoSuchFieldException | SecurityException e1) {
 			return new BlankActionListener();
@@ -439,27 +429,18 @@ public abstract class BasePage {
 			final Field field = this.getClass().getDeclaredField(fieldName);
 			final Object origin = this;
 			field.setAccessible(true);
-			return new PropertyChangeListener() {
-
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					Date value = dateChooser.getDate();
-					try {
-						field.set(origin, value);
-						log(field.getName(), ":", value);
-					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						log("Error setting value for field: ", field.getName(), " the value :", value);
-						e1.printStackTrace();
-					}
-
+			return  (PropertyChangeEvent evt)->{
+				Date value = dateChooser.getDate();
+				try {
+					field.set(origin, value);
+					log(field.getName(), ":", value);
+				} catch (IllegalArgumentException | IllegalAccessException e1) {
+					log("Error setting value for field: ", field.getName(), " the value :", value);
+					e1.printStackTrace();
 				}
 			};
 		} catch (NoSuchFieldException | SecurityException e1) {
-			return new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-				}
-			};
+			return  (PropertyChangeEvent evt)->{ };
 		}
 
 	}
@@ -515,9 +496,5 @@ public abstract class BasePage {
 
 		return components;
 	}
-
-	
-
-	
 	
 }
