@@ -1,10 +1,11 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
-import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -21,7 +22,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;

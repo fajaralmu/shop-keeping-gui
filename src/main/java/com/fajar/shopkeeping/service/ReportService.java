@@ -48,7 +48,7 @@ public class ReportService extends BaseService{
 	 * @param callback parameter #1  : JSON response (WebResponse.class)
 	 */
 	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading( ()->{ 
+		ThreadUtil.runWithLoading(()->{ 
 			try { 
 				WebResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
 

@@ -59,10 +59,7 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 
 		return  (ActionEvent e)-> {
 
-			reportService.getDailyCashflowDetail(day, month, year,  
-					(WebResponse response) ->{ 
-					handleResponseDailyCashflow(response);
-				}); 
+			reportService.getDailyCashflowDetail(day, month, year,  this::handleResponseDailyCashflow); 
 		};
 	}
 

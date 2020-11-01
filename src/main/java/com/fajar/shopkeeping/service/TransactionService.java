@@ -48,7 +48,7 @@ public class TransactionService extends BaseService{
 	  * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	  */
 	public void transactionSupply(final List<ProductFlow> productFlows, final Supplier supplier, final MyCallback<WebResponse> myCallback) {
-		ThreadUtil.runWithLoading( ()-> {
+		ThreadUtil.runWithLoading(()-> {
 			try {
 				WebResponse response = callTransactionSupply(productFlows, supplier);
 				
@@ -74,7 +74,7 @@ public class TransactionService extends BaseService{
 	 * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void transactionSell(final List<ProductFlow> productFlows, final Customer customer, final MyCallback<WebResponse> myCallback) {
-		ThreadUtil.runWithLoading( ()-> {
+		ThreadUtil.runWithLoading(()-> {
 			try {
 				WebResponse response = callTransactionSell(productFlows, customer);
 				
@@ -98,7 +98,7 @@ public class TransactionService extends BaseService{
 	 */
 	public void getProductDetail(final String productCode, final MyCallback<WebResponse> callback) {
 		
-		ThreadUtil.runWithLoading( ()->{
+		ThreadUtil.runWithLoading(()->{
 			try {
 				WebResponse response = getProductDetail(productCode); 
 				callback.handle(response);

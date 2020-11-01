@@ -1,8 +1,11 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
-import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -15,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
-import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
@@ -31,7 +33,6 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
-import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 public class PeriodicReportPage extends BasePage {
 	
 	private static final int COLUMN_WIDTH = 160; 
@@ -159,7 +160,7 @@ public class PeriodicReportPage extends BasePage {
 	
 	private void callbackPeriodicCashflow(final WebResponse response) {
 		
-		ThreadUtil.run( ()-> {
+		ThreadUtil.run(()-> {
 			if(null == panelCashflowListTable) {
 				log("panelCashflowListTable IS NULL");
 				return;

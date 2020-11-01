@@ -78,13 +78,9 @@ public class DailyCashflowPage extends BasePage {
 	}
 
 	public void update() {
-		ThreadUtil.run(new Runnable() {
-				
-				@Override
-				public void run() {
-					setDailyCashflowPanel(buildDetailTable()); 
-					preInitComponent();
-				}
+		ThreadUtil.run(() ->{
+				setDailyCashflowPanel(buildDetailTable()); 
+				preInitComponent(); 
 		});
 	}
 

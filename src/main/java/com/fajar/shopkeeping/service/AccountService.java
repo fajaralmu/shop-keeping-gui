@@ -74,13 +74,13 @@ public class AccountService extends BaseService{
 	public void doLogin(final String username, final String password, final MyCallback<Boolean> callback) {
 
 		ThreadUtil.runWithLoading( ()->{ 
-				boolean success = false; 
-				try {
-					  
-					ResponseEntity<HashMap<Object, Object>> response = callLogin(username, password);
+			boolean success = false; 
+			try {
+				  
+				ResponseEntity<HashMap<Object, Object>> response = callLogin(username, password);
 
-					if (response == null || response.getBody() ==null || response.getBody().get("code").equals("00") == false) {
-						throw new Exception("Invalid Response");
+				if (response == null || response.getBody() ==null || response.getBody().get("code").equals("00") == false) {
+					throw new Exception("Invalid Response");
 					}
  
 					HttpHeaders responseHeaders = response.getHeaders();
@@ -91,23 +91,22 @@ public class AccountService extends BaseService{
 
 					Dialogs.info("Login Success!");
 
-					success = true;
+				success = true;
+			} catch (Exception e) {
+
+				e.printStackTrace();
+				Dialogs.error("Login Error: " + e.getMessage());
+			} finally {
+
+				Log.log("Login success: " + success);
+
+				try {
+					callback.handle(success);
 				} catch (Exception e) {
-
+					Log.log("Error calling back login");
 					e.printStackTrace();
-					Dialogs.error("Login Error: " + e.getMessage());
-				} finally {
-
-					Log.log("Login success: " + success);
-
-					try {
-						callback.handle(success);
-					} catch (Exception e) {
-						Log.log("Error calling back login");
-						e.printStackTrace();
-					}
-				} 
-
+				}
+			}  
 		});
 
 	}

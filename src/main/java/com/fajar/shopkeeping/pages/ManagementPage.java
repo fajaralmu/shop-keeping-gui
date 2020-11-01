@@ -823,11 +823,10 @@ public class ManagementPage extends BasePage {
 	 * callback when edit button pressed
 	 * @return
 	 */
-	public MyCallback<Map<Object, Object>> callbackGetSingleEntity() { 
-		return (Map<Object, Object> entity)-> { 
-			 helper.populateFormInputs(toStringObjectMap(entity));
-			 setEditMode(true);  
-		};
+	public void callbackGetSingleEntity(Map<Object, Object> entity) {  
+		 helper.populateFormInputs(toStringObjectMap(entity));
+		 setEditMode(true);  
+		 
 	}
 	
 	private static Map<String, Object> toStringObjectMap(Map<?, ?> map) {

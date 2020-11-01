@@ -65,9 +65,7 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 	 * @return
 	 */
 	public ActionListener submit() { 
-		return (ActionEvent e)-> { 
-			submitEntity(); 
-		};
+		return (ActionEvent e)-> {  submitEntity();  };
 	}
 
 	/**
@@ -129,7 +127,7 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 	public void getSingleEntity(String idFieldName, Object idValue) {
 
 		entityService.getSingleEntityByID(idFieldName, idValue, getPage().getEntityClass(),
-				getPage().callbackGetSingleEntity());
+				getPage()::callbackGetSingleEntity);
 	}
 
 	public ActionListener printExcel() {
