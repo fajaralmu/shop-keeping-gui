@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
@@ -12,7 +13,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -42,13 +42,10 @@ import com.fajar.shoppingmart.entity.Product;
 import com.fajar.shoppingmart.entity.ProductFlow;
 import com.fajar.shoppingmart.entity.Supplier;
 import com.fajar.shoppingmart.util.EntityUtil;
-import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-
-import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
 @Data
 public abstract class BaseTransactionPage extends BasePage{ 
 	

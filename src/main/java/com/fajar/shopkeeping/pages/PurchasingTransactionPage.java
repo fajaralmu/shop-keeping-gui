@@ -280,17 +280,12 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	
 	@Override
 	protected ActionListener submitTransactionListener() { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
-				if(confirm != 0) { 
-					return;
-				}
-				getHandler().transactionSupply(productFlows, selectedSupplier);
-				
+		return  (ActionEvent e)-> {
+			int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
+			if(confirm != 0) { 
+				return;
 			}
+			getHandler().transactionSupply(productFlows, selectedSupplier); 
 		};
 	}
  

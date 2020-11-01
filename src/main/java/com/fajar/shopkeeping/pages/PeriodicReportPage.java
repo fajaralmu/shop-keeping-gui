@@ -140,60 +140,41 @@ public class PeriodicReportPage extends BasePage {
 	}
 
 	private ActionListener buttonSearchListener() { 
-		return new ActionListener() {
+		return  (ActionEvent e)-> {
+			log("Button Click");
 			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				log("Button Click");
-				
-				 Filter filter = new Filter();
-				 filter.setMonth(selectedMonthFrom);
-				 filter.setYear(selectedYearFrom);
-				 filter.setMonthTo(selectedMonthTo);
-				 filter.setYearTo(selectedYearTo);
-				 
-				 getHandler().getPeriodicCashflow(filter, callbackGetPeriodicCashflow());
-				
-			} 
+			Filter filter = new Filter();
+			filter.setMonth(selectedMonthFrom);
+			filter.setYear(selectedYearFrom);
+			filter.setMonthTo(selectedMonthTo);
+			filter.setYearTo(selectedYearTo);
+		 
+			getHandler().getPeriodicCashflow(filter, callbackGetPeriodicCashflow()); 
 		};
 	}
 
 	private WebResponseCallback callbackGetPeriodicCashflow() {
-		 
-		return new WebResponseCallback() {
-			
-			@Override
-			public void handle(WebResponse response) throws ApplicationException { 
-				
-				 callbackPeriodicCashflow(response);
-			} 
-			
-		};
+		return this::callbackPeriodicCashflow; 
 	}
 	
 	private void callbackPeriodicCashflow(final WebResponse response) {
 		
-		ThreadUtil.run(new Runnable() {
-			
-			@Override
-			public void run() {
-				if(null == panelCashflowListTable) {
-					log("panelCashflowListTable IS NULL");
-					return;
-				}
-				
-				periodicCashflowResponse = response;
-				
-				try {
-					panelCashflowListTable = buildPeriodicCashflowTable();
-				}catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				preInitComponent();
-				initEvent();
-				
+		ThreadUtil.run( ()-> {
+			if(null == panelCashflowListTable) {
+				log("panelCashflowListTable IS NULL");
+				return;
 			}
+			
+			periodicCashflowResponse = response;
+			
+			try {
+				panelCashflowListTable = buildPeriodicCashflowTable();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			preInitComponent();
+			initEvent(); 
 		});
 		
 	}
@@ -256,12 +237,8 @@ public class PeriodicReportPage extends BasePage {
 	}
 
 	private ActionListener generateDailyReportListener(final int month, final int year) {  
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				getHandler().generateExcelReportDaily(month, year);
-			}
+		return  (ActionEvent e)->{ 
+			getHandler().generateExcelReportDaily(month, year); 
 		};
 	}
 

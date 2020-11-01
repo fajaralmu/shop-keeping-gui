@@ -210,16 +210,8 @@ public class DashboardPage extends BasePage {
  
 	}
 	
-	private WebResponseCallback callbackUpdateMonthlyCashflow() {
-		 
-		return new WebResponseCallback() {
-
-			@Override
-			public void handle(WebResponse jsonResponse) throws ApplicationException { 
-				
-				callbackMonthlyCashflow(jsonResponse);
-			}
-		};
+	private WebResponseCallback callbackUpdateMonthlyCashflow() { 
+		return this::callbackMonthlyCashflow;
 	}
 
 	/**
@@ -251,19 +243,15 @@ public class DashboardPage extends BasePage {
 	 * @param response
 	 */
 	private void callbackMonthlyCashflow(final WebResponse response) {
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.run(()-> {
+			setResponseTodayCashflow(response);
+			setPanelTodayCashflow(buildTodayCashflowTable(response));
+			setPanelMonthlySummary(buildMonthlySummaryTable(response));
+			setMinTransactionYear(response.getTransactionYears()[0]);
+			AppContext.setContext(ContextConstants.REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
 			
-			@Override
-			public void run() {
-				setResponseTodayCashflow(response);
-				setPanelTodayCashflow(buildTodayCashflowTable(response));
-				setPanelMonthlySummary(buildMonthlySummaryTable(response));
-				setMinTransactionYear(response.getTransactionYears()[0]);
-				AppContext.setContext(ContextConstants.REPORT_STUFF, SharedContext.builder().minTransactionYear(minTransactionYear).build());
-				
-				preInitComponent();
-				initEvent();
-			}
+			preInitComponent();
+			initEvent(); 
 		});
 
 	}
@@ -292,9 +280,7 @@ public class DashboardPage extends BasePage {
 			CashFlow costflow = costflowMap.get(key);
 
 			JPanel panelRow = buildCashflowSummaryTableRow(key,(cashflow), costflow);
-
-			 
-			
+ 
 			components[index] = panelRow;
 
 			updateCountAndAmount(totalCostflow, costflow);
@@ -404,11 +390,11 @@ public class DashboardPage extends BasePage {
 		
 
 		if(selectedMonth == 0)
-		 selectedMonth  = DateUtil.getCurrentMonth();
+			selectedMonth  = DateUtil.getCurrentMonth();
 		if(selectedYear == 0)
-		 selectedYear = DateUtil.getCurrentYear();
+			selectedYear = DateUtil.getCurrentYear();
 		if(minTransactionYear == 0)
-		 minTransactionYear = DateUtil.getCurrentYear();
+			minTransactionYear = DateUtil.getCurrentYear();
 
 		JComboBox<?> _comboBoxMonth = ComponentBuilder.buildComboBox(selectedMonth, buildArray(1,12));
 		JComboBox<?> _comboBoxYear = ComponentBuilder.buildComboBox(selectedYear, buildArray(minTransactionYear, Calendar.getInstance().get(Calendar.YEAR)));

@@ -40,7 +40,6 @@ public class LoginPage extends BasePage {
 		JPanel loginFormPanel = getLoginFormPanel();
 
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
-
 				title("Please Login"), loginFormPanel);
 
 		parentPanel.add(mainPanel);

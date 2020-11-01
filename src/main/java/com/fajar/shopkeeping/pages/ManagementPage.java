@@ -1,17 +1,25 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponent;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildVerticallyInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.textarea;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.dateChooser;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.numberField;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.submitButton;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.textField;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.textFieldDisabled;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.textFieldDisabledBlank;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
 import static com.fajar.shopkeeping.util.ComponentUtil.toArrayOfComponent;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 import static java.awt.Color.white;
-import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
-import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -43,7 +51,6 @@ import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
-import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -70,7 +77,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 @Data
 @Slf4j
 public class ManagementPage extends BasePage {
@@ -175,19 +181,14 @@ public class ManagementPage extends BasePage {
 	 * rebuild the navigation buttons for data table
 	 */
 	private void validateNavigationPanel() { 
-
-		ThreadUtil.run(new Runnable() {
-			
-			@Override
-			public void run() {
-				JPanel contentNavigation = getNavigationPanel();
-				contentNavigation.setBounds(0, 0, 515, 81);
-				contentNavigation.setPreferredSize(new Dimension(515, 81));
-				navigationPanel.removeAll();
-				navigationPanel.add(contentNavigation); 
-				navigationPanel.revalidate();
-				navigationPanel.repaint();
-			}
+		ThreadUtil.run(()-> {
+			JPanel contentNavigation = getNavigationPanel();
+			contentNavigation.setBounds(0, 0, 515, 81);
+			contentNavigation.setPreferredSize(new Dimension(515, 81));
+			navigationPanel.removeAll();
+			navigationPanel.add(contentNavigation); 
+			navigationPanel.revalidate();
+			navigationPanel.repaint(); 
 		});
 		
 	}
@@ -246,20 +247,11 @@ public class ManagementPage extends BasePage {
 	 * @return
 	 */
 	private ActionListener clearListener() { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						fieldsFilter.clear();
-						helper.doClearForm();
-					}
-				}); 
-			}
+		return (ActionEvent e) ->{ 
+			ThreadUtil.run(()-> { 
+				fieldsFilter.clear();
+				helper.doClearForm(); 
+			});  
 		};
 	}
 	
@@ -298,24 +290,18 @@ public class ManagementPage extends BasePage {
 	/**
 	 * constructs CRUD form
 	 */
-	public void loadForm() {
-		 
-		ThreadUtil.runWithLoading(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					setFormPanel(generateInputForm());
-					helper.doClearForm();
-					getHandler().getEntities(); 
-					preInitComponent();
-					initEvent(); 
-				} catch (Exception e) {
-					 
-					e.printStackTrace();
-				}
-				
-			}
+	public void loadForm() { 
+		ThreadUtil.runWithLoading(()->{
+			try {
+				setFormPanel(generateInputForm());
+				helper.doClearForm();
+				getHandler().getEntities(); 
+				preInitComponent();
+				initEvent(); 
+			} catch (Exception e) {
+				 
+				e.printStackTrace();
+			} 
 		}); 
 
 	}
@@ -661,17 +647,10 @@ public class ManagementPage extends BasePage {
 	}
 	
 	private ActionListener clearDataTableFilterListener() {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				clearDataTableFilter();
-				
-			}
-		};
+		return this::clearDataTableFilter;
 	}
 	
-	private void clearDataTableFilter() {
+	private void clearDataTableFilter(ActionEvent e) {
 		Set<String> keys = columnFilterTextFields.keySet();
 		for (String string : keys) {
 			columnFilterTextFields.get(string).setText("");
@@ -705,13 +684,10 @@ public class ManagementPage extends BasePage {
 	 */
 	private JButton orderButton(final String elementId, final String theOrderType) {
 		JButton button = button(theOrderType.equals(ORDER_ASC)?'˄':'˅');
-		button.addActionListener(new ActionListener() { 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setOrderBy(elementId);
-				setOrderType(theOrderType);
-				getHandler().getEntities();
-			}
+		button.addActionListener( (ActionEvent e)-> {
+			setOrderBy(elementId);
+			setOrderType(theOrderType);
+			getHandler().getEntities(); 
 		});
 		
 		if(elementId.equals(orderBy) && theOrderType.equals(orderType)) {
@@ -786,13 +762,9 @@ public class ManagementPage extends BasePage {
 		}
 		Log.log("Callback update entity: ", response);
 		
-		ThreadUtil.run(new Runnable() {
-			
-			@Override
-			public void run() {
-				getHandler().getEntities();
-				helper.doClearForm(); 
-			}
+		ThreadUtil.run( ()->{
+			getHandler().getEntities();
+			helper.doClearForm();  
 		}); 
 
 		setEditMode(false);
@@ -834,20 +806,15 @@ public class ManagementPage extends BasePage {
 	 * reset cursor to the last focus component
 	 */
 	private void updateColumnFilterFieldFocus() {
-		ThreadUtil.run(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					String textValue = columnFilterTextFields.get(currentElementIdFocus).getText();
-					columnFilterTextFields.get(currentElementIdFocus).requestFocus();
-					columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
-					columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
-				}catch (Exception e) {
-					 
-				}
-				
-			}
+		ThreadUtil.run( ()-> {
+			try {
+				String textValue = columnFilterTextFields.get(currentElementIdFocus).getText();
+				columnFilterTextFields.get(currentElementIdFocus).requestFocus();
+				columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
+				columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
+			}catch (Exception e) {
+				 
+			} 
 		});
 		
 	}
@@ -857,15 +824,9 @@ public class ManagementPage extends BasePage {
 	 * @return
 	 */
 	public MyCallback<Map<Object, Object>> callbackGetSingleEntity() { 
-		return new MyCallback<Map<Object, Object>>() {
-			
-			@Override
-			public void handle(Map<Object, Object> entity) throws ApplicationException { 
-				 helper.populateFormInputs(toStringObjectMap(entity));
-				 setEditMode(true);
-				
-			} 
-			
+		return (Map<Object, Object> entity)-> { 
+			 helper.populateFormInputs(toStringObjectMap(entity));
+			 setEditMode(true);  
 		};
 	}
 	
