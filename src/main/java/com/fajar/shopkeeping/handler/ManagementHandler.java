@@ -66,17 +66,9 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 	 * 
 	 * @return
 	 */
-	public ActionListener submit() {
-
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Log.log("ACTION PERFORMED:", e.getActionCommand());
-				submitEntity();
-
-			}
-
+	public ActionListener submit() { 
+		return (ActionEvent e)-> { 
+			submitEntity(); 
 		};
 	}
 

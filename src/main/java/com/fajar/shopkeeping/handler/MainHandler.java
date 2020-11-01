@@ -46,11 +46,8 @@ public class MainHandler<T extends BasePage> {
 	protected void init() {  }
 
 	public ActionListener navigationListener(final PageConstants pageCode) {
-		return new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				APP_HANDLER.navigate(pageCode);
-			}
+		return  (ActionEvent e)-> {
+			APP_HANDLER.navigate(pageCode); 
 		};
 	}
 

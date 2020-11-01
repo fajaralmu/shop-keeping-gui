@@ -49,22 +49,18 @@ public class AccountService extends BaseService{
 	 * @param callback parameter #1 : WebResponse.class
 	 */
 	private void requestAppId(final WebResponseCallback callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
-
-			public void run() {
-
-				try {
-					WebResponse response = callRequestAppId();
-					callback.handle(response );
-				} catch (ResourceAccessException | HttpClientErrorException e) {
-					Dialogs.error("Error requesting app id: " + e.getMessage());
-					Dialogs.info("App terminated");
-					System.exit(1);
-					
-				} catch (Exception e) { 
-					e.printStackTrace();
-				} finally {  }
-			}
+		ThreadUtil.runWithLoading( ()-> { 
+			try {
+				WebResponse response = callRequestAppId();
+				callback.handle(response );
+			} catch (ResourceAccessException | HttpClientErrorException e) {
+				Dialogs.error("Error requesting app id: " + e.getMessage());
+				Dialogs.info("App terminated");
+				System.exit(1);
+				
+			} catch (Exception e) { 
+				e.printStackTrace();
+			} finally {  } 
 
 		}); 
 	}
@@ -77,9 +73,7 @@ public class AccountService extends BaseService{
 	 */
 	public void doLogin(final String username, final String password, final MyCallback<Boolean> callback) {
 
-		ThreadUtil.runWithLoading(new Runnable() {
-
-			public void run() { 
+		ThreadUtil.runWithLoading( ()->{ 
 				boolean success = false; 
 				try {
 					  
@@ -112,8 +106,7 @@ public class AccountService extends BaseService{
 						Log.log("Error calling back login");
 						e.printStackTrace();
 					}
-				}
-			}
+				} 
 
 		});
 
@@ -142,36 +135,33 @@ public class AccountService extends BaseService{
 	 */
 	public void logout(final MyCallback<Boolean> callback) {
 
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading( ()->{
 
-			public void run() {
+			boolean success = false;
 
-				boolean success = false;
+			try { 
+				WebResponse response  = callLogout();
 
-				try { 
-					WebResponse response  = callLogout();
-
-					if (response. getCode().equals("00") == false) {
-						throw new RuntimeException("Invalid Response: "+response. getCode());
+				if (response. getCode().equals("00") == false) {
+					throw new RuntimeException("Invalid Response: "+response. getCode());
 					}
   
 					AppSession.removeLoginKey(); 
 					Dialogs.info("Logout Success!");
 
-					success = true;
+				success = true;
+			} catch (Exception e) {
+
+				e.printStackTrace();
+				Dialogs.error("Logout Error: " + e.getMessage());
+			} finally {
+
+				Log.log("Logout success: " + success); 
+				try {
+					callback.handle(success);
 				} catch (Exception e) {
-
+					Log.log("Error calling back Logout");
 					e.printStackTrace();
-					Dialogs.error("Logout Error: " + e.getMessage());
-				} finally {
-
-					Log.log("Logout success: " + success); 
-					try {
-						callback.handle(success);
-					} catch (Exception e) {
-						Log.log("Error calling back Logout");
-						e.printStackTrace();
-					}
 				}
 			} 
 

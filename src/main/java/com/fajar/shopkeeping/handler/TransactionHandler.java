@@ -44,16 +44,12 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 	}
 	
 	public void transactionSupply(List<ProductFlow> productFlows, Supplier supplier) {
-		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
-			
-			@Override
-			public void handle(WebResponse response) throws ApplicationException {
-				try {
-					getSupplyPage().callbackTransactionSupply(response);
-				}catch (Exception e) { 
-					throw new ApplicationException(e);
-				}
-			}
+		MyCallback<WebResponse> myCallback =  (WebResponse response) -> {
+			try {
+				getSupplyPage().callbackTransactionSupply(response);
+			}catch (Exception e) { 
+				throw new ApplicationException(e);
+			} 
 		};
 		transactionService.transactionSupply(productFlows, supplier, myCallback );
 	}
@@ -68,32 +64,23 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 	 
 	
 	public void getProductDetail(final String productCode) {
-		MyCallback<WebResponse> callback = new MyCallback<WebResponse>() {
-			
-			@Override
-			public void handle(WebResponse response) throws ApplicationException {
-				try {
-					getSellingPage().callbackGetProductDetail(response);
-				}catch (Exception e) { 
-					throw new ApplicationException(e);
-				}
-			}
+		MyCallback<WebResponse> callback =  (WebResponse response) ->{
+			try {
+				getSellingPage().callbackGetProductDetail(response);
+			}catch (Exception e) { 
+				throw new ApplicationException(e);
+			} 
 		};
 		transactionService.getProductDetail(productCode, callback );
 	}
 	
 	public void transactionSell(List<ProductFlow> productFlows, Customer customer) {
-		MyCallback<WebResponse> myCallback = new MyCallback<WebResponse>() {
-			
-			@Override
-			public void handle(WebResponse response) throws ApplicationException {
-				try {
-					getSellingPage().callbackTransactionSell(response);
-				}catch (Exception e) {
-					
-					throw new ApplicationException(e);
-				}
-			}
+		MyCallback<WebResponse> myCallback = (WebResponse response) -> {
+			try {
+				getSellingPage().callbackTransactionSell(response);
+			}catch (Exception e) { 
+				throw new ApplicationException(e);
+			} 
 		};
 		transactionService.transactionSell(productFlows, customer, myCallback);
 	}

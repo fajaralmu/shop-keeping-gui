@@ -48,25 +48,22 @@ public class TransactionService extends BaseService{
 	  * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	  */
 	public void transactionSupply(final List<ProductFlow> productFlows, final Supplier supplier, final MyCallback<WebResponse> myCallback) {
-		ThreadUtil.runWithLoading(new Runnable() { 
-		 
-			public void run() {
-				try {
-					WebResponse response = callTransactionSupply(productFlows, supplier);
-					
-					if("00".equals(response.getCode()) == false) {
-						Error error = new Error(response.getMessage());
-						throw new RuntimeErrorException(error );
-					}
-					
-					myCallback.handle(response);
-					Dialogs.error("Transaction Success!");
-
-				} catch (Exception e) {
-					Dialogs.error("Error performing transaction :" +e.getMessage());
-				} finally { }
+		ThreadUtil.runWithLoading( ()-> {
+			try {
+				WebResponse response = callTransactionSupply(productFlows, supplier);
 				
-			}
+				if("00".equals(response.getCode()) == false) {
+					Error error = new Error(response.getMessage());
+					throw new RuntimeErrorException(error );
+				}
+				
+				myCallback.handle(response);
+				Dialogs.error("Transaction Success!");
+
+			} catch (Exception e) {
+				Dialogs.error("Error performing transaction :" +e.getMessage());
+			} finally { }
+				 
 		});
 	}
 	
@@ -77,23 +74,20 @@ public class TransactionService extends BaseService{
 	 * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void transactionSell(final List<ProductFlow> productFlows, final Customer customer, final MyCallback<WebResponse> myCallback) {
-		ThreadUtil.runWithLoading(new Runnable() {
-			
-			public void run() {
-				try {
-					WebResponse response = callTransactionSell(productFlows, customer);
-					
-					if("00".equals(response.getCode()) == false) {
-						throw new Exception(response.getCode());
-					}
-					
-					myCallback.handle(response);
-					Dialogs.error("Transaction Success!");
+		ThreadUtil.runWithLoading( ()-> {
+			try {
+				WebResponse response = callTransactionSell(productFlows, customer);
+				
+				if("00".equals(response.getCode()) == false) {
+					throw new Exception(response.getCode());
+				}
+				
+				myCallback.handle(response);
+				Dialogs.error("Transaction Success!");
 
-				} catch (Exception e) {
-					Dialogs.error("Error performing transaction :" +e.getMessage());
-				} finally { }
-			}
+			} catch (Exception e) {
+				Dialogs.error("Error performing transaction :" +e.getMessage());
+			} finally { } 
 		});
 	}
 	
@@ -104,17 +98,14 @@ public class TransactionService extends BaseService{
 	 */
 	public void getProductDetail(final String productCode, final MyCallback<WebResponse> callback) {
 		
-		ThreadUtil.runWithLoading(new Runnable() {
-			
-			public void run() {
-				try {
-					WebResponse response = getProductDetail(productCode); 
-					callback.handle(response);
-				} catch (Exception e) {
-					Dialogs.error("Error getting product detail: "+e.getMessage());
-					e.printStackTrace();
-				} finally { }
-			}
+		ThreadUtil.runWithLoading( ()->{
+			try {
+				WebResponse response = getProductDetail(productCode); 
+				callback.handle(response);
+			} catch (Exception e) {
+				Dialogs.error("Error getting product detail: "+e.getMessage());
+				e.printStackTrace();
+			} finally { } 
 		});
 	}
 	

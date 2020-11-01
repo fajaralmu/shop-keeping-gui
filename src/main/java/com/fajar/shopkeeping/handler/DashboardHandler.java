@@ -36,21 +36,13 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 	}
 
 	public ActionListener logout() {
-		return new ActionListener() {
+		return  (ActionEvent e)->{
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				accountService.logout(new BooleanCallback() {
-
-					@Override
-					public void handle(Boolean success) throws ApplicationException { 
-						if (success) {
-							APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
-						}
-					}
-				});
-			}
+			accountService.logout((Boolean success) -> { 
+				if (success) {
+					APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
+				} 
+			}); 
 		};
 	}
 
@@ -66,19 +58,12 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 
 	public ActionListener getDailyCashflow(final int day, final int month, final int year) {
 
-		return new ActionListener() {
+		return  (ActionEvent e)-> {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				reportService.getDailyCashflowDetail(day, month, year, new MyCallback<WebResponse>() {
-
-					@Override
-					public void handle(WebResponse response) throws ApplicationException { 
-						handleResponseDailyCashflow(response);
-					}
-				});
-			}
+			reportService.getDailyCashflowDetail(day, month, year,  
+					(WebResponse response) ->{ 
+					handleResponseDailyCashflow(response);
+				}); 
 		};
 	}
 
@@ -98,13 +83,8 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 	}
 	
 	public ActionListener generateMonthlyReport( ) {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				generateExcelReportMontly(getPage().getSelectedYear());
-			}
+		return (ActionEvent e)->{ 
+				generateExcelReportMontly(getPage().getSelectedYear()); 
 		};
 	}
 	
@@ -113,22 +93,18 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 		Filter filter = Filter.builder().year(year).build();
 		WebRequest webRequest =  WebRequest.builder().filter(filter).build(); 
 
-		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
-
-			@Override
-			public void handle(ReportResponse reportResponse) throws ApplicationException {
+		MyCallback<ReportResponse> myCallback =  (ReportResponse reportResponse) ->{
 				 
-				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
-				Loadings.end();
-				 
-				String fileName = getFileName(response);
-				try {
-				saveFile(response.getBody(), fileName);
-				}catch (Exception e) {
-					// TODO: handle exception
-					throw new ApplicationException(e);
-				}
-			}
+			ResponseEntity<byte[]> response = reportResponse.getFileResponse();
+			Loadings.end();
+			 
+			String fileName = getFileName(response);
+			try {
+			saveFile(response.getBody(), fileName);
+			}catch (Exception e) {
+				// TODO: handle exception
+				throw new ApplicationException(e);
+			} 
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.MONTHLY);
 
@@ -136,14 +112,10 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 
 	public ActionListener getMonthlyCashflow(final MyCallback<WebResponse> callback) {
 
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Object month = getPage().getSelectedMonth();
-				Object year = getPage().getSelectedYear();
-				reportService.getMonthlyCashflowDetail(toInt(month), toInt(year), callback);
-			}
+		return (ActionEvent e)-> {
+			Object month = getPage().getSelectedMonth();
+			Object year = getPage().getSelectedYear();
+			reportService.getMonthlyCashflowDetail(toInt(month), toInt(year), callback); 
 		};
 	} 
 
@@ -164,13 +136,10 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 	}
 	
 	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass) {
-		return new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				SharedContext context = SharedContext.builder().entityClass(entityClass).build();
-				AppContext.setContext(ContextConstants.CTX_MANAGEMENT_PAGE, context );
-				APP_HANDLER.navigate(PageConstants.PAGE_MANAGEMENT);
-			}
+		return  (ActionEvent e)-> {
+			SharedContext context = SharedContext.builder().entityClass(entityClass).build();
+			AppContext.setContext(ContextConstants.CTX_MANAGEMENT_PAGE, context );
+			APP_HANDLER.navigate(PageConstants.PAGE_MANAGEMENT); 
 		};
 	}
 

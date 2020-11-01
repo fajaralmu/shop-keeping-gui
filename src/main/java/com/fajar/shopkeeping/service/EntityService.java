@@ -47,18 +47,15 @@ public class EntityService extends BaseService {
 	 * @param callback parameter #1 : response (WebResponse.class)
 	 */
 	public void getEntityList(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading( ()-> {
 
-			public void run() {
-
-				try { 
-					WebResponse response = getEntityListFullResponse(filter, entityClass);
-					callback.handle(response);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("getEntityList Error getEntityList: " + e.getMessage());
-				} finally { }
-			} 
+			try { 
+				WebResponse response = getEntityListFullResponse(filter, entityClass);
+				callback.handle(response);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("getEntityList Error getEntityList: " + e.getMessage());
+			} finally { } 
 		}); 
 	} 
 	
@@ -78,21 +75,18 @@ public class EntityService extends BaseService {
 		filter.setContains(false);
 		filter.setFieldsFilter(MapUtil.singleMap(idField, id));
 		
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading( ()->{
 
-			public void run() {
-
-				try {
-					
-					Map<Object, Object> response = callGetEntity(filter , entityClass);
-					List<Map<Object, Object>> theEntities  = (List<Map<Object, Object>>) response.get("entities");
-					Map<Object, Object> theEntity = theEntities.get(0);
-					callback.handle(theEntity);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("getSingleEntityByID Error getEntityList: " + e.getMessage());
-				} finally { }
-			} 
+			try {
+				
+				Map<Object, Object> response = callGetEntity(filter , entityClass);
+				List<Map<Object, Object>> theEntities  = (List<Map<Object, Object>>) response.get("entities");
+				Map<Object, Object> theEntity = theEntities.get(0);
+				callback.handle(theEntity);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("getSingleEntityByID Error getEntityList: " + e.getMessage());
+			} finally { } 
 		});
 		 
 	}
@@ -104,18 +98,14 @@ public class EntityService extends BaseService {
 	 * @param callback parameter #1 : response (Map<Object, Object>)
 	 */
 	public void getEntityListHashMapResponse(final Filter filter, final Class<?> entityClass, final MyCallback<Map<Object, Object>> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
-
-			public void run() {
-
-				try {
-					Map<Object, Object> response = callGetEntity(filter, entityClass);
-					callback.handle(response);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("getEntityListHashMapResponse Error getEntityList: " + e.getMessage());
-				} finally { 	}
-			}
+		ThreadUtil.runWithLoading( ()-> { 
+			try {
+				Map<Object, Object> response = callGetEntity(filter, entityClass);
+				callback.handle(response);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("getEntityListHashMapResponse Error getEntityList: " + e.getMessage());
+			} finally { 	} 
 
 		}); 
 	}
@@ -127,19 +117,14 @@ public class EntityService extends BaseService {
 	 * @param callback parameter #1 : JSON response, (WebResponse.class)
 	 */
 	public void getEntityListJsonResponse(final Filter filter, final Class<? extends BaseEntity> entityClass, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
-
-			public void run() {
-
-				try {
-					WebResponse response = getEntityListFullResponse(filter, entityClass);
-					callback.handle(response);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("getEntityListJsonResponse Error getEntityList: " + e.getMessage());
-				} finally { }
-			}
-
+		ThreadUtil.runWithLoading( ()->{ 
+			try {
+				WebResponse response = getEntityListFullResponse(filter, entityClass);
+				callback.handle(response);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("getEntityListJsonResponse Error getEntityList: " + e.getMessage());
+			} finally { } 
 		}); 
 	}
 
@@ -160,25 +145,21 @@ public class EntityService extends BaseService {
 	 * @param myCallback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void updateEntity( final Map<String, Object> entityObject, final boolean editMode, final Class<?> entityClass, final MyCallback<Map<Object, Object>> myCallback) { 
-		ThreadUtil.runWithLoading(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					Map<Object, Object> response = new HashMap<Object, Object>();
-					
-					if(editMode) {
-						response = callModifyEntity(entityObject, entityClass);
-					}
-					else {
-						response = callAddEntity(entityObject, entityClass);
-					}
-					myCallback.handle(response);
-					
-				}catch (Exception e) {
-					e.printStackTrace();
-				}finally { }
-			}
+		ThreadUtil.runWithLoading (()-> {
+			try {
+				Map<Object, Object> response = new HashMap<Object, Object>();
+				
+				if(editMode) {
+					response = callModifyEntity(entityObject, entityClass);
+				}
+				else {
+					response = callAddEntity(entityObject, entityClass);
+				}
+				myCallback.handle(response);
+				
+			}catch (Exception e) {
+				e.printStackTrace();
+			}finally { } 
 		});
 		 
 	}

@@ -48,19 +48,15 @@ public class ReportService extends BaseService{
 	 * @param callback parameter #1  : JSON response (WebResponse.class)
 	 */
 	public void getMonthlyCashflowDetail(final int month, final int year, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading( ()->{ 
+			try { 
+				WebResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
 
-			public void run() {
-
-				try { 
-					WebResponse jsonResponse = callGetMothlyCashflowDetail(month, year);
-
-					callback.handle(jsonResponse);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("Error getMonthlyCashflowDetail: " + e.getMessage());
-				} finally { }
-			} 
+				callback.handle(jsonResponse);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("Error getMonthlyCashflowDetail: " + e.getMessage());
+			} finally { } 
 		}); 
 	}
 
@@ -73,19 +69,15 @@ public class ReportService extends BaseService{
 	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void getDailyCashflowDetail(final int day, final int month, final int year, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading (()->{ 
+			try { 
+				WebResponse jsonResponse = callDailyCashflow(day, month, year);
 
-			public void run() {
-
-				try { 
-					WebResponse jsonResponse = callDailyCashflow(day, month, year);
-
-					callback.handle(jsonResponse);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("Error getDailyCashflowDetail: " + e.getMessage());
-				} finally { }
-			}
+				callback.handle(jsonResponse);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("Error getDailyCashflowDetail: " + e.getMessage());
+			} finally { } 
 
 		}); 
 	}
@@ -97,22 +89,18 @@ public class ReportService extends BaseService{
 	 * @param callback parameter #1 : JSON response (WebResponse.class)
 	 */
 	public void getPeriodicCashflow(final Filter filter, final MyCallback<WebResponse> callback) {
-		ThreadUtil.runWithLoading(new Runnable() {
+		ThreadUtil.runWithLoading( ()->{ 
+			try { 
 
-			public void run() {
+				HashMap<Object, Object> mapResponse = callPeriodicCashflow(filter);
 
-				try { 
+				WebResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
 
-					HashMap<Object, Object> mapResponse = callPeriodicCashflow(filter);
-
-					WebResponse jsonResponse = parseCashflowPeriodicResponse(mapResponse);
-
-					callback.handle(jsonResponse);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Dialogs.error("Error getPeriodicCashflow: " + e.getMessage());
-				} finally { }
-			}
+				callback.handle(jsonResponse);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Dialogs.error("Error getPeriodicCashflow: " + e.getMessage());
+			} finally { } 
 		}); 
 
 	}
@@ -163,37 +151,33 @@ public class ReportService extends BaseService{
 	 * 					 parameter #2 : reportType (ReportType.class)
 	 */
 	public void downloadReportExcel(final WebRequest WebRequest, final MyCallback<ReportResponse> myCallback, final ReportType reportType) {
-		ThreadUtil.runWithLoading(new Runnable() {
-			
-			@Override
-			public void run() {
+		ThreadUtil.runWithLoading( ()->{
 				 
-				Log.log("Will generate report: ", reportType.toString());
+			Log.log("Will generate report: ", reportType.toString());
+			
+			try {
+				ResponseEntity<byte[]> response = null;
+				switch (reportType) {
+					case DAILY:
+						response = callDownloadExcelDaily(WebRequest);
+						break;
+					case MONTHLY:
+						response = callDownloadExcelMonthly(WebRequest);
+						break;
+					case ENTITY:
+						response = callDownloadEntityReport(WebRequest);
+						break;
+					default:
+						throw new IllegalArgumentException("Invalid Report Type");
+				}
 				
-				try {
-					ResponseEntity<byte[]> response = null;
-					switch (reportType) {
-						case DAILY:
-							response = callDownloadExcelDaily(WebRequest);
-							break;
-						case MONTHLY:
-							response = callDownloadExcelMonthly(WebRequest);
-							break;
-						case ENTITY:
-							response = callDownloadEntityReport(WebRequest);
-							break;
-						default:
-							throw new IllegalArgumentException("Invalid Report Type");
-					}
-					
-					ReportResponse reportResponse = new ReportResponse(reportType, response);
-					
-					myCallback.handle(reportResponse);
-					
-				}catch (Exception e) {
-					Dialogs.error("Error generating report: ", e.getMessage());
-				} finally {  }
-			}
+				ReportResponse reportResponse = new ReportResponse(reportType, response);
+				
+				myCallback.handle(reportResponse);
+				
+			}catch (Exception e) {
+				Dialogs.error("Error generating report: ", e.getMessage());
+			} finally {  } 
 		});
 	}
 	

@@ -17,28 +17,22 @@ public class LoginHandler extends MainHandler<LoginPage> {
 	}
 
 	public ActionListener doLogin() {
-		return new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				final String username = getPage().getTypedUsername();
-				final String password = getPage().getTypedPassword();
-				doLogin(username, password);
-				System.out.println("LOGIN: " + username + " & " + password);
-
-			} 
+		return  (ActionEvent e)->{
+			final String username = getPage().getTypedUsername();
+			final String password = getPage().getTypedPassword();
+			doLogin(username, password);
+			System.out.println("LOGIN: " + username + " & " + password); 
 		};
 	} 
 	
 	private void doLogin(String username, String password) {
 		
-		accountService.doLogin(username, password, new BooleanCallback() {
+		accountService.doLogin(username, password,  
 			
-			public void handle(Boolean success) throws ApplicationException {
-				  
+			 (Boolean success) -> { 
 				if(success) {
 					APP_HANDLER.navigate(PageConstants.PAGE_DASHBOARD);
-				}
-			}
+				} 
 		});
 	}
 }

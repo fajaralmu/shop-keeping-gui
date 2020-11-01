@@ -20,12 +20,8 @@ public class LauncherHandler extends MainHandler<LauncherPage> {
 
 	public ActionListener showLoginPage() { 
 		
-		return new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				
-				APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
-			}
+		return  (ActionEvent e)->{ 
+				APP_HANDLER.navigate(PageConstants.PAGE_LOGIN); 
 		};
 	}
 }

@@ -36,22 +36,17 @@ public class PeriodicReportHandler extends MainHandler<PeriodicReportPage> {
 		Filter filter = Filter.builder().month(month).year(year).build();
 		WebRequest webRequest = WebRequest.builder().filter(filter).build(); 
 
-		MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
-
-			@Override
-			public void handle(ReportResponse reportResponse) throws ApplicationException {
-				
-				try {
-					Log.log("Response daily excel: ", reportResponse.getReportType());
-					ResponseEntity<byte[]> response = reportResponse.getFileResponse();
-					Loadings.end(); 
-					String fileName = getFileName(response);
-					saveFile(response.getBody(), fileName);
-				}catch (Exception e) {
-					// TODO: handle exception
-					throw new ApplicationException(e);
-				}
-			}
+		MyCallback<ReportResponse> myCallback =  (ReportResponse reportResponse) ->{ 
+			try {
+				Log.log("Response daily excel: ", reportResponse.getReportType());
+				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
+				Loadings.end(); 
+				String fileName = getFileName(response);
+				saveFile(response.getBody(), fileName);
+			}catch (Exception e) {
+				// TODO: handle exception
+				throw new ApplicationException(e);
+			} 
 		};
 		reportService.downloadReportExcel(webRequest, myCallback, ReportType.DAILY);
 

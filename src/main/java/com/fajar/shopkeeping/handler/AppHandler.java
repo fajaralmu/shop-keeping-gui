@@ -100,22 +100,18 @@ public class AppHandler {
 	}
 
 	private void getAppId() throws Exception {
-		accountService.getAppId(new WebResponseCallback() {
-
-			public void handle(WebResponse params) throws ApplicationException {
+		accountService.getAppId( (WebResponse params) -> { 
+			try {
+				WebResponse response = (WebResponse) params ;
+				String applicationId = response.getMessage();
+			
+				AppSession.setApplicationID(applicationId);
+				startActiveHandler();
+			} catch (Exception e) {
 				 
-				try {
-					WebResponse response = (WebResponse) params ;
-					String applicationId = response.getMessage();
-				
-					AppSession.setApplicationID(applicationId);
-					startActiveHandler();
-				} catch (Exception e) {
-					 
-					throw new ApplicationException("App id not generated");
-					 
-				}
-			}
+				throw new ApplicationException("App id not generated");
+				 
+			} 
 		});
 
 	}
