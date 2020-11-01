@@ -3,12 +3,15 @@ package com.fajar.shopkeeping.pages;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponent;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildVerticallyInlineComponent;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.textarea;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelNonScroll;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
 import static com.fajar.shopkeeping.service.AppContext.getContext;
 import static com.fajar.shopkeeping.util.ComponentUtil.toArrayOfComponent;
 import static com.fajar.shopkeeping.util.MapUtil.objectEquals;
 import static java.awt.Color.white;
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -39,6 +42,8 @@ import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.constant.UrlConstants;
@@ -65,7 +70,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 @Data
 @Slf4j
 public class ManagementPage extends BasePage {
@@ -408,7 +413,7 @@ public class ManagementPage extends BasePage {
 				
 			} else if (fieldType.equals(FieldType.FIELD_TYPE_TEXTAREA)) {
 
-				inputComponent = textArea(elementId);
+				inputComponent = textarea(elementId);
 				((JTextArea) inputComponent).addKeyListener(helper.textAreaActionListener((JTextArea) inputComponent, elementId));
 				
 			} else if (fieldType.equals(FieldType.FIELD_TYPE_COLOR)) {
@@ -582,7 +587,7 @@ public class ManagementPage extends BasePage {
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 520, 450);
 		
 		Component[] arrayOfComponents = toArrayOfComponent(listComponents);
-		synchronizeComponentWidth(arrayOfComponents);
+		ComponentModifier.synchronizeComponentWidth(arrayOfComponents);
 		
 		JPanel panel = buildPanelV2(panelRequest, (arrayOfComponents));
 //		

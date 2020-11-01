@@ -48,4 +48,25 @@ public class ComponentModifier {
 
 		component.setBounds(component.getX(), component.getY(), component.getWidth(), height);
 	}
+	
+	public static void synchronizeComponentWidth(Component... components) {
+		int maxWidth = getMaxWidth(components);
+
+		for (Component component : components) {
+			component.setSize(maxWidth, component.getHeight());
+		}
+	}
+
+	public static int getMaxWidth(Component... components) {
+		int width = 0;
+
+		for (Component component : components) {
+			if (width < component.getWidth()) {
+				width = component.getWidth();
+			}
+		}
+
+		return width;
+	}
+
 }

@@ -1,6 +1,12 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearComboBox;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearDateChooser;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearLabel;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearTextField;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
@@ -20,6 +26,7 @@ import javax.swing.JTextField;
 
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
@@ -78,8 +85,8 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 			ProductFlow productFlow = productFlows.get(i);
 			
 			Date expDate 			= productFlow.getExpiryDate() == null ? new Date() : productFlow.getExpiryDate();  
-			JButton buttonEdit 		= button("edit", 100, editProductFlow(productFlow));
-			JButton buttonRemove 	= button("remove", 100, buttonRemoveListener(productFlow)); 
+			JButton buttonEdit 		= ComponentBuilder.button("edit", 100, editProductFlow(productFlow));
+			JButton buttonRemove 	= ComponentBuilder.button("remove", 100, buttonRemoveListener(productFlow)); 
 			JPanel buttonField 		= ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove); 
 			String dateString 		= DateUtil.formatDate(expDate, "dd-MM-yyyy");
 			
@@ -100,7 +107,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		 
 		PanelRequest panelRequest = getProductListPanelRequest(columnWidth, colSize);
 		
-		setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
+		InputComponentBuilder.setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
 		
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
@@ -122,9 +129,9 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
 		
-		inputQtyField = numberField("0");
-		inputUnitPriceField = numberField("0");
- 		inputExpiredDateField = dateChooser(new Date());
+		inputQtyField = InputComponentBuilder.numberField("0");
+		inputUnitPriceField = InputComponentBuilder.numberField("0");
+ 		inputExpiredDateField = InputComponentBuilder.dateChooser(new Date());
  		
  		labelProductUnit = label("unit", LEFT);
  		labelProductUnit.setSize(200, 20); 

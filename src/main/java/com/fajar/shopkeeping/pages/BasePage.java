@@ -5,10 +5,8 @@ import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
@@ -18,25 +16,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.text.JTextComponent;
 
 import com.fajar.shopkeeping.callbacks.BlankActionListener;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
-import com.fajar.shopkeeping.component.builder.ComponentModifier;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -115,13 +108,9 @@ public abstract class BasePage {
 		}
 	}
 
-	protected void setDefaultValues() {
+	protected void setDefaultValues() { }
 
-	}
-
-	protected void initEvent() {
-
-	}
+	protected void initEvent() { }
 
 	/**
 	 * set the handler of the page
@@ -160,12 +149,10 @@ public abstract class BasePage {
 		return new KeyListener() {
 
 			@Override
-			public void keyTyped(KeyEvent e) {
-			}
+			public void keyTyped(KeyEvent e) { }
 
 			@Override
-			public void keyReleased(KeyEvent e) {
-			}
+			public void keyReleased(KeyEvent e) { }
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -214,19 +201,10 @@ public abstract class BasePage {
 		Log.log("Refresh on super class does not affect anything");
 	}
 
-	public void onShow() {
-
-	}
+	public void onShow() {}
 
 	protected ActionListener buttonRefreshListener() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				refresh();
-			}
-
-		};
+		return  (ActionEvent e) -> { refresh(); };
 	}
 
 	/**
@@ -288,7 +266,7 @@ public abstract class BasePage {
 			try {
 				components[i] = (Component) objects[i];
 			} catch (Exception e) {
-				components[i] = textFieldDisabled(objects[i], colSizes[colIndex]);
+				components[i] = InputComponentBuilder.textFieldDisabled(objects[i], colSizes[colIndex]);
 				((JTextField) components[i]).setBackground(null);
 			}
 			colIndex++;
@@ -335,165 +313,7 @@ public abstract class BasePage {
 		return rowPanel(colSizes, Color.white, objects);
 	}
 
-	/**
-	 * ================================== COMPONENT INSTANCES
-	 * ==================================
-	 */
-	protected JLabel title(String title, int fontSize) {
-		return ComponentBuilder.title(title, fontSize);
-	}
-
-	protected JLabel title(String title) {
-		return ComponentBuilder.title(title, 20);
-	}
-
-	protected JButton button(Object text) {
-		return ComponentBuilder.button(text);
-	}
-
-	protected JButton submitButton(Object text) {
-		JButton button = ComponentBuilder.button(text);
-		button.setBackground(Color.green);
-		button.setForeground(Color.white);
-		return button;
-	}
-
-	protected JButton button(Object text, Color color) {
-		return ComponentBuilder.button(text, color);
-	}
-
-	protected JButton button(Object text, int width, ActionListener actionListener) {
-		return ComponentBuilder.button(text, width, actionListener);
-	}
-
-	/**
-	 * Reversed column sizes
-	 * 
-	 * @param ints
-	 * @return
-	 */
-	protected static int[] intArray(int... ints) {
-		return (PanelRequest.intArray(ints));
-	}
-
-	protected JPasswordField passwordField(String string) {
-
-		JPasswordField label = new JPasswordField(string);
-		label.setSize(100, 20);
-		return label;
-	}
-
-	protected JTextField textField(String string) {
-
-		JTextField textField = new JTextField(string);
-		textField.setSize(100, 20);
-		textField.setFont(new Font("Arial", Font.PLAIN, 15));
-		return textField;
-	}
-
-	protected JTextField textFieldDisabled(Object string) {
-		return textFieldDisabled(string, Integer.MAX_VALUE);
-	}
-
-	protected JTextField textFieldDisabled(Object string, int maxWidth) {
-		if (null == string) {
-			string = "";
-		}
-		JTextField textfield = textFieldDisabled(string, 100, 20);
-		int characterLength = string.toString().trim().length();
-		int fontSize = textfield.getFont().getSize();
-		int width = characterLength * fontSize * 2 / 3;
-
-		if (width > maxWidth) {
-			width = maxWidth;
-		}
-
-		textfield.setSize(width, fontSize);
-		textfield.setBorder(null);
-		return textfield;
-	}
-
-	protected JTextField textFieldDisabled(Object string, int width, int height) {
-
-		if (null == string) {
-			string = "";
-		}
-
-		JTextField textField = textField(string.toString());
-		ComponentModifier.changeSize(textField, width, height);
-		textField.setEditable(false);
-		return textField;
-	}
-
-	protected JTextField textFieldDisabledBlank(Object string, int width, int height) {
-
-		JTextField textField = textFieldDisabled(string, width, height);
-		textField.setBackground(null);
-		textField.setBorder(null);
-		return textField;
-
-	}
-
-	/**
-	 * color chooser
-	 * 
-	 * @return
-	 */
-	protected JColorChooser colorChooser() {
-
-		JColorChooser colorChooser = new JColorChooser();
-		colorChooser.setSize(100, 20);
-		return colorChooser;
-	}
-
-	/**
-	 * date chooser with nowDate as default value
-	 * 
-	 * @return
-	 */
-	protected JDateChooser dateChooser() {
-
-		return dateChooser(new Date());
-	}
-
-	/**
-	 * date chooser with specified default value
-	 * 
-	 * @param date
-	 * @return
-	 */
-	protected JDateChooser dateChooser(Date date) {
-
-		JDateChooser dateChooser = new JDateChooser(date);
-		dateChooser.setSize(100, 20);
-		return dateChooser;
-	}
-
-	protected JTextField numberField(String text) {
-		final JTextField textField = textField(text);
-		textField.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent ke) {
-				String value = textField.getText();
-				final int l = value.length();
-				if (ke.getKeyChar() >= '0' && ke.getKeyChar() <= '9') {
-
-				} else {
-					if (l == 1) {
-						textField.setText("0");
-					} else if (l > 1) {
-						String newValue = value.replace(ke.getKeyChar() + "", "");
-						textField.setText(newValue);
-					}
-				}
-			}
-		});
-		return textField;
-	}
-
-	protected JTextArea textArea(Object defaultValue) {
-
-		return ComponentBuilder.textarea(defaultValue);
-	}
+	/////////////////////////////COMPONENT INSTANCES///////////////////////////////////	
 
 	protected Object[] buildArray(int i, int i2) {
 
@@ -696,98 +516,8 @@ public abstract class BasePage {
 		return components;
 	}
 
-	protected static void addActionListener(JButton button, ActionListener actionListener) {
-		if (button.getActionListeners().length == 0) {
-			button.addActionListener(actionListener);
-		}
-	}
+	
 
-	protected static void addActionListener(JMenuItem button, ActionListener actionListener) {
-		if (button.getActionListeners().length == 0) {
-			button.addActionListener(actionListener);
-		}
-	}
-
-	protected static void addKeyListener(JTextField textfield, KeyListener actionListener,
-			final boolean limitToOneListener) {
-
-		if (!limitToOneListener) {
-			textfield.addKeyListener(actionListener);
-		} else if (limitToOneListener) {
-			if (textfield.getKeyListeners().length == 0) {
-				textfield.addKeyListener(actionListener);
-			}
-		}
-	}
-
-	protected static void addKeyListener(JTextField textfield, KeyListener actionListener) {
-		addKeyListener(textfield, actionListener, true);
-	}
-
-	protected static void addActionListener(JComboBox<?> comboBox, ActionListener actionListener) {
-		if (comboBox.getActionListeners().length == 0) {
-			comboBox.addActionListener(actionListener);
-		}
-	}
-
-	protected static void addActionListener(JDateChooser dateChooser, PropertyChangeListener actionListener) {
-		if (dateChooser.getPropertyChangeListeners().length == 0) {
-			dateChooser.addPropertyChangeListener(actionListener);
-		}
-	}
-
-	public static void setText(JTextField textField, Object text) {
-		if (null == text) {
-			text = "";
-		}
-		textField.setText(text.toString());
-	}
-
-	public static void setText(JLabel label, Object text) {
-		if (null == text) {
-			text = "";
-		}
-		label.setText(text.toString());
-	}
-
-	/**
-	 * get comboBox component from KeyEvent
-	 * 
-	 * @param event
-	 * @return
-	 */
-	public static JComboBox<?> getComboBox(KeyEvent event) {
-		return (JComboBox<?>) ((Component) event.getSource()).getParent();
-	}
-
-	/**
-	 * get typed text from JComboBox
-	 * 
-	 * @param comboBox
-	 * @return
-	 */
-	public static String getComboBoxText(JComboBox<?> comboBox) {
-		return ((JTextComponent) (comboBox).getEditor().getEditorComponent()).getText();
-	}
-
-	public static void synchronizeComponentWidth(Component... components) {
-		int maxWidth = getMaxWidth(components);
-
-		for (Component component : components) {
-			component.setSize(maxWidth, component.getHeight());
-		}
-	}
-
-	public static int getMaxWidth(Component... components) {
-		int width = 0;
-
-		for (Component component : components) {
-			if (width < component.getWidth()) {
-				width = component.getWidth();
-			}
-		}
-
-		return width;
-	}
-
+	
+	
 }

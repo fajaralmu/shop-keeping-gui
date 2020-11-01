@@ -33,9 +33,9 @@ import javax.swing.text.JTextComponent;
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.ManagementHandler;
-import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.ComponentUtil;
 import com.fajar.shopkeeping.util.Log;
@@ -794,8 +794,8 @@ public class CommonFormFieldHelper {
 			@Override
 			public void keyReleased(KeyEvent event) {
 
-				final JComboBox dynamicComboBox = BasePage.getComboBox(event);
-				final String comboBoxText = BasePage.getComboBoxText(dynamicComboBox);
+				final JComboBox dynamicComboBox = InputComponentBuilder.getComboBoxFromEvent(event);
+				final String comboBoxText = InputComponentBuilder.getComboBoxText(dynamicComboBox);
 				page.getHandler().getEnitiesFormDynamicDropdown(fieldType, optionItemName, comboBoxText,
 						new MyCallback< Map<Object, Object>>() {
 

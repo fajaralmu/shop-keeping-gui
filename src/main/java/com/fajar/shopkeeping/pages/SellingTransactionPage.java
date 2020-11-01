@@ -1,6 +1,12 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearComboBox;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearLabel;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearTextField;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.setText;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
@@ -21,6 +27,7 @@ import javax.swing.JTextField;
 
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -219,8 +226,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
 		
-		inputQtyField = numberField("0"); 
-		inputCustomerPayment = numberField("0");
+		inputQtyField = InputComponentBuilder.numberField("0"); 
+		inputCustomerPayment = InputComponentBuilder.numberField("0");
 		 		
  		labelProductUnit = label("unit", LEFT);
  		labelProductUnit.setSize(200, 20);
@@ -271,8 +278,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		for (int i = 0; i < productFlows.size(); i++) {
 			ProductFlow productFlow = productFlows.get(i); 
 			
-			JButton buttonEdit = button("edit", 100, editProductFlow(productFlow));
-			JButton buttonRemove = button("remove", 100, buttonRemoveListener(productFlow)); 
+			JButton buttonEdit = ComponentBuilder.button("edit", 100, editProductFlow(productFlow));
+			JButton buttonRemove = ComponentBuilder.button("remove", 100, buttonRemoveListener(productFlow)); 
 			JPanel buttonField = ComponentBuilder.buildVerticallyInlineComponent(100, buttonEdit, buttonRemove);  
 			long totalPrice = productFlow.getCount() * productFlow.getPrice();
 			rowComponents[i + 1] = rowPanel(colSize, columnWidth, 

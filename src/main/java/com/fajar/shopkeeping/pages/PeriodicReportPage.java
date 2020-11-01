@@ -2,7 +2,7 @@ package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
-
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.handler.PeriodicReportHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -30,7 +31,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
-
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 public class PeriodicReportPage extends BasePage {
 	
 	private static final int COLUMN_WIDTH = 160; 
@@ -224,7 +225,7 @@ public class PeriodicReportPage extends BasePage {
 			int year = cashflow.getYear();
 			
 			String periodLabel = (DateUtil.dateString(month, year));
-			JButton buttonGenerateReport = button("Report", 150, generateDailyReportListener(month, year));
+			JButton buttonGenerateReport = ComponentBuilder.button("Report", 150, generateDailyReportListener(month, year));
 			
 			JPanel rowPanel = rowPanel(COLUMN, COLUMN_WIDTH, Color.white, 
 					
@@ -247,7 +248,7 @@ public class PeriodicReportPage extends BasePage {
 		log("ARRAYSIZE: "+ arraySize);
 		PanelRequest panelRequest = PanelRequest.autoPanelScrollWidthHeightSpecified(1, TABLE_WIDTH  , 5, Color.LIGHT_GRAY, (BASE_WIDTH * 4)/5, 400); 
 		
-		synchronizeComponentWidth(components);
+		ComponentModifier.synchronizeComponentWidth(components);
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		panel.setBorder(BorderFactory.createLineBorder(Color.blue));

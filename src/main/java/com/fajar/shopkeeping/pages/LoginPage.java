@@ -1,13 +1,16 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.model.PanelRequest.intArray;
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
 import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.handler.LoginHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
@@ -46,9 +49,9 @@ public class LoginPage extends BasePage {
 	}
 
 	private JPanel getLoginFormPanel() {
-		loginButton  = button("Login", Color.YELLOW);
-		usernameField = textField("admin");
-		passwordField = passwordField("123");
+		loginButton  = ComponentBuilder.button("Login", Color.YELLOW);
+		usernameField = InputComponentBuilder.textField("admin");
+		passwordField = InputComponentBuilder.passwordField("123");
 		
 		
 		PanelRequest panelRequest = new PanelRequest(intArray(64, 100), 20, 15, Color.WHITE, 10, 10, 0, 0, true);

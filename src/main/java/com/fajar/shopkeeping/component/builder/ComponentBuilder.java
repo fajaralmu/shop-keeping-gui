@@ -258,13 +258,9 @@ public class ComponentBuilder {
 		return false;
 	}
 
-	/**
-	 * jLabel with specified fontSize
-	 * 
-	 * @param title
-	 * @param fontSize
-	 * @return
-	 */
+	public static JLabel title(String title) {
+		return title(title, 20);
+	}
 	public static JLabel title(String title, int fontSize) {
 
 		int width = title.length() * (fontSize + 10);

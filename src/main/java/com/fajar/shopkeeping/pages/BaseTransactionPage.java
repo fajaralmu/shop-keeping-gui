@@ -29,6 +29,7 @@ import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
@@ -47,6 +48,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
 @Data
 public abstract class BaseTransactionPage extends BasePage{ 
 	
@@ -90,15 +92,15 @@ public abstract class BaseTransactionPage extends BasePage{
 		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 1, Color.WHITE, 30, 30, 0, 0, false, true);   
 		buttonSubmitCart = ComponentBuilder.editButton("Submit To Cart");
- 		buttonClearCart = button("Clear");
- 		buttonSubmitTransaction = submitButton("SUBMIT TRANSACTION");
+ 		buttonClearCart =  ComponentBuilder.button("Clear");
+ 		buttonSubmitTransaction = InputComponentBuilder.submitButton("SUBMIT TRANSACTION");
 		
 		if(formPanel == null) {
 			formPanel = buildFormPanel();
 		}
 		
 		if(titleLabel == null) {
-			titleLabel = title("Transaction", 50);
+			titleLabel = ComponentBuilder.title("Transaction", 50);
 		}
 		
 		productListPanel = buildProductListPanel(); 
@@ -199,19 +201,10 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected ActionListener buttonClearListener() {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						clearForm(false); 
-					}
-				});
-				
-			}
+		return  (ActionEvent e) ->{ 
+				ThreadUtil.run( ()->{
+					clearForm(false); 
+				}); 
 		};
 	}
 	
@@ -230,13 +223,9 @@ public abstract class BaseTransactionPage extends BasePage{
 					Dialogs.error("selected product does not exist");
 					return;
 				}
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						populateForm(selectedProductFlow, null);
-						setEditMode(true);
-					}
+				ThreadUtil.run(()->{
+					populateForm(selectedProductFlow, null);
+					setEditMode(true); 
 				});
 				
 			}
@@ -302,18 +291,9 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected ActionListener buttonSubmitToCartListener() { 
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		return  (ActionEvent e)-> {
 				int confirm = JOptionPane.showConfirmDialog(null, "Continue submit?"); 
-				if(confirm != 0) { 
-					return;
-				}
-				
-				submitToCart();
-			} 
-			
+				if(confirm == 0) {  submitToCart(); } 
 		};
 	} 
 	
@@ -323,20 +303,13 @@ public abstract class BaseTransactionPage extends BasePage{
 	 */
 	protected ActionListener dynamicDropdownActionListener(final DropDownType dropDownType) {
 		 
-		return  new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) { 
+		return  (ActionEvent e)-> { 
 				
 				 final JComboBox<?> inputComponent = (JComboBox<?>) e.getSource();
 				 Object selectedValue = inputComponent.getSelectedItem();
-				 if(null == selectedValue) {
-						return;
-					}
+				 if(null == selectedValue) { return; }
 				 handleDynamicDropdownChange(dropDownType, selectedValue.toString());
-			}
- 
-		};
+			};
 	}
 	 
 	/**
@@ -409,8 +382,8 @@ public abstract class BaseTransactionPage extends BasePage{
 			public void keyPressed(KeyEvent e) { }
 			@Override
 			public void keyReleased(KeyEvent event) { 
-				final JComboBox<?> dynamicComboBox = getComboBox(event);
-				final String componentText = getComboBoxText(dynamicComboBox);  
+				final JComboBox<?> dynamicComboBox = InputComponentBuilder.getComboBoxFromEvent(event);
+				final String componentText = InputComponentBuilder.getComboBoxText(dynamicComboBox);  
 				handleDropDownKeyReleased(dynamicComboBox, dropDownType, componentText);
 			}
 			 
@@ -424,28 +397,16 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected ActionListener buttonRemoveListener(final ProductFlow productFlow) {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		return  (ActionEvent e)-> {
 				int confirm = JOptionPane.showConfirmDialog(null, "Remove "+productFlow.getProduct().getName()+"?");
 				
-				if(confirm != 0) { 
-					return;
-				}
+				if(confirm != 0) {  return; }
 				
-				ThreadUtil.run(new Runnable() {
-					
-					@Override
-					public void run() {
-						long productId = productFlow.getProduct().getId();
-						removeProductFlow(productId);
-						refresh();
-						
-					}
+				ThreadUtil.run(()->{
+					long productId = productFlow.getProduct().getId();
+					removeProductFlow(productId);
+					refresh(); 
 				});
-				
-			}
 		};
 	}
 	
@@ -475,37 +436,6 @@ public abstract class BaseTransactionPage extends BasePage{
 		SUPPLIER, PRODUCT, CUSTOMER
 	}
 	
-	/**
-	 * set label text to ""
-	 * @param label
-	 */
-	protected static void clearLabel(JLabel label) {
-		label.setText("");
-	}
 	
-	/**
-	 * set date chooser to now
-	 * @param dateChooser
-	 */
-	protected static void clearDateChooser(JDateChooser dateChooser) {
-		dateChooser.setDate(new Date());
-	}
-	
-	/**
-	 * set value to ""
-	 * @param textField
-	 */
-	protected static void clearTextField(JTextField textField) {
-		textField.setText("");
-	}
-	
-	/**
-	 * remove all items and set selected value to "";
-	 * @param comboBox
-	 */
-	protected static void clearComboBox(JComboBox<?> comboBox) {
-		comboBox.removeAllItems();
-		comboBox.setSelectedItem("");
-	}
 
 }

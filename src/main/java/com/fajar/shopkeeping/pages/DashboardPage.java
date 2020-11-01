@@ -1,8 +1,10 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
-
+import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -23,6 +25,7 @@ import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.DashboardHandler;
@@ -119,7 +122,7 @@ public class DashboardPage extends BasePage {
 		PanelRequest mainPanelRequest = mainPanelRequest(); 
 
 		if (labelUserInfo == null) {
-			labelUserInfo = title("Welcome to Dasboard!");
+			labelUserInfo =  title("Welcome to Dasboard!");
 		}
 		if (panelTodayCashflow == null) {
 			panelTodayCashflow = buildCashflowCardPanel(null, null);
@@ -303,7 +306,7 @@ public class DashboardPage extends BasePage {
 		// footer
 		components[components.length - 1] = cashflowSummaryFooter(totalCashflow, totalCostflow);
 		
-		synchronizeComponentWidth(components);
+		ComponentModifier.synchronizeComponentWidth(components);
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, 500, 1, Color.LIGHT_GRAY, 260);
 		JPanel panel = buildPanelV2(panelRequest, components);

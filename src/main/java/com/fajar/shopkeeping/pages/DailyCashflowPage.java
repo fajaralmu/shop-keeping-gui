@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.ContextConstants;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
@@ -67,7 +68,7 @@ public class DailyCashflowPage extends BasePage {
 		
 		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
 
-				title("Detail Penjualan " + DateUtil.dateString(day, month, year), 30),
+				 ComponentBuilder.title("Detail Penjualan " + DateUtil.dateString(day, month, year), 30),
 				dailyCashflowPanel
 
 		);  
@@ -124,7 +125,7 @@ public class DailyCashflowPage extends BasePage {
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelScroll(1, TABLE_WIDTH , 1, Color.LIGHT_GRAY, 500); 
 	 
-		synchronizeComponentWidth(components);
+		ComponentModifier.synchronizeComponentWidth(components);
 		
 		JPanel panel = buildPanelV2(panelRequest, components);
 		

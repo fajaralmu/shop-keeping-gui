@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.*;
 import java.awt.Color;
 
 import javax.swing.JButton;
