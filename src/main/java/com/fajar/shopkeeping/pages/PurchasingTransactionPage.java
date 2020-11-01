@@ -285,7 +285,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 			if(confirm != 0) { 
 				return;
 			}
-			getHandler().transactionSupply(productFlows, selectedSupplier); 
+			getHandler().transactionPurchasing(productFlows, selectedSupplier); 
 		};
 	}
  
@@ -323,7 +323,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 * handle response when supply transaction has been performed
 	 * @param response
 	 */
-	public void callbackTransactionSupply(WebResponse response) {
+	public void callbackTransactionPurchasing(WebResponse response) {
 		Transaction transaction = response.getTransaction();
 		String tranCode = transaction.getCode();
 		

@@ -12,11 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
-import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.constant.PageConstants;
-import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.PurchasingTransactionPage;
+import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.service.AccountService;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;

@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
@@ -21,7 +20,6 @@ import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebRequest;
-import com.fajar.shoppingmart.dto.WebResponse;
 
 public class ManagementHandler extends MainHandler<ManagementPage> {
 
@@ -85,16 +83,11 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 
 			Log.log("Submit managedObject: ", managedObject);
 
-			getPage().validateEntity();
-			entityService.updateEntity(managedObject, getPage().isEditMode(), getPage().getEntityClass(),
-					new MyCallback<Map<Object, Object>>() {
-
-						@Override
-						public void handle(Map<Object, Object> response) throws ApplicationException {
-
-							getPage().callbackUpdateEntity(response);
-						}
-					});
+			getPage().validateEntity(); 
+			entityService.updateEntity(managedObject, 
+					getPage().isEditMode(), 
+					getPage().getEntityClass(),
+					getPage()::callbackUpdateEntity );
 
 		} else {
 			Log.log("Operation aborted");
@@ -106,15 +99,8 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 	 * 
 	 * @return
 	 */
-	public ActionListener filterEntity() {
-
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getEntities();
-			}
-		};
+	public ActionListener filterEntity() { 
+		return  (ActionEvent e)->{ getEntities();  };
 	}
 
 	/**
@@ -134,14 +120,7 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 		filter.setOrderBy(getPage().getOrderBy());
 		filter.setOrderType(getPage().getOrderType());
 
-		entityService.getEntityList(filter, getPage().getEntityClass(), new WebResponseCallback() {
-
-			@Override
-			public void handle(WebResponse response) throws ApplicationException {
-
-				getPage().callbackGetFilteredEntities(response);
-			}
-		});
+		entityService.getEntityList(filter, getPage().getEntityClass(), getPage()::callbackGetFilteredEntities );
 	}
 
 	/**
@@ -155,31 +134,22 @@ public class ManagementHandler extends MainHandler<ManagementPage> {
 
 	public ActionListener printExcel() {
 
-		return new ActionListener() {
+		return  (ActionEvent event)-> { 
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+			WebRequest webRequest = getExcelReportRequest();
+			MyCallback<ReportResponse> myCallback =  (ReportResponse reportResponse)-> {
+				Log.log("Response daily excel: ", reportResponse.getReportType());
+				ResponseEntity<byte[]> response = reportResponse.getFileResponse();
+				Loadings.end();
 
-				WebRequest webRequest = getExcelReportRequest();
-				MyCallback<ReportResponse> myCallback = new MyCallback<ReportResponse>() {
-
-					@Override
-					public void handle(ReportResponse reportResponse) throws ApplicationException {
-						Log.log("Response daily excel: ", reportResponse.getReportType());
-						ResponseEntity<byte[]> response = reportResponse.getFileResponse();
-						Loadings.end();
-
-						String fileName = getFileName(response);
-						try {
-							saveFile(response.getBody(), fileName);
-						} catch (Exception e) {
-							throw new ApplicationException(e);
-						}
-					}
-				};
-				reportService.downloadReportExcel(webRequest, myCallback, ReportType.ENTITY);
-			}
+				String fileName = getFileName(response);
+				try {
+					saveFile(response.getBody(), fileName);
+				} catch (Exception e) {
+					throw new ApplicationException(e);
+				} 
+			};
+			reportService.downloadReportExcel(webRequest, myCallback, ReportType.ENTITY); 
 
 		};
 	}

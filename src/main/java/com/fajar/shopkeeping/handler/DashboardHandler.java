@@ -7,7 +7,6 @@ import java.util.Calendar;
 import org.springframework.http.ResponseEntity;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
-import com.fajar.shopkeeping.callbacks.BooleanCallback;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ContextConstants;

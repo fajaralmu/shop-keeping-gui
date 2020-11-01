@@ -3,11 +3,10 @@ package com.fajar.shopkeeping.handler;
 import java.util.List;
 import java.util.Map;
 
-import com.fajar.shopkeeping.callbacks.ApplicationException;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.pages.BaseTransactionPage;
-import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.pages.PurchasingTransactionPage;
+import com.fajar.shopkeeping.pages.SellingTransactionPage;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -43,14 +42,8 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		entityService.getEntityListJsonResponse(filter, entityClass, callback);
 	}
 	
-	public void transactionSupply(List<ProductFlow> productFlows, Supplier supplier) {
-		MyCallback<WebResponse> myCallback =  (WebResponse response) -> {
-			try {
-				getSupplyPage().callbackTransactionSupply(response);
-			}catch (Exception e) { 
-				throw new ApplicationException(e);
-			} 
-		};
+	public void transactionPurchasing(List<ProductFlow> productFlows, Supplier supplier) {
+		MyCallback<WebResponse> myCallback =  getSupplyPage()::callbackTransactionPurchasing;
 		transactionService.transactionSupply(productFlows, supplier, myCallback );
 	}
 	
@@ -64,24 +57,12 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 	 
 	
 	public void getProductDetail(final String productCode) {
-		MyCallback<WebResponse> callback =  (WebResponse response) ->{
-			try {
-				getSellingPage().callbackGetProductDetail(response);
-			}catch (Exception e) { 
-				throw new ApplicationException(e);
-			} 
-		};
+		MyCallback<WebResponse> callback = getSellingPage()::callbackGetProductDetail; 
 		transactionService.getProductDetail(productCode, callback );
 	}
 	
 	public void transactionSell(List<ProductFlow> productFlows, Customer customer) {
-		MyCallback<WebResponse> myCallback = (WebResponse response) -> {
-			try {
-				getSellingPage().callbackTransactionSell(response);
-			}catch (Exception e) { 
-				throw new ApplicationException(e);
-			} 
-		};
+		MyCallback<WebResponse> myCallback =  getSellingPage()::callbackTransactionSell;
 		transactionService.transactionSell(productFlows, customer, myCallback);
 	}
 }
