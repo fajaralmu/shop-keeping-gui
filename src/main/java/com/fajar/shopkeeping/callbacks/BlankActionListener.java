@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.handler;
+package com.fajar.shopkeeping.callbacks;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

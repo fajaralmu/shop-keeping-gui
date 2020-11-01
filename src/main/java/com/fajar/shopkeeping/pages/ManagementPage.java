@@ -300,7 +300,7 @@ public class ManagementPage extends BasePage {
 			@Override
 			public void run() {
 				try {
-					setFormPanel(generateEntityForm());
+					setFormPanel(generateInputForm());
 					helper.doClearForm();
 					getHandler().getEntities(); 
 					preInitComponent();
@@ -364,7 +364,7 @@ public class ManagementPage extends BasePage {
 	 * @return
 	 * @throws Exception 
 	 */
-	private JPanel generateEntityForm() throws Exception { 
+	private JPanel generateInputForm() throws Exception { 
 
 		List<Component> formComponents = new ArrayList<Component>();
  
@@ -477,7 +477,7 @@ public class ManagementPage extends BasePage {
 	}
 	
 	/**
-	 * CRUID DATA TABLE
+	 * Crud Data Table
 	 * @return
 	 */
 	private JPanel buildDataTablePanel() {
