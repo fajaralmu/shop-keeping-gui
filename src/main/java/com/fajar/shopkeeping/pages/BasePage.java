@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.callbacks.BlankActionListener;
+import com.fajar.shopkeeping.callbacks.Listeners;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
@@ -146,27 +147,18 @@ public abstract class BasePage {
 	}
 
 	private KeyListener frameKeyListener() {
-		return new KeyListener() { 
-			@Override
-			public void keyTyped(KeyEvent e) { } 
-			@Override
-			public void keyReleased(KeyEvent e) { }
+		return Listeners.keyPressedOnlyListener((KeyEvent e)->{
+			int code = e.getKeyCode();
+			switch (code) {
+			case KeyEvent.VK_F5:
+				Log.log("Refresh");
+				refresh();
+				break;
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				int code = e.getKeyCode();
-				switch (code) {
-				case KeyEvent.VK_F5:
-					Log.log("Refresh");
-					refresh();
-					break;
-
-				default:
-					break;
-				}
-
+			default:
+				break;
 			}
-		};
+		});
 	}
 
 	public abstract void initComponent();
@@ -334,22 +326,13 @@ public abstract class BasePage {
 	 * @return
 	 */
 	protected KeyListener textFieldKeyListener(final Component notUsed, final String fieldName) {
-
-		try {
+ 
 			final Field field = EntityUtil.getDeclaredField(getClass(), fieldName);
 			final Object origin = this;
 			final Class<?> fieldType = field.getType();
 			field.setAccessible(true);
 
-			return new KeyListener() {
-
-				@Override
-				public void keyTyped(KeyEvent e) { } 
-				@Override
-				public void keyPressed(KeyEvent e) { }
-
-				@Override
-				public void keyReleased(KeyEvent e) {
+			return Listeners.keyPressedOnlyListener( (KeyEvent e)->{
 					Log.log("HELLO");
 					final JTextField inputComponent = (JTextField) e.getSource();
 					Object value = inputComponent.getText();
@@ -379,13 +362,7 @@ public abstract class BasePage {
 						inputComponent.setText("");
 					}
 
-				}
-			};
-		} catch (Exception e1) {
-			Log.log("Error setting key listener");
-			e1.printStackTrace();
-			return null;
-		}
+				});
 
 	}
 

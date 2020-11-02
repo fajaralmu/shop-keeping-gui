@@ -46,8 +46,6 @@ import javax.swing.SwingConstants;
 
 import org.springframework.util.StringUtils;
 
-import com.fajar.shopkeeping.callbacks.ApplicationException;
-import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
@@ -777,27 +775,22 @@ public class ManagementPage extends BasePage {
 	 */
 	public void callbackGetFilteredEntities(final WebResponse response) { 
 		
-		ThreadUtil.run(new Runnable() {
+		ThreadUtil.run( ()->{
+			Log.log("Filtered Entities: ", response.getEntities());
+			int totalData = response.getTotalData();
+			int totalPage = totalData / getSelectedLimit();
 			
-			@Override
-			public void run() {
-				Log.log("Filtered Entities: ", response.getEntities());
-				int totalData = response.getTotalData();
-				int totalPage = totalData / getSelectedLimit();
-				
-				if(totalPage < selectedPage) {
-					setSelectedPage(totalPage);
-				}
-				
-				setEntityList(response.getEntities());
-				setTotalData(response.getTotalData());  
-				setListPanel(buildDataTablePanel()); 
-				refresh();
-				updateColumnFilterFieldFocus();
-				validateNavigationPanel();
+			if(totalPage < selectedPage) {
+				setSelectedPage(totalPage);
 			}
+			
+			setEntityList(response.getEntities());
+			setTotalData(response.getTotalData());  
+			setListPanel(buildDataTablePanel()); 
+			refresh();
+			updateColumnFilterFieldFocus();
+			validateNavigationPanel();
 		});
-		
 	}
 	
 	
@@ -806,15 +799,13 @@ public class ManagementPage extends BasePage {
 	 * reset cursor to the last focus component
 	 */
 	private void updateColumnFilterFieldFocus() {
-		ThreadUtil.run( ()-> {
+		ThreadUtil.run(()-> {
 			try {
 				String textValue = columnFilterTextFields.get(currentElementIdFocus).getText();
 				columnFilterTextFields.get(currentElementIdFocus).requestFocus();
 				columnFilterTextFields.get(currentElementIdFocus).setSelectionStart(textValue.length());
 				columnFilterTextFields.get(currentElementIdFocus).setSelectionEnd(textValue.length());
-			}catch (Exception e) {
-				 
-			} 
+			}catch (Exception e) { } 
 		});
 		
 	}
