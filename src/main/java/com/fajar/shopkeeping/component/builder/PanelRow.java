@@ -33,6 +33,26 @@ public class PanelRow {
 		return getMaxHeight(components);
 	}
 	
+	private Component getLastComponent() {
+		return components.get(components.size()-1);
+	}
+	
+	public int getMaxRightOffset() {
+		Component lastComponent = getLastComponent();
+		return lastComponent.getX()+lastComponent.getWidth();
+	}
+	
+	public static int getMaxRightOffset(List<PanelRow> panelRows) {
+		int maxRightOffet = 0;
+		
+		for (PanelRow panelRow : panelRows) {
+			if(panelRow.getMaxRightOffset()>maxRightOffet) {
+				maxRightOffet = panelRow.getMaxRightOffset();
+			}
+		}
+		return maxRightOffet;
+	}
+	
 	private int getMaxHeight(List<Component> components) {
 		int maxHeight = 0;
 		for (Component component : components) {

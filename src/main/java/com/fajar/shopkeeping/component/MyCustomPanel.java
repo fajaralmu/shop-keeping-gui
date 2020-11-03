@@ -3,81 +3,35 @@ package com.fajar.shopkeeping.component;
 import java.awt.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.component.builder.PanelRow;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.util.CollectionUtil;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
-public class MyCustomPanel extends JPanel {
-
-	
-	private final transient Map<Integer, PanelRow> componentsMap;
+public class MyCustomPanel extends BaseCustomPanel { 
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -9045915483807077198L;
-
-	int row, margin, customHeight, customWidth;
-	int currentHeight;
-	
-	private boolean centerAligment;
-	@Setter(value = AccessLevel.NONE)
-	final int[] colSizes;
-	
+	private static final long serialVersionUID = -9145915483807077198L;  
 	final List<Component> lastComponentEachRow = new ArrayList<Component>();
 
 	public MyCustomPanel(int... colSizes) {
-		super();
-		this.colSizes = colSizes;
-		componentsMap = new HashMap<Integer, PanelRow>();
+		super(colSizes); 
 
-	}
-
-	public void addComponent(Component component, int row) {
-		if (componentsMap.get(row) == null) {
-			componentsMap.put(row, new PanelRow());
-		}
-
-		componentsMap.get(row).getComponents().add(component);
-	}
-
+	} 
 	public void update() {
  
 		calculateComponentsPosition();
-		drawComponents();
-	}
-
-	public void setCenterAlignment(boolean centerAligment) {
-		this.centerAligment = centerAligment;
-	}
-
-	private void drawComponents() {
-		this.removeAll();
-
-		final Set<Integer> rows = componentsMap.keySet();
-
-		for (Integer row : rows) {
-			addComponents(componentsMap.get(row).getComponents());
-		}
+		calculateWidthAndHeight();
+		allAllComponents();
 	}
 	
-	private void addComponents(List<Component> components) {
-		for (Component component : components) {
-			add(component);
-		}
-	}
-
 	private int getXPosition(int columnIndex, Component component) {
 		int xPosition = margin;
 		for (int i = 0; i < columnIndex; i++) {
@@ -134,10 +88,7 @@ public class MyCustomPanel extends JPanel {
 			}
 			lastComponentEachRow.add(getPanelRowComponents(key).get(components.size() - 1));
 			currentHeight = currentHeight + margin + rowHeight;
-		}
-		 
-		calculateWidthAndHeight();
-
+		} 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
 	}
 	
@@ -162,25 +113,31 @@ public class MyCustomPanel extends JPanel {
 
 	private void calculateWidthAndHeight() {
 		 
-		customHeight = calculateHeight();
-		customWidth = calculateWidth();
+		customHeight = calculatePanelHeight();
+		customWidth = calculatePanelWidth();
 	}
 
-	private int calculateHeight() { 
-		return currentHeight + margin * 2; 
+	private int calculatePanelHeight() { 
+		final Set<Integer> rows = componentsMap.keySet();  
+		int totalHeight = 0; 
+		for (Integer key : rows) { 
+			PanelRow panelRow = componentsMap.get(key);
+			totalHeight+=panelRow.getHeight()+margin;
+		}
+		return totalHeight;
 	}
 
-	private int calculateWidth() {
-
-		int width = 0;
-		for (Component component : lastComponentEachRow) {
-			int componentWidth = component.getX() + component.getWidth();
-			if (componentWidth > width) {
-				width = componentWidth;
-			}
-		} 
-
-		return width + margin;
+	private int calculatePanelWidth() { 
+		return PanelRow.getMaxRightOffset(CollectionUtil.mapToList(componentsMap));
+//		int width = 0;
+//		for (Component component : lastComponentEachRow) {
+//			int componentWidth = component.getX() + component.getWidth();
+//			if (componentWidth > width) {
+//				width = componentWidth;
+//			}
+//		} 
+//
+//		return width + margin;
 	}
 
 	
