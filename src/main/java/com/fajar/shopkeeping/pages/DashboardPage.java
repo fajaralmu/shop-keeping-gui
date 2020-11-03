@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildPanelV3;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;

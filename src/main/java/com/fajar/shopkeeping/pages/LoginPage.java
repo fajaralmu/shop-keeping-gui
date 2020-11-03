@@ -55,7 +55,7 @@ public class LoginPage extends BasePage {
 		
 		PanelRequest panelRequest = new PanelRequest(intArray(64, 100), 20, 15, Color.WHITE, 10, 10, 0, 0, true);
 		Log.log("LOGIN PAGE**");
-		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest, 
+		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest, 
 				ComponentBuilder.label("Username"), usernameField, 
 				ComponentBuilder.label("Password") ,passwordField,
 				null, loginButton);

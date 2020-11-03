@@ -21,7 +21,7 @@ import lombok.Setter;
 public class MyCustomPanel extends JPanel {
 
 	
-	private transient Map<Integer, PanelRow> componentsMap;
+	private final transient Map<Integer, PanelRow> componentsMap;
 
 	/**
 	 * 
@@ -53,8 +53,7 @@ public class MyCustomPanel extends JPanel {
 	}
 
 	public void update() {
-
-		setHeightsForEachRows();
+ 
 		calculateComponentsPosition();
 		drawComponents();
 	}
@@ -68,16 +67,14 @@ public class MyCustomPanel extends JPanel {
 
 		final Set<Integer> rows = componentsMap.keySet();
 
-		for (Integer key : rows) {
-			PanelRow panelRow = componentsMap.get(key);
-			loop: for (Component component : panelRow.getComponents()) {
-
-				if (component == null) {
-
-					continue loop;
-				}
-				add(component);
-			}
+		for (Integer row : rows) {
+			addComponents(componentsMap.get(row).getComponents());
+		}
+	}
+	
+	private void addComponents(List<Component> components) {
+		for (Component component : components) {
+			add(component);
 		}
 	}
 
@@ -173,21 +170,6 @@ public class MyCustomPanel extends JPanel {
 		return currentHeight + margin * 2; 
 	}
 
-	private void setHeightsForEachRows() {
-		final Set<Integer> rows = componentsMap.keySet();
-		/**
-		 * setting the height
-		 */
-		for (Integer key : rows) {
-			PanelRow panelRow = componentsMap.get(key);
-			List<Component> components = panelRow.getComponents();
-			int maxHeight = getMaxHeight(components);
-
-			componentsMap.get(key).setHeight(maxHeight);
-		}
-
-	}
-
 	private int calculateWidth() {
 
 		int width = 0;
@@ -196,32 +178,10 @@ public class MyCustomPanel extends JPanel {
 			if (componentWidth > width) {
 				width = componentWidth;
 			}
-		}
-
-//		for (int colSize : colSizes) {
-//			width += margin + colSize + margin;
-////			if (!centerAligment) {
-////				width += margin * 2;
-////			}
-//		}
+		} 
 
 		return width + margin;
 	}
 
-	public static int getMaxHeight(List<Component> components) {
-		int maxHeight = Integer.MIN_VALUE;
-
-		for (Component component : components) {
-			if (null == component) {
-				continue;
-			}
-			int componentHeight = component.getHeight();
-			if (componentHeight > maxHeight) {
-				maxHeight = componentHeight;
-			}
-		}
-
-		return maxHeight;
-	}
-
+	
 }

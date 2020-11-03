@@ -81,7 +81,7 @@ public class PanelBuilderv1 {
 
 		panel.setBackground(color);
 		panel.setBounds(X, Y, finalW, finalH);
-		panel.setLayout(null);
+//		panel.setLayout(null);
 		panel.setBounds(X, Y, finalW, finalH);
 		panel.setSize(finalW, finalH);
 

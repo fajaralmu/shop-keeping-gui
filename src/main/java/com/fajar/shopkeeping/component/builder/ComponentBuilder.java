@@ -21,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
-import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.component.MyInfoLabel;
 import com.fajar.shopkeeping.component.RoundedBorder;
 import com.fajar.shopkeeping.component.RoundedButton;
@@ -66,10 +65,16 @@ public class ComponentBuilder {
 	 * @param components
 	 * @return
 	 */
-	public static MyCustomPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
+	public static JPanel buildPanelV2(PanelRequest panelRequest, Object... components) {
 
 		PanelBuilderv2 panelBuilder = new PanelBuilderv2(panelRequest, components);
 
+		return panelBuilder.buildPanel();
+	}
+	public static JPanel buildPanelV3(PanelRequest panelRequest, Object... components) {
+		
+		PanelBuilderv3 panelBuilder = new PanelBuilderv3(panelRequest, components);
+		
 		return panelBuilder.buildPanel();
 	}
 
@@ -80,13 +85,13 @@ public class ComponentBuilder {
 	 * @param height
 	 * @return
 	 */
-	public static MyCustomPanel buildScrolledPanel(Component mainComponent, int width, int height) {
+	public static JPanel buildScrolledPanel(Component mainComponent, int width, int height) {
 
 		JScrollPane scrollPane = new JScrollPane(mainComponent, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollPane.setPreferredSize(new Dimension(width, height));
 
-		MyCustomPanel panel = new MyCustomPanel();
+		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, width, height);
 		panel.add(scrollPane);
 		return panel;

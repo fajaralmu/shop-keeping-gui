@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.fajar.shopkeeping.component.MyCustomPanel;
+import com.fajar.shopkeeping.component.MyCustomPanelv2;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.Log;
@@ -18,7 +19,7 @@ import com.fajar.shopkeeping.util.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PanelBuilderv2 {
+public class PanelBuilderv3 {
 
 	private final PanelRequest panelRequest;
 	private final Object[] components;
@@ -37,10 +38,10 @@ public class PanelBuilderv2 {
 	private int panelH = 0;
 	private boolean autoScroll = false;
 	private boolean heightSpecified = false;
-	private MyCustomPanel customPanel;
+	private MyCustomPanelv2 customPanel;
 
 
-	public PanelBuilderv2(PanelRequest panelRequest, Object[] components) {
+	public PanelBuilderv3(PanelRequest panelRequest, Object[] components) {
 		this.panelRequest = panelRequest;
 		this.components = components;
 		this.Size = components.length ;
@@ -67,14 +68,14 @@ public class PanelBuilderv2 {
 		this.heightSpecified = panelH > 0;
 		this.autoScroll = panelRequest.isAutoScroll();
 		
-		this.customPanel = new MyCustomPanel(colSizes);
+		this.customPanel = new MyCustomPanelv2(colSizes);
 		customPanel.setMargin(margin);
 		customPanel.setCenterAlignment(panelRequest.isCenterAligment());
 
 	}
 
 	public JPanel buildPanel() {
-		 
+		
 		for (int i = 0; i < Size; i++) {
 
 			Component currentComponent; 
@@ -83,15 +84,13 @@ public class PanelBuilderv2 {
 			} catch (Exception e) {
 				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
 			}
-			currentColumn++;
 			
 			addToTemporaryComponent(currentComponent); 
-			checkIfSwitchRow();
+			updateCurrentColumnAndCurrentRow();
 //			printComponentLayout(currentComponent);
 		}
 
 		addRemainingComponents();
-
 		customPanel.update(); 
 		return generatePanelPhysical();
 	}
@@ -113,8 +112,8 @@ public class PanelBuilderv2 {
 		}
 	}
 
-	private void checkIfSwitchRow() {
-		 
+	private void updateCurrentColumnAndCurrentRow() {
+		currentColumn++;
 		if (currentColumn == COLUMN_COUNT) {
 			currentColumn = 0;
 			for (Component component : tempComponents) {
@@ -135,7 +134,7 @@ public class PanelBuilderv2 {
 		final int finalWidth = customPanel.getCustomWidth();
 		final int finalHeight = customPanel.getCustomHeight(); 
 
-		customPanel.setLayout(null);
+//		customPanel.setLayout(null);
 		customPanel.setBounds(xPos, yPos, finalWidth, finalHeight);
 		customPanel.setBackground(color);
 		
