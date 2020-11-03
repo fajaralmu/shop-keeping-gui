@@ -12,8 +12,7 @@ import javax.swing.JLabel;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.UrlConstants;
-import com.fajar.shopkeeping.handler.LauncherHandler;
-import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.handler.LauncherHandler; 
 import com.fajar.shopkeeping.service.AppSession;
 
 public class LauncherPage extends BasePage {
@@ -25,7 +24,7 @@ public class LauncherPage extends BasePage {
  
 
 	public LauncherPage() {
-		super("Launcher", BASE_WIDTH, BASE_HEIGHT);
+		super("Launcher", 700, 450);
 	} 
 
 	@Override
@@ -36,9 +35,7 @@ public class LauncherPage extends BasePage {
 		labelApplicationIcon = applicationIcon();
 		ComponentModifier.changeSize(navigateLoginButton, 100, 50);
 		
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true); 
-		
-		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
 				labelApplicationIcon,
 				labelAppName,
 				labelAppAddress,  

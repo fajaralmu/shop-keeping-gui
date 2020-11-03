@@ -24,7 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.component.ManagementMenuItem;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
@@ -147,11 +146,12 @@ public class DashboardPage extends BasePage {
 
 		exitOnClose();
 
-	}
-
-	
+	} 
 	public ManagementMenuItem menuItem(String text, Class<? extends BaseEntity> _class) {
 		return new ManagementMenuItem(text, _class);
+	}
+	public ManagementMenuItem menuItemNotEditable(String text, Class<? extends BaseEntity> _class) {
+		return new ManagementMenuItem(text, _class, false);
 	}
 	public JMenuItem menuItem(String text) {
 		return new JMenuItem(text);
@@ -179,7 +179,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemCustomerVoucher(menuItem("Member Voucher Data", CustomerVoucher.class));
 		setMenuItemCapital(menuItem("Capital Type", Capital.class));
 		setMenuItemCapitalFLow(menuItem("Capital Journal", CapitalFlow.class));
-		setMenuItemCashBalance(menuItem("Balance Journal", CashBalance.class));
+		setMenuItemCashBalance(menuItemNotEditable("Balance Journal", CashBalance.class));
 
 		
         JMenu managementMenu = new JMenu("Management"); 
@@ -210,7 +210,7 @@ public class DashboardPage extends BasePage {
 		voucherMenu.add(menuItemCustomerVoucher);
 		
 		ComponentModifier.
-			addMenuForMenuBar(menuBar, accountMenu, settingMenu, managementMenu, voucherMenu);
+			addMenuForMenuBar(menuBar, accountMenu, settingMenu, managementMenu, voucherMenu, transactionMenu);
  
 	}
 
@@ -438,7 +438,7 @@ public class DashboardPage extends BasePage {
 				field.setAccessible(true);
 				try {
 					ManagementMenuItem value = (ManagementMenuItem) field.get(this);
-					addActionListener(value, managementListener(value.getEntityClass()));
+					addActionListener(value, managementListener(value.getEntityClass(), value.isEditable()));
 				} catch (Exception e) { 
 					e.printStackTrace();
 				}
@@ -469,8 +469,8 @@ public class DashboardPage extends BasePage {
 		super.initEvent();
 	}
 	
-	private ActionListener managementListener(Class<? extends BaseEntity> _class) {
-		return getHandler().managementNavigationListener(_class);
+	private ActionListener managementListener(Class<? extends BaseEntity> _class, boolean editable) {
+		return getHandler().managementNavigationListener(_class, editable);
 	}
 
 	private DashboardHandler getHandler() {

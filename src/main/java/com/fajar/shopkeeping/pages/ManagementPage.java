@@ -73,6 +73,7 @@ import com.toedter.calendar.JDateChooser;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 @Data
@@ -113,8 +114,9 @@ public class ManagementPage extends BasePage {
 	
 	private boolean refreshing;
 	private boolean editMode;
+	@Getter(value = AccessLevel.NONE)
+	private boolean entityEditable; 
 	
-	private String idFieldName;
 	private String orderType;
 	private String orderBy;
 	private Object idValue;
@@ -150,25 +152,25 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = autoPanelNonScroll(2, 550, 5, Color.WHITE);
+		PanelRequest panelRequest = autoPanelNonScroll(2, generalWidth(), 5, Color.WHITE);
 		panelRequest.setCenterAligment(true);
 
-		if (formPanel == null) {
-			formPanel = buildPanelV2(panelRequest, label("Please wait.."));
-		}  
 		if(listPanel == null) {
 			listPanel = buildPanelV2(panelRequest, label("Please wait.."));
 		} 
-		if(navigationPanel == null) { //will be populated with pagination buttons when get filtered entities
-			navigationPanel = ComponentBuilder.blankPanel(520, 90);
-		} 
+		navigationPanel = ComponentBuilder.blankPanel(generalWidth(), 90);
 		
-		mainPanel = buildPanelV2(panelRequest,
-
-				title("Management::"+getEntityClassName(), 30), null,
-				formPanel, 
-				buildVerticallyInlineComponent(520, navigationPanel,  listPanel));
-
+		if(isEntityEditable() ) {
+		
+			mainPanel = buildPanelV2(panelRequest,
+					title("Management::"+getEntityClassName(), 30), null,
+					formPanel, 
+					buildVerticallyInlineComponent(generalWidth(), navigationPanel,  listPanel));
+		} else {
+			mainPanel = buildPanelV2(panelRequest,
+					title("Management::"+getEntityClassName(), 30), null,
+					buildVerticallyInlineComponent(generalWidth(), navigationPanel,  listPanel));
+		}
 		parentPanel.add(mainPanel);
 		
 		exitOnClose();
@@ -181,14 +183,18 @@ public class ManagementPage extends BasePage {
 	private void validateNavigationPanel() { 
 		ThreadUtil.run(()-> {
 			JPanel contentNavigation = getNavigationPanel();
-			contentNavigation.setBounds(0, 0, 515, 81);
-			contentNavigation.setPreferredSize(new Dimension(515, 81));
+			contentNavigation.setBounds(0, 0, generalWidth(), 81);
+			contentNavigation.setPreferredSize(new Dimension(generalWidth(), 81));
 			navigationPanel.removeAll();
 			navigationPanel.add(contentNavigation); 
 			navigationPanel.revalidate();
 			navigationPanel.repaint(); 
 		});
 		
+	}
+	
+	private int generalWidth() {
+		return isEntityEditable() ? 550 : WIDTH-40;
 	}
 
 	/**
@@ -200,13 +206,12 @@ public class ManagementPage extends BasePage {
 		if(selectedLimit == 0) {
 			return new JPanel();
 		} 
-		
 		Component[] navigationButtons = helper.generateDataTableNavigationButtonsV2();
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, 500, 40);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, generalWidth(), 40);
 		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
 		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, buttonPrintExcel, label("input page"), inputPage);
-		return buildVerticallyInlineComponent(500, panelNavigation, panelPageLimit);
+		return buildVerticallyInlineComponent(generalWidth(), panelNavigation, panelPageLimit);
 	} 
 
 	private String getEntityClassName() {
@@ -236,8 +241,13 @@ public class ManagementPage extends BasePage {
 	public void setAppHandler(MainHandler mainHandler) {
 		SharedContext context = getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
 		setEntityClass(context.getEntityClassForManagement());
+		setEntityEditable(context.isEntityEditable());
 		super.setAppHandler(mainHandler);
 		
+	}
+	
+	private boolean isEntityEditable() {
+		return entityEditable == true && entityProperty.isEditable() == true;
 	}
 	
 	/**
@@ -256,9 +266,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	protected void constructMenu() {
 		
-		if(menuBar.getMenuCount()>0) {
-			return;
-		}
+		if(menuBar.getMenuCount()>0) { return; }
 		
 		setMenuBack(new JMenuItem("Back"));
 		
@@ -291,6 +299,7 @@ public class ManagementPage extends BasePage {
 	public void loadForm() { 
 		ThreadUtil.runWithLoading(()->{
 			try {
+				setEntityProperty(EntityUtil.createEntityProperty(entityClass, null));
 				setFormPanel(generateInputForm());
 				helper.doClearForm();
 				getHandler().getEntities(); 
@@ -348,9 +357,9 @@ public class ManagementPage extends BasePage {
 	}
 
 	/**
-	 * CRUD Form Generation
+	 * CRUD Form Generation returns null if not editable
 	 * 
-	 * @return
+	 * @return 
 	 * @throws Exception 
 	 */
 	private JPanel generateInputForm() throws Exception { 
@@ -359,11 +368,12 @@ public class ManagementPage extends BasePage {
  
 		comboBoxListContainer.clear();
 		formInputFields.clear();
-		EntityProperty newEntityProperty = EntityUtil.createEntityProperty(entityClass, null);
 		
-		setEntityProperty(newEntityProperty);
+		if(isEntityEditable() == false) {
+			return null;
+		}
 
-		List<EntityElement> entityElements = newEntityProperty.getElements();
+		List<EntityElement> entityElements = entityProperty.getElements();
 
 		for (EntityElement element : entityElements) {
 			final String elementId = element.getId();
@@ -393,7 +403,7 @@ public class ManagementPage extends BasePage {
 			} else if (element.isIdentity()) {
 				
 				inputComponent = textFieldDisabled("ID", 100, 20); 
-				setIdFieldName(elementId);
+//				setIdFieldName(elementId);
 				
 			} else if (fieldType.equals(FieldType.FIELD_TYPE_TEXTAREA)) {
 
@@ -433,6 +443,7 @@ public class ManagementPage extends BasePage {
 		}
 		
 		formComponents.add(actionButtons );
+		
 		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, 420, 2, Color.WHITE, 450, 550);
 		JPanel formPanel = buildPanelV2(panelRequest, toArrayOfComponent(formComponents));
 		formPanel.setBackground(white);
@@ -558,7 +569,7 @@ public class ManagementPage extends BasePage {
 			}
 			
 			//end field elements
-			components[colSize - 1] = idExist ? helper.editButton(idFieldName, idValue) : label("--");
+			components[colSize - 1] = idExist && isEntityEditable() ? helper.editButton(idFieldName, idValue) : label("--");
 			
 			sequenceNumber++;
 			
@@ -568,7 +579,7 @@ public class ManagementPage extends BasePage {
 			listComponents.add(rowPanel);
 		}
 		
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 520, 450);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, generalWidth() , 450);
 		
 		Component[] arrayOfComponents = toArrayOfComponent(listComponents);
 		ComponentModifier.synchronizeComponentWidth(arrayOfComponents);
@@ -775,7 +786,7 @@ public class ManagementPage extends BasePage {
 	 */
 	public void callbackGetFilteredEntities(final WebResponse response) { 
 		
-		ThreadUtil.run( ()->{
+		ThreadUtil.run(()->{
 			Log.log("Filtered Entities: ", response.getEntities());
 			int totalData = response.getTotalData();
 			int totalPage = totalData / getSelectedLimit();
@@ -785,11 +796,14 @@ public class ManagementPage extends BasePage {
 			}
 			
 			setEntityList(response.getEntities());
-			setTotalData(response.getTotalData());  
-			setListPanel(buildDataTablePanel()); 
-			refresh();
-			updateColumnFilterFieldFocus();
-			validateNavigationPanel();
+			setTotalData(response.getTotalData()); 
+			
+			ThreadUtil.run(()->{
+				setListPanel(buildDataTablePanel()); 
+				refresh();
+				updateColumnFilterFieldFocus();
+				validateNavigationPanel();
+			});
 		});
 	}
 	

@@ -30,6 +30,7 @@ public class SharedContext implements Serializable {
 	private int minTransactionYear;
 	private int code;
 	private Class<? extends BaseEntity> entityClassForManagement;
+	private boolean entityEditable;
 	
 	public SharedContext(int d, int m, int y) {
 		day = d;

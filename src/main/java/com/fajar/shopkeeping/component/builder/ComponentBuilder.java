@@ -71,6 +71,13 @@ public class ComponentBuilder {
 
 		return panelBuilder.buildPanel();
 	}
+	
+	/**
+	 * using grid layout
+	 * @param panelRequest
+	 * @param components
+	 * @return
+	 */
 	public static JPanel buildPanelV3(PanelRequest panelRequest, Object... components) {
 		
 		PanelBuilderv3 panelBuilder = new PanelBuilderv3(panelRequest, components);

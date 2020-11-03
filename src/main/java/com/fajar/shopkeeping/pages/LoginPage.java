@@ -34,7 +34,7 @@ public class LoginPage extends BasePage {
 	@Override
 	public void initComponent() { 
 
-		PanelRequest panelRequest = new PanelRequest(1, 300, 20, 15, Color.WHITE, 30, 30, 0, 0, true);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, 300, 15, Color.WHITE);
 		panelRequest.setCenterAligment(true);
 
 		JPanel loginFormPanel = getLoginFormPanel();
@@ -53,7 +53,7 @@ public class LoginPage extends BasePage {
 		passwordField = InputComponentBuilder.passwordField("123");
 		
 		
-		PanelRequest panelRequest = new PanelRequest(intArray(64, 100), 20, 15, Color.WHITE, 10, 10, 0, 0, true);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(intArray(64, 100), 20, Color.WHITE);
 		Log.log("LOGIN PAGE**");
 		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest, 
 				ComponentBuilder.label("Username"), usernameField, 

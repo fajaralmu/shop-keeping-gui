@@ -131,12 +131,15 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 		return navigationListener(PageConstants.PAGE_MANAGEMENT);
 	}
 	
-	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass) {
+	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass, final boolean editable) {
 		return  (ActionEvent e)-> {
-			SharedContext context = SharedContext.builder().entityClassForManagement(entityClass).build();
+			SharedContext context = SharedContext.builder().entityClassForManagement(entityClass).entityEditable(editable).build();
 			AppContext.setContext(ContextConstants.CTX_MANAGEMENT_PAGE, context );
 			APP_HANDLER.navigate(PageConstants.PAGE_MANAGEMENT); 
 		};
+	}
+	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass ) {
+		return managementNavigationListener(entityClass, true);
 	}
 
 }

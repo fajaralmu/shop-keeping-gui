@@ -63,8 +63,8 @@ public abstract class BasePage {
 	protected JMenuItem menuBack;
 
 	protected boolean refreshing;
-	private final int WIDTH;
-	private final int HEIGHT;
+	protected final int WIDTH;
+	protected final int HEIGHT;
 	private final String title;
 
 	protected boolean authRequired;
