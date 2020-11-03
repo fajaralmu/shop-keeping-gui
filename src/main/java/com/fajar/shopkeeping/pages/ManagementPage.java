@@ -235,7 +235,7 @@ public class ManagementPage extends BasePage {
 	@Override
 	public void setAppHandler(MainHandler mainHandler) {
 		SharedContext context = getContext(ContextConstants.CTX_MANAGEMENT_PAGE);
-		setEntityClass(context.getEntityClass());
+		setEntityClass(context.getEntityClassForManagement());
 		super.setAppHandler(mainHandler);
 		
 	}

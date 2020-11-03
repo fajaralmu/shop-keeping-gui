@@ -35,6 +35,7 @@ public class LauncherPage extends BasePage {
 		labelAppAddress = label(getApplicationAddress()); 
 		labelApplicationIcon = applicationIcon();
 		ComponentModifier.changeSize(navigateLoginButton, 100, 50);
+		
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true); 
 		
 		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
@@ -68,6 +69,7 @@ public class LauncherPage extends BasePage {
 		labelAppName.setText(getApplicationName());
 		labelAppAddress.setText(getApplicationAddress());
 		labelApplicationIcon.setText("");
+		labelApplicationIcon.setBorder(null);
 		labelApplicationIcon.setIcon(ComponentBuilder.imageIcon(getApplicationImageUrl(), 200, 200));
 	}
 	

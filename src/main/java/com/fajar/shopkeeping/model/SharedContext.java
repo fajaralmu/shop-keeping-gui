@@ -9,6 +9,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * this class holds data to be shared for entire page
+ * @author Republic Of Gamers
+ *
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -24,7 +29,7 @@ public class SharedContext implements Serializable {
 	
 	private int minTransactionYear;
 	private int code;
-	private Class<? extends BaseEntity> entityClass;
+	private Class<? extends BaseEntity> entityClassForManagement;
 	
 	public SharedContext(int d, int m, int y) {
 		day = d;

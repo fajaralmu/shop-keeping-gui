@@ -133,7 +133,7 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 	
 	public ActionListener managementNavigationListener( final Class<? extends BaseEntity> entityClass) {
 		return  (ActionEvent e)-> {
-			SharedContext context = SharedContext.builder().entityClass(entityClass).build();
+			SharedContext context = SharedContext.builder().entityClassForManagement(entityClass).build();
 			AppContext.setContext(ContextConstants.CTX_MANAGEMENT_PAGE, context );
 			APP_HANDLER.navigate(PageConstants.PAGE_MANAGEMENT); 
 		};

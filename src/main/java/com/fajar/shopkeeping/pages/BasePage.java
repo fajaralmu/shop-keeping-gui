@@ -26,7 +26,6 @@ import javax.swing.WindowConstants;
 
 import com.fajar.shopkeeping.callbacks.BlankActionListener;
 import com.fajar.shopkeeping.callbacks.Listeners;
-import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.MyCustomFrame;
 import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
@@ -176,9 +175,7 @@ public abstract class BasePage {
 			String subPage = oldTitle.split("::")[1];
 			String newTitle = AppSession.getApplicationProfile().getName()+"::"+subPage;
 			frame.setTitle(newTitle);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		} catch (Exception e) { }
 	}
 
 	public void dismiss() {
