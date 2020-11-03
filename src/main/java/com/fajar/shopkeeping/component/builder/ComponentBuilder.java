@@ -305,6 +305,24 @@ public class ComponentBuilder {
 		Object[] componentsClone = components;
 		return buildPanelV2(panelRequest, componentsClone);
 	}
+	
+	public static JPanel buildInlineComponentv2(Object... components) {
+		int[] colSizes = new int[components.length];
+		for (int i = 0; i< components.length; i++) {
+			Object object = components[i];
+			try {
+				Component component = (Component) object;
+				colSizes[i] = component.getWidth();
+			} catch (Exception e) {
+			}
+		}
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(colSizes,3,Color.WHITE);
+		Object[] componentsClone = components;
+		return buildPanelV2(panelRequest, componentsClone);
+		
+	}
+	
+	
 
 	/**
 	 * build vertically in line components wrapped in JPanel

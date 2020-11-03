@@ -52,7 +52,7 @@ public class DailyCashflowPage extends BasePage {
 	@Override
 	public void initComponent() { 
 		
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
+		PanelRequest panelRequest = new PanelRequest(1, TABLE_WIDTH, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
 
 		SharedContext context = AppContext.getContext(ContextConstants.CTX_DETAIL_CASHFLOW);
 		int day = context.getDay();
@@ -66,7 +66,7 @@ public class DailyCashflowPage extends BasePage {
 //			dailyCashflowPanel = null;
 		}
 		
-		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
+		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(TABLE_WIDTH,
 
 				 ComponentBuilder.title("Detail Penjualan " + DateUtil.dateString(day, month, year), 30),
 				dailyCashflowPanel

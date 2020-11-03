@@ -42,6 +42,13 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 		entityService.getEntityListJsonResponse(filter, entityClass, callback);
 	}
 	
+	public void getExactEntity(Class<? extends BaseEntity> entityClass, final String key, final Object value,
+			MyCallback<WebResponse> callback) {
+		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
+		Filter filter = Filter.builder().exacts(true).page(0).limit(1).fieldsFilter(fieldsFilter).build();
+		entityService.getEntityListJsonResponse(filter, entityClass, callback);
+	}
+	
 	public void transactionPurchasing(List<ProductFlow> productFlows, Supplier supplier) {
 		MyCallback<WebResponse> myCallback =  getSupplyPage()::callbackTransactionPurchasing;
 		transactionService.transactionSupply(productFlows, supplier, myCallback );

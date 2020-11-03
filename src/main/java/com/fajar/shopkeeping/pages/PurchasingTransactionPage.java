@@ -2,11 +2,13 @@ package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponentv2;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearComboBox;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearDateChooser;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearLabel;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearTextField;
+import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.setText;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
@@ -24,8 +26,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
+import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
@@ -44,8 +48,8 @@ import lombok.Data;
 @Data
 public class PurchasingTransactionPage extends BaseTransactionPage {   
 	
-	private long supplierId;
 	private long unitPrice;
+	private String productCode, supplierCode;
 	private Date expiryDate = new Date();
 	
 	private Supplier selectedSupplier;
@@ -53,8 +57,14 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	//fields
 	private JComboBox supplierComboBox;  
 	private JTextField inputUnitPriceField;
+	private JTextField inputSupplierCode;
+	private JTextField InputProductCode;
 	private JLabel labelCurrentPrice;
 	private JDateChooser inputExpiredDateField; 
+	
+	//buttons
+	private JButton buttonSearchSupplierByCode;
+	private JButton buttonSearchProductByCode;
 
 	public PurchasingTransactionPage() { 
 		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Supply");
@@ -65,6 +75,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 * build table
 	 * @return
 	 */
+	@Override
 	protected JPanel buildProductListPanel() {
 		 
 		if(null == productFlows) {
@@ -107,7 +118,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		 
 		PanelRequest panelRequest = getProductListPanelRequest(columnWidth, colSize);
 		
-		InputComponentBuilder.setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
+		setText(labelTotalPrice, StringUtil.beautifyNominal(grandTotalPrice));
 		
 		JPanel panel = buildPanelV2(panelRequest, (rowComponents));
 		return panel;
@@ -118,18 +129,23 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 * transaction fields
 	 * @return
 	 */
+	@Override
 	protected JPanel buildFormPanel() {
 		//supplier
 		ActionListener actionListener = dynamicDropdownActionListener(SUPPLIER);
 		KeyListener keyListener = dynamicDropdownFieldKeyListener(SUPPLIER); 
 		supplierComboBox = ComponentBuilder.buildEditableComboBox("", keyListener, actionListener, "type supplier name..");
+		buttonSearchSupplierByCode = ComponentBuilder.button("Search");
 		
 		//product
 		ActionListener actionListenerProduct = dynamicDropdownActionListener(PRODUCT);
 		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
+		buttonSearchProductByCode = ComponentBuilder.button("Search");
 		
 		inputQtyField = InputComponentBuilder.numberField("0");
+		inputSupplierCode = InputComponentBuilder.textField("");
+		InputProductCode = InputComponentBuilder.textField("");
 		inputUnitPriceField = InputComponentBuilder.numberField("0");
  		inputExpiredDateField = InputComponentBuilder.dateChooser(new Date());
  		
@@ -141,9 +157,11 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
  		labelCurrentPrice.setSize(300, 20);
  		
 		PanelRequest panelRequest = getFormFieldPanelRequest();
-		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
-				label("Supplier", LEFT), supplierComboBox,
-				label("Product", LEFT), productComboBox,
+		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest , 
+				label("Supplier Name", LEFT), supplierComboBox,
+				label("Or Supplier Code", LEFT), buildInlineComponentv2(inputSupplierCode, buttonSearchSupplierByCode),
+				label("Product Name", LEFT), productComboBox,
+				label("Or Product Code", LEFT), buildInlineComponentv2(InputProductCode, buttonSearchProductByCode),
 				label("Quantity", LEFT), inputQtyField,
 				label("Unit", LEFT), labelProductUnit,
 				label("Curr Price", LEFT), labelCurrentPrice,
@@ -160,6 +178,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 * clear input form
 	 * @param clearSupplier
 	 */
+	@Override
 	protected void clearForm(boolean clearSupplier) {
 		
 		selectedProduct = null;
@@ -170,6 +189,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 
 		clearComboBox(productComboBox);
 		clearTextField(inputQtyField);
+		clearTextField(InputProductCode);
 		clearTextField(inputUnitPriceField);
 		clearDateChooser(inputExpiredDateField);
 		clearLabel(labelProductUnit);
@@ -178,6 +198,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		if(clearSupplier) {
 			selectedSupplier = null;
 			clearComboBox(supplierComboBox);
+			clearTextField(inputSupplierCode);
 			labelTotalPrice.setText("0");
 		}
 		
@@ -194,6 +215,8 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		unitPrice = productFlow.getPrice();
 		
 		productComboBox.setSelectedItem(productFlow.getProduct().getName());
+		InputProductCode.setText(productFlow.getProduct().getCode());
+		
 		inputExpiredDateField.setDate(expiryDate);
 		inputQtyField.setText(String.valueOf(quantity));
 		inputUnitPriceField.setText(String.valueOf(unitPrice));
@@ -203,6 +226,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 
 		if(supplierOrCustomer != null) {
 			supplierComboBox.setSelectedItem(((Supplier)supplierOrCustomer).getName());
+			inputSupplierCode.setText(((Supplier)supplierOrCustomer).getId().toString());
 		}
 		
 	} 
@@ -223,6 +247,8 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 */
 	private void setSelectedSupplier(Supplier supplier) { 
 		selectedSupplier = supplier;
+		setText(inputSupplierCode, supplier.getId());
+		supplierComboBox.setSelectedItem(supplier.getName());
 		Log.log("selectedSupplier: ",selectedSupplier);
 	}
 
@@ -243,6 +269,8 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		this.selectedProduct = product;
 		labelProductUnit.setText(product.getUnit().getName());
 		labelCurrentPrice.setText(StringUtil.beautifyNominal(product.getPrice()));
+		setText(InputProductCode, product.getCode());
+		productComboBox.setSelectedItem(product.getName());
 	}
 	
 	@Override
@@ -270,12 +298,28 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		 addActionListener(buttonClearCart, buttonClearListener());
 		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
 		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
+		 addActionListener(buttonSearchProductByCode, this::searchProductByCode);
+		 addActionListener(buttonSearchSupplierByCode, this::searchSupplierByCode);
 		 
 		 //fields  
 		 addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	 
+		 addKeyListener(inputSupplierCode, textFieldKeyListener(inputSupplierCode, "supplierCode"), false);	 
+		 addKeyListener(InputProductCode, textFieldKeyListener(InputProductCode, "productCode"), false);	 
 		 addKeyListener(inputUnitPriceField, textFieldKeyListener(inputUnitPriceField, "unitPrice"), false);
 		 addActionListener(inputExpiredDateField, dateChooserListener(inputExpiredDateField, "expiryDate")); 
 		 
+	}
+	
+	private void searchProductByCode(ActionEvent e) {
+	}
+	
+	private void searchSupplierByCode(ActionEvent e) {
+
+		MyCallback<WebResponse> callback = (WebResponse)->{
+			if(WebResponse.getEntities().size()>0)
+				setSelectedSupplier((Supplier) WebResponse.getEntities().get(0));
+		};
+		getHandler().getExactEntity(Supplier.class, "id", supplierCode, callback);
 	}
 	
 	@Override

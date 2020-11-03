@@ -65,8 +65,8 @@ public class PeriodicReportPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
-
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, TABLE_WIDTH, 15, Color.white);
+		panelRequest.setCenterAligment(true);
 		panelFilterPeriod = buildPanelPeriodFilter();
 		if(null == panelCashflowListTable) {
 			panelCashflowListTable = buildPanelV2(panelRequest, label("Please Select The Period"));

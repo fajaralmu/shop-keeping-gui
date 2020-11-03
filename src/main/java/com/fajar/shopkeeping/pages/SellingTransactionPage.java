@@ -42,15 +42,20 @@ import lombok.Data;
 @Data
 public class SellingTransactionPage  extends BaseTransactionPage{
 
-	
-	private long customerId;  
+	 
 	
 	private Customer selectedCustomer;
 	private JComboBox customerComboBox;
 	private JLabel labelRemainingQty;
 	private JLabel labelProductPrice;
+	private JTextField inputCustomerCode;
+	private JTextField inputProductCode;
 	private JTextField inputCustomerPayment;
 	private JLabel labelTotalChange;
+	
+	//buttons
+	private JButton buttonSearchCustomerByCode;
+	private JButton buttonSearchProductByCode;
 	
 	public SellingTransactionPage() { 
 		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Selling");
@@ -65,6 +70,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		
 		//fields  
 		addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	
+		addKeyListener(inputProductCode, textFieldKeyListener(inputProductCode, "productCode"), false);	
+		addKeyListener(inputCustomerCode, textFieldKeyListener(inputCustomerCode, "customerCode"), false);	
 		addKeyListener(inputCustomerPayment, inputCustomerPaymentKeyListener(), false);
 		super.initEvent();
 	} 
@@ -181,12 +188,14 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		clearLabel(labelProductUnit);
 		clearLabel(labelRemainingQty);
 		clearLabel(labelTotalChange); 
+		clearTextField(inputProductCode);
 		
 		if(clearCustomer) {
 			selectedCustomer = null;
 			clearComboBox(customerComboBox);
 			labelTotalPrice.setText("0");
 			clearTextField(inputCustomerPayment);
+			clearTextField(inputCustomerCode);
 			grandTotalPrice = 0l;
 		}
 		
@@ -206,6 +215,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		setText(labelProductUnit, product.getUnit().getName());
 		setText(labelRemainingQty, beautifyNominal(product.getCount()));
 		setText(labelProductPrice, beautifyNominal(product.getPrice()));
+		setText(inputProductCode, product.getCode());
 		Log.log("Selected product: ", product);
 		
 	}
@@ -216,11 +226,13 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		ActionListener actionListener = dynamicDropdownActionListener(CUSTOMER);
 		KeyListener keyListener = dynamicDropdownFieldKeyListener(CUSTOMER); 
 		customerComboBox = ComponentBuilder.buildEditableComboBox("", keyListener, actionListener, "type customer name..");
+		buttonSearchCustomerByCode = ComponentBuilder.button("Search");
 				
 		//product
 		ActionListener actionListenerProduct = dynamicDropdownActionListener(PRODUCT);
 		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
+		buttonSearchProductByCode = ComponentBuilder.button("Search");
 		
 		inputQtyField = InputComponentBuilder.numberField("0"); 
 		inputCustomerPayment = InputComponentBuilder.numberField("0");
@@ -240,9 +252,11 @@ public class SellingTransactionPage  extends BaseTransactionPage{
  		JPanel panelRemainingStock = ComponentBuilder.buildInlineComponent(140, labelRemainingQty, labelProductUnit);
  		
  		PanelRequest panelRequest = getFormFieldPanelRequest();
-		JPanel panel = ComponentBuilder.buildPanelV2(panelRequest , 
-				label("Customer", LEFT), customerComboBox,
-				label("Product", LEFT), productComboBox,
+		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest , 
+				label("Customer Name", LEFT), customerComboBox,
+				label("Or Customer Code", LEFT), ComponentBuilder.buildInlineComponentv2(inputCustomerCode, buttonSearchCustomerByCode),
+				label("Product Name", LEFT), productComboBox,
+				label("Or Product Code", LEFT), ComponentBuilder.buildInlineComponentv2(inputProductCode, buttonSearchProductByCode),
 				label("Unit Price", LEFT), labelProductPrice,
 				label("Stock", LEFT), panelRemainingStock,
 				label("Quantity", LEFT), inputQtyField,
