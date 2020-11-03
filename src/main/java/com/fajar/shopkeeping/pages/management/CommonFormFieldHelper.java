@@ -2,6 +2,7 @@ package com.fajar.shopkeeping.pages.management;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -151,7 +152,7 @@ public class CommonFormFieldHelper {
 		JButton button = ComponentBuilder.button(text, 70, 20);
 		button.addActionListener(dataTableNavigationListener(page));
 		button.setBackground(active ? Color.orange : Color.yellow);
-
+//		button.setMargin(new Insets(0, 0, 0, 0));
 		return button;
 	}
 
@@ -208,12 +209,8 @@ public class CommonFormFieldHelper {
 	 * @param entity
 	 */
 	public void populateFormInputs(final Map<String, Object> entity) {
-		ThreadUtil.run(new Runnable() {
-
-			@Override
-			public void run() {
-				doPopulateFormInputs(entity);
-			}
+		ThreadUtil.run(()->{
+			doPopulateFormInputs(entity);
 		});
 	}
 
@@ -420,14 +417,10 @@ public class CommonFormFieldHelper {
 	 */
 	public JButton editButton(final String idFieldName2, final Object idValue2) {
 		JButton button = ComponentBuilder.editButton("Edit");
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		button.addActionListener((ActionEvent e)->{
 				page.getHandler().getSingleEntity(idFieldName2, idValue2);
 
-			}
-		});
+			});
 		return button;
 	}
 

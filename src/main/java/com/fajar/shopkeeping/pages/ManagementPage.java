@@ -207,7 +207,7 @@ public class ManagementPage extends BasePage {
 			return new JPanel();
 		} 
 		Component[] navigationButtons = helper.generateDataTableNavigationButtonsV2();
-		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 50, 1, Color.gray, generalWidth(), 40);
+		PanelRequest panelRequest = autoPanelScrollWidthHeightSpecified(navigationButtons .length, 70, 1, Color.gray, generalWidth(), 40);
 		JPanel panelNavigation = buildPanelV2(panelRequest, navigationButtons);
 		
 		JPanel panelPageLimit = buildInlineComponent(90, buttonFilterEntity, buttonClearDataTableFilter, buttonPrintExcel, label("input page"), inputPage);
