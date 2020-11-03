@@ -118,7 +118,7 @@ public class AppHandler {
 
 	public void startActiveHandler() {
 		activeHandler.start();
-		activeHandler.setPageHandler(); 
+		activeHandler.setPageHandler();
 	}
 
 }

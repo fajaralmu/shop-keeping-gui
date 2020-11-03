@@ -34,6 +34,7 @@ import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
@@ -164,7 +165,20 @@ public abstract class BasePage {
 
 	public void show() {
 		System.out.println("Show: " + title);
+		updateTitle();
 		this.frame.setVisible(true);
+		
+	}
+
+	private void updateTitle() {
+		try {
+			String oldTitle = frame.getTitle();
+			String subPage = oldTitle.split("::")[1];
+			String newTitle = AppSession.getApplicationProfile().getName()+"::"+subPage;
+			frame.setTitle(newTitle);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	public void dismiss() {
