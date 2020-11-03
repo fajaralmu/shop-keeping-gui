@@ -14,6 +14,6 @@ public class RoundedButton extends JButton{
 	public RoundedButton(String text, int borderRadius) {
 		super(text);
 		this.borderRadius = borderRadius;
-		this.setBorder(new RoundedBorder(borderRadius));
+//		this.setBorder(new RoundedBorder(borderRadius));
 	} 
 }

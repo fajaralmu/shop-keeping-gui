@@ -353,6 +353,13 @@ public class ComponentBuilder {
 	 * @return
 	 */
 	public static JTextArea textarea(Object defaultValue) {
+		return textarea(defaultValue, false, null);
+	}
+	public static JTextArea textareaDisabled(Object defaultValue) {
+		return textarea(defaultValue, true, null);
+	}
+	
+	public static JTextArea textarea(Object defaultValue, boolean disabled, Color color) {
 		if (null == defaultValue) {
 			defaultValue = "";
 		}
@@ -361,7 +368,9 @@ public class ComponentBuilder {
 		textArea.setSize(100, 50);
 		textArea.setColumns(10);
 		textArea.setRows(3);
-		textArea.setBackground(Color.LIGHT_GRAY);
+		textArea.setEditable(!disabled);
+		if(color!=null)
+			textArea.setBackground(color);
 		return textArea;
 	}
 

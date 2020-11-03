@@ -1,7 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
-import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildPanelV3;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
@@ -10,7 +9,9 @@ import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import javax.swing.border.Border;
 
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Loadings;
+import com.fajar.shopkeeping.component.ManagementMenuItem;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.ContextConstants;
@@ -54,6 +56,7 @@ import com.fajar.shoppingmart.entity.Transaction;
 import com.fajar.shoppingmart.entity.Unit;
 import com.fajar.shoppingmart.entity.Voucher;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
+import com.fajar.shoppingmart.util.EntityUtil;
 
 import lombok.Data;
 
@@ -83,21 +86,21 @@ public class DashboardPage extends BasePage {
 	private int selectedYear;  
 	
 	private JMenuItem menuItemLogout;
-	private JMenuItem menuItemProduct;
-	private JMenuItem menuItemUnit;
-	private JMenuItem menuItemSupplier;
-	private JMenuItem menuItemCustomer;
-	private JMenuItem menuItemCategory;
-	private JMenuItem menuItemTransaction;
-	private JMenuItem menuItemCostFlow;
-	private JMenuItem menuItemCostType;
-	private JMenuItem menuItemProductFlow;
+	private ManagementMenuItem menuItemProduct;
+	private ManagementMenuItem menuItemUnit;
+	private ManagementMenuItem menuItemSupplier;
+	private ManagementMenuItem menuItemCustomer;
+	private ManagementMenuItem menuItemCategory;
+	private ManagementMenuItem menuItemTransaction;
+	private ManagementMenuItem menuItemCostFlow;
+	private ManagementMenuItem menuItemCostType;
+	private ManagementMenuItem menuItemProductFlow;
 	
-	private JMenuItem menuItemVoucher;
-	private JMenuItem menuItemCustomerVoucher;
-	private JMenuItem menuItemCapital;
-	private JMenuItem menuItemCapitalFLow;
-	private JMenuItem menuItemCashBalance;
+	private ManagementMenuItem menuItemVoucher;
+	private ManagementMenuItem menuItemCustomerVoucher;
+	private ManagementMenuItem menuItemCapital;
+	private ManagementMenuItem menuItemCapitalFLow;
+	private ManagementMenuItem menuItemCashBalance;
 	
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
@@ -135,7 +138,7 @@ public class DashboardPage extends BasePage {
 		setPanelPeriodFilter(buildPanelPeriodFilter());  
 		
 		mainPanel = buildPanelV2(mainPanelRequest, 
-				title("BUMDES \"MAJU MAKMUR\""), labelUserInfo,  
+				title(AppSession.getApplicationProfile().getName()), labelUserInfo,  
 				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
 				panelTodayCashflow, panelPeriodFilter, 
 				panelMonthlySummary);
@@ -147,6 +150,9 @@ public class DashboardPage extends BasePage {
 	}
 
 	
+	public ManagementMenuItem menuItem(String text, Class<? extends BaseEntity> _class) {
+		return new ManagementMenuItem(text, _class);
+	}
 	public JMenuItem menuItem(String text) {
 		return new JMenuItem(text);
 	}
@@ -158,22 +164,22 @@ public class DashboardPage extends BasePage {
 		}
 		
 		setMenuItemLogout(menuItem("Logout"));
-		setMenuItemProduct(menuItem("Product"));
-		setMenuItemUnit(menuItem("Unit"));
-		setMenuItemSupplier(menuItem("Supplier"));
-		setMenuItemCustomer(menuItem("Customer"));
-		setMenuItemCategory(menuItem("Category"));
-		setMenuItemTransaction(menuItem("List Transction"));
-		setMenuItemCostFlow(menuItem("Cost Data"));
-		setMenuItemCostType(menuItem("Cost Type"));
+		setMenuItemProduct(menuItem("Product", Product.class));
+		setMenuItemUnit(menuItem("Unit", Unit.class));
+		setMenuItemSupplier(menuItem("Supplier", Supplier.class));
+		setMenuItemCustomer(menuItem("Customer", Customer.class));
+		setMenuItemCategory(menuItem("Product Category", Category.class));
+		setMenuItemTransaction(menuItem("List Transaction", Transaction.class));
+		setMenuItemCostFlow(menuItem("Cost Journal ", CostFlow.class));
+		setMenuItemCostType(menuItem("Cost Type", Cost.class));
 		setMenuItemTransactionSupply(menuItem("Supply"));
-		setMenuItemProductFlow(menuItem("Product Flow"));
+		setMenuItemProductFlow(menuItem("Product Flow", ProductFlow.class));
 		setMenuItemTransactionSelling(menuItem("Selling"));
-		setMenuItemVoucher(menuItem("Voucher Type"));
-		setMenuItemCustomerVoucher(menuItem("Member Voucher Data"));
-		setMenuItemCapital(menuItem("Capital Type"));
-		setMenuItemCapitalFLow(menuItem("Capital Data"));
-		setMenuItemCashBalance(menuItem("Balance Journal"));
+		setMenuItemVoucher(menuItem("Voucher Type", Voucher.class));
+		setMenuItemCustomerVoucher(menuItem("Member Voucher Data", CustomerVoucher.class));
+		setMenuItemCapital(menuItem("Capital Type", Capital.class));
+		setMenuItemCapitalFLow(menuItem("Capital Journal", CapitalFlow.class));
+		setMenuItemCashBalance(menuItem("Balance Journal", CashBalance.class));
 
 		
         JMenu managementMenu = new JMenu("Management"); 
@@ -430,6 +436,22 @@ public class DashboardPage extends BasePage {
 		PanelRequest panelCashflowRequest = PanelRequest.autoPanelNonScroll(2, 250, 15, Color.white);
 		return panelCashflowRequest;
 	}
+	
+	private void initManagementMenuEvents() {
+		List<Field> fields = EntityUtil.getDeclaredFields(getClass());
+		for (int i = 0; i < fields.size(); i++) {
+			Field field = fields.get(i);
+			if(field.getType().equals(ManagementMenuItem.class)) {
+				field.setAccessible(true);
+				try {
+					ManagementMenuItem value = (ManagementMenuItem) field.get(this);
+					addActionListener(value, managementListener(value.getEntityClass()));
+				} catch (Exception e) { 
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	@Override
 	protected void initEvent() { 
@@ -439,26 +461,10 @@ public class DashboardPage extends BasePage {
 		//account
 		addActionListener(menuItemLogout, getHandler().logout());
 		//management
-		addActionListener(menuItemProduct, managementListener(Product.class));
-		addActionListener(menuItemUnit, managementListener(Unit.class));
-		addActionListener(menuItemSupplier, managementListener(Supplier.class));
-		addActionListener(menuItemCategory, managementListener(Category.class));
-		addActionListener(menuItemCustomer, managementListener(Customer.class));
-		addActionListener(menuItemCostFlow, managementListener(CostFlow.class)); 
-		addActionListener(menuItemCostType, managementListener(Cost.class)); 
+		initManagementMenuEvents();
 		
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
-		addActionListener(menuItemProductFlow, managementListener(ProductFlow.class));
-		addActionListener(menuItemTransaction, managementListener(Transaction.class));
-		
-		addActionListener(menuItemCashBalance, managementListener(CashBalance.class));
-		
-		addActionListener(menuItemVoucher, managementListener(Voucher.class)); 
-		addActionListener(menuItemCustomerVoucher, managementListener(CustomerVoucher.class)); 
-		
-		addActionListener(menuItemCapital, managementListener(Capital.class)); 
-		addActionListener(menuItemCapitalFLow, managementListener(CapitalFlow.class)); 
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());

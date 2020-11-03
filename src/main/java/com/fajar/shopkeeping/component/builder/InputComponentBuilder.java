@@ -21,8 +21,7 @@ public class InputComponentBuilder {
 
 	public static JButton submitButton(Object text) {
 		JButton button = ComponentBuilder.button(text);
-		button.setBackground(Color.green);
-		button.setForeground(Color.white);
+		button.setBackground(Color.green); 
 		return button;
 	}
    

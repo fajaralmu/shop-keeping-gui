@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.textarea;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 
@@ -20,7 +21,7 @@ public class LauncherPage extends BasePage {
 
 	private JButton navigateLoginButton;
 	private JLabel labelAppName;
-	private JTextArea labelAppAddress;
+	private JLabel labelAppAddress;
  
 
 	public LauncherPage() {
@@ -31,17 +32,17 @@ public class LauncherPage extends BasePage {
 	public void initComponent() {
 		navigateLoginButton = button("Login"); 
 		labelAppName = title(getApplicationName(), 50);
-		labelAppAddress = textarea(getApplicationAddress());
+		labelAppAddress = label(getApplicationAddress()); 
 		ComponentModifier.changeSize(navigateLoginButton, 100, 50);
 		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true); 
 		
 		mainPanel = ComponentBuilder.buildPanelV3(panelRequest,
 
-				title("BUMDES", 50),
+				title("Retail", 50),
 				labelAppName,
 				labelAppAddress,  
-				ComponentBuilder.label("Silakan Login Untuk Melanjutkan"), 
-				ComponentBuilder.buildVerticallyInlineComponent(100, navigateLoginButton)); 
+				label("Silakan Login Untuk Melanjutkan"), 
+				ComponentBuilder.buildVerticallyInlineComponent(670, navigateLoginButton)); 
 
 		parentPanel.add(mainPanel);
 		exitOnClose();
