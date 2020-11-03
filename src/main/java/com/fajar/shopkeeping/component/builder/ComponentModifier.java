@@ -3,6 +3,8 @@ package com.fajar.shopkeeping.component.builder;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 
 public class ComponentModifier {
@@ -67,6 +69,13 @@ public class ComponentModifier {
 		}
 
 		return width;
+	}
+
+	public static void addMenuForMenuBar(JMenuBar menuBar, JMenu ...jMenus) {
+		for (int i = 0; i < jMenus.length; i++) {
+			menuBar.add(jMenus[i]);
+		}
+		
 	}
 
 }

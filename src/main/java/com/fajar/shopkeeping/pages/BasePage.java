@@ -332,7 +332,7 @@ public abstract class BasePage {
 			field.setAccessible(true);
 
 			return Listeners.keyReleasedOnlyListener((KeyEvent e)->{
-					Log.log("HELLO");
+					
 					final JTextField inputComponent = (JTextField) e.getSource();
 					Object value = inputComponent.getText();
 

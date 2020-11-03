@@ -115,7 +115,7 @@ public class DashboardPage extends BasePage {
 	@Override
 	public void onShow() {
 		if (responseTodayCashflow == null) {
-			getHandler().getTodayMonthlyCashflow(callbackUpdateMonthlyCashflow());
+			getHandler().getTodayMonthlyCashflow(this::callbackMonthlyCashflow);
 			Loadings.end();
 		}
 	}
@@ -172,7 +172,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemTransaction(menuItem("List Transaction", Transaction.class));
 		setMenuItemCostFlow(menuItem("Cost Journal ", CostFlow.class));
 		setMenuItemCostType(menuItem("Cost Type", Cost.class));
-		setMenuItemTransactionSupply(menuItem("Supply"));
+		setMenuItemTransactionSupply(menuItem("Purchasing"));
 		setMenuItemProductFlow(menuItem("Product Flow", ProductFlow.class));
 		setMenuItemTransactionSelling(menuItem("Selling"));
 		setMenuItemVoucher(menuItem("Voucher Type", Voucher.class));
@@ -209,16 +209,9 @@ public class DashboardPage extends BasePage {
 		voucherMenu.add(menuItemVoucher);
 		voucherMenu.add(menuItemCustomerVoucher);
 		
-		menuBar.add(accountMenu ); 
-		menuBar.add(settingMenu);
-        menuBar.add(managementMenu); 
-        menuBar.add(transactionMenu);
-        menuBar.add(voucherMenu);
+		ComponentModifier.
+			addMenuForMenuBar(menuBar, accountMenu, settingMenu, managementMenu, voucherMenu);
  
-	}
-	
-	private WebResponseCallback callbackUpdateMonthlyCashflow() { 
-		return this::callbackMonthlyCashflow;
 	}
 
 	/**
@@ -466,7 +459,7 @@ public class DashboardPage extends BasePage {
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
 		
-		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(callbackUpdateMonthlyCashflow()));
+		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(this::callbackMonthlyCashflow));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
 		addActionListener(buttonGenerateMontlyReport, getHandler().generateMonthlyReport());
 		

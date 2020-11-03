@@ -368,6 +368,9 @@ public class ComponentBuilder {
 		textArea.setSize(100, 50);
 		textArea.setColumns(10);
 		textArea.setRows(3);
+		if(!disabled) {
+			textArea.setBorder(BorderFactory.createLineBorder(Color.gray));
+		}
 		textArea.setEditable(!disabled);
 		if(color!=null)
 			textArea.setBackground(color);
