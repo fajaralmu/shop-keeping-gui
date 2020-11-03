@@ -81,8 +81,7 @@ public abstract class BasePage {
 		this.title = title;
 
 		initMainComponent();
-		preInitComponent();
-
+		preInitComponent(); 
 	}
 
 	private static SimpleDateFormat getDateFormat() {
@@ -111,7 +110,7 @@ public abstract class BasePage {
 
 	protected void setDefaultValues() { }
 
-	protected void initEvent() { }
+	protected void initEvent() { } 
 
 	/**
 	 * set the handler of the page
@@ -332,7 +331,7 @@ public abstract class BasePage {
 			final Class<?> fieldType = field.getType();
 			field.setAccessible(true);
 
-			return Listeners.keyPressedOnlyListener( (KeyEvent e)->{
+			return Listeners.keyReleasedOnlyListener((KeyEvent e)->{
 					Log.log("HELLO");
 					final JTextField inputComponent = (JTextField) e.getSource();
 					Object value = inputComponent.getText();
@@ -356,10 +355,10 @@ public abstract class BasePage {
 
 						field.set(origin, value);
 						log(field.getName(), ":", value);
-					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						Dialogs.error("Error setting value for field: ", field.getName(), " the value is :", value);
+					} catch (Exception e1) {
+						//Dialogs.error("Error setting value for field: ", field.getName(), " the value is :", value);
 						e1.printStackTrace();
-						inputComponent.setText("");
+						inputComponent.setText("0");
 					}
 
 				});

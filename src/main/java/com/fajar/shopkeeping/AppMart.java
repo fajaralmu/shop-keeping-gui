@@ -11,7 +11,7 @@ public class AppMart
     public static void main( String[] args )
     {
       AppHandler appHandler = AppHandler.getInstance();
-      appHandler.beginApp();
+      appHandler.start();
          
     }
 }

@@ -18,5 +18,18 @@ public class Listeners {
 			}
 		};
 	}
+	public static KeyListener keyReleasedOnlyListener(final GeneralCallback<KeyEvent> ev) {
+		return new KeyListener() { 
+			@Override
+			public void keyTyped(KeyEvent e) { } 
+			@Override
+			public void keyReleased(KeyEvent e) { ev.action(e); }
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				 
+			}
+		};
+	}
 
 }

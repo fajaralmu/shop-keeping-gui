@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.component.builder;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JLabel;
@@ -9,31 +8,27 @@ import javax.swing.JPanel;
 import com.fajar.shopkeeping.component.BlankComponent;
 import com.fajar.shopkeeping.model.PanelRequest;
 
-public class PanelBuilderv1 {
-	private final PanelRequest panelRequest;
-	private final Component[] components;
-	private final int COLUMN_COUNT;
+public class PanelBuilderv1 extends BasePanelBuilder<Component>{ 
 	private final int width;
 	private final int height;
 	private final int margin;
-	private final Color color;
 	private final int size;
 
 	public PanelBuilderv1(PanelRequest panelRequest, Component[] components) {
-		this.panelRequest = panelRequest;
-		this.components = components;
-		this.COLUMN_COUNT = panelRequest.column;
+		super(panelRequest, panelRequest.getColor(), components); 
 		this.width = panelRequest.width;
 		this.height = panelRequest.height;
-		this.margin = panelRequest.margin;
-		this.color = panelRequest.getColor();
+		this.margin = panelRequest.margin; 
 		this.size = components.length;
 		init();
 	}
+	
+	@Override
+	protected int getColumnCount() {
+		return  panelRequest.column;
+	} 
 
-	private void init() {
-
-	}
+	private void init() { }
 
 	public JPanel buildPanel() {
 

@@ -82,7 +82,7 @@ public class AppHandler {
 		startActiveHandler();
 	}
 
-	public void beginApp() {
+	public void start() {
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 
 		try {
@@ -101,10 +101,11 @@ public class AppHandler {
 	private void getAppId() throws Exception {
 		accountService.getAppId( (WebResponse params) -> { 
 			try {
-				WebResponse response = (WebResponse) params ;
+				WebResponse response = (WebResponse) params ; 
 				String applicationId = response.getMessage();
 			
 				AppSession.setApplicationID(applicationId);
+				AppSession.setApplicationProfile(response.getApplicationProfile());
 				startActiveHandler();
 			} catch (Exception e) {
 				 
@@ -117,7 +118,7 @@ public class AppHandler {
 
 	public void startActiveHandler() {
 		activeHandler.start();
-		activeHandler.setPageHandler();
+		activeHandler.setPageHandler(); 
 	}
 
 }

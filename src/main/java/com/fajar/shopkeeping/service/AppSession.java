@@ -1,5 +1,6 @@
 package com.fajar.shopkeeping.service;
 
+import com.fajar.shoppingmart.entity.Profile;
 import com.fajar.shoppingmart.entity.User;
 
 public class AppSession {
@@ -7,6 +8,20 @@ public class AppSession {
 	private static String applicationId = "1234";
 	private static String loginKey = "";
 	private static User loggedUser;
+	private static Profile applicationProfile = defaultProfile();
+	
+	public static void setApplicationProfile(Profile profile) {
+		applicationProfile = profile;
+	}
+	
+	private static Profile defaultProfile() {
+		 
+		return Profile.builder().name("ECommerce System").address("-").contact("-").about("-").build();
+	}
+
+	public static Profile getApplicationProfile() {
+		return applicationProfile;
+	}
 	
 	public static void setUser(User u) {
 		loggedUser = u;

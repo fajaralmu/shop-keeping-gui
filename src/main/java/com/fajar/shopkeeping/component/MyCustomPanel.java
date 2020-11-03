@@ -2,7 +2,6 @@ package com.fajar.shopkeeping.component;
 
 import java.awt.Component;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,8 +17,7 @@ public class MyCustomPanel extends BaseCustomPanel {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -9145915483807077198L;  
-	final List<Component> lastComponentEachRow = new ArrayList<Component>();
+	private static final long serialVersionUID = -9145915483807077198L;   
 
 	public MyCustomPanel(int... colSizes) {
 		super(colSizes); 
@@ -51,12 +49,8 @@ public class MyCustomPanel extends BaseCustomPanel {
 
 		resetDimensions(); 
 		
-		final Set<Integer> rows = componentsMap.keySet(); 
-		lastComponentEachRow.clear();
-
-//		Log.log("----------------------start-------------------");
+		final Set<Integer> rows = componentsMap.keySet();
 		for (Integer key : rows) {
-//			Log.log(">>>>>>>>>>>>>>>ROW:", key);
 			PanelRow panelRow = componentsMap.get(key);
 
 			int rowHeight = panelRow.getHeight();
@@ -81,28 +75,17 @@ public class MyCustomPanel extends BaseCustomPanel {
 					e.printStackTrace();
 					continue loop;
 				}
+				updateComponentBounds(key, i, x, y);
 
-				// update location
-				updateComponentLocation(key, i, x, y);
-
-			}
-			lastComponentEachRow.add(getPanelRowComponents(key).get(components.size() - 1));
+			} 
 			currentHeight = currentHeight + margin + rowHeight;
 		} 
 		Log.log("-----------------end--------------- size", customWidth, "x", customHeight);
 	}
 	
-	private void updateComponentLocation(int key, int listIndex, int x, int y) { 
+	private void updateComponentBounds(int key, int listIndex, int x, int y) { 
 		componentsMap.get(key).getComponents().get(listIndex).setLocation(x, y);
-	}
-
-	private PanelRow getPanelRow(Integer key) {
-		return componentsMap.get(key);
-	}
-	
-	private List<Component> getPanelRowComponents(Integer key) {
-		return getPanelRow(key).getComponents();
-	}
+	} 
 
 	private void resetDimensions() {
 		 
@@ -129,15 +112,6 @@ public class MyCustomPanel extends BaseCustomPanel {
 
 	private int calculatePanelWidth() { 
 		return PanelRow.getMaxRightOffset(CollectionUtil.mapToList(componentsMap));
-//		int width = 0;
-//		for (Component component : lastComponentEachRow) {
-//			int componentWidth = component.getX() + component.getWidth();
-//			if (componentWidth > width) {
-//				width = componentWidth;
-//			}
-//		} 
-//
-//		return width + margin;
 	}
 
 	

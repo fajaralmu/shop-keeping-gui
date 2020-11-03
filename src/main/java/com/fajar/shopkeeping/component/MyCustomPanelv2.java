@@ -3,18 +3,11 @@ package com.fajar.shopkeeping.component;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.JPanel;
 
 import com.fajar.shopkeeping.component.builder.PanelRow;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
 public class MyCustomPanelv2 extends BaseCustomPanel {

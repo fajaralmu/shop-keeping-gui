@@ -1,6 +1,5 @@
 package com.fajar.shopkeeping.component.builder;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.component.MyCustomPanelv2;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.pages.BasePage;
@@ -19,19 +17,13 @@ import com.fajar.shopkeeping.util.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PanelBuilderv3 {
-
-	private final PanelRequest panelRequest;
-	private final Object[] components;
-	private final int Size;
-	private final int COLUMN_COUNT;
+public class PanelBuilderv3 extends BasePanelBuilder<Object>{ 
 	private final int[] colSizes;
 	
 	private List<Component> tempComponents = new ArrayList<Component>();
 	private int currentColumn = 0;
 	private int currentRow = 0; 
-	private int margin = 0;
-	private Color color = Color.white;
+	private int margin = 0; 
 	private int panelX = 0;
 	private int panelY = 0;
 	private int panelW = 0;
@@ -42,11 +34,8 @@ public class PanelBuilderv3 {
 
 
 	public PanelBuilderv3(PanelRequest panelRequest, Object[] components) {
-		this.panelRequest = panelRequest;
-		this.components = components;
-		this.Size = components.length ;
-		boolean useColSizes = panelRequest.column == 0;
-		this.COLUMN_COUNT = useColSizes ? panelRequest.colSizes.length : panelRequest.column;
+		super(panelRequest, panelRequest.getColor(), components);
+		boolean useColSizes = panelRequest.column == 0; 
 		/**
 		 * set column sizes
 		 */
@@ -54,12 +43,17 @@ public class PanelBuilderv3 {
 //		log.debug("COLUMN SIZES: {} - {}", colSizes,  panelRequest.colSizes );
 		init();
 	}
+	
+	@Override
+	protected int getColumnCount() {
+		boolean useColSizes = panelRequest.column == 0;
+		return useColSizes ? panelRequest.colSizes.length : panelRequest.column;
+	}
 
 	private void init() { 
 		
 //		int height = panelRequest.height;
-		this.margin = panelRequest.margin;
-		this.color = panelRequest.getColor();
+		this.margin = panelRequest.margin; 
 
 		this.panelX = panelRequest.panelX;
 		this.panelY = panelRequest.panelY;
@@ -76,7 +70,7 @@ public class PanelBuilderv3 {
 
 	public JPanel buildPanel() {
 		
-		for (int i = 0; i < Size; i++) {
+		for (int i = 0; i < components.length; i++) {
 
 			Component currentComponent; 
 			try {
