@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
@@ -42,7 +43,7 @@ import lombok.Data;
 @Data
 public class SellingTransactionPage  extends BaseTransactionPage{
 
-	 
+	private String customerCode, productCode;
 	
 	private Customer selectedCustomer;
 	private JComboBox customerComboBox;
@@ -67,6 +68,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		 addActionListener(buttonClearCart, buttonClearListener());
 		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
 		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
+		 addActionListener(buttonSearchCustomerByCode, this::searchCustomerByCode);
+//		 addActionListener(buttonSearchProductByCode, buttonSubmitToCartListener());
 		
 		//fields  
 		addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	
@@ -75,6 +78,15 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		addKeyListener(inputCustomerPayment, inputCustomerPaymentKeyListener(), false);
 		super.initEvent();
 	} 
+	
+	private void searchCustomerByCode(ActionEvent e) {
+		MyCallback<WebResponse> callback = (response)->{
+			if(response.getEntities().size()>0) {
+				setSelectedCustomer((Customer) response.getEntities().get(0));
+			}
+		};
+		getHandler().getExactEntity(Customer.class, "id", customerCode, callback );
+	}
 	
 	private KeyListener inputCustomerPaymentKeyListener() { 
 		return new KeyListener() {
@@ -227,12 +239,14 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		KeyListener keyListener = dynamicDropdownFieldKeyListener(CUSTOMER); 
 		customerComboBox = ComponentBuilder.buildEditableComboBox("", keyListener, actionListener, "type customer name..");
 		buttonSearchCustomerByCode = ComponentBuilder.button("Search");
+		inputCustomerCode = InputComponentBuilder.textField("");
 				
 		//product
 		ActionListener actionListenerProduct = dynamicDropdownActionListener(PRODUCT);
 		KeyListener keyListenerProduct = dynamicDropdownFieldKeyListener(PRODUCT); 
 		productComboBox = ComponentBuilder.buildEditableComboBox("", keyListenerProduct, actionListenerProduct, "type product name.."); 
 		buttonSearchProductByCode = ComponentBuilder.button("Search");
+		inputProductCode = InputComponentBuilder.textField("");
 		
 		inputQtyField = InputComponentBuilder.numberField("0"); 
 		inputCustomerPayment = InputComponentBuilder.numberField("0");
@@ -313,6 +327,11 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		return panel;
 	}
 
+	private void setSelectedCustomer(Customer customer) {
+		this.selectedCustomer = customer;
+		inputCustomerCode.setText(customer.getId().toString());
+		customerComboBox.setSelectedItem(customer.getName());
+	}
 	 
 
 	@Override
