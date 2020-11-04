@@ -38,21 +38,19 @@ public class DailyCashflowPage extends BasePage {
 	private static final int TABLE_WIDTH = COLUMN_WIDTH * COLUMN;
 
 	private WebResponse dailyCashflowResponse;
-	private JPanel dailyCashflowPanel;
+	private Component dailyCashflowPanel;
 
 	public DailyCashflowPage() {
 		super("Daily Cashflow", BASE_WIDTH, BASE_HEIGHT);
 	}
 
 	public DailyCashflowPage(int day, int month, int year) {
-		super("Daily Cashflow", BASE_WIDTH, BASE_HEIGHT);
+		super("Daily Cashflow", TABLE_WIDTH+15, BASE_HEIGHT);
 
 	}
 
 	@Override
-	public void initComponent() { 
-		
-		PanelRequest panelRequest = new PanelRequest(1, TABLE_WIDTH, 20, 15, Color.WHITE, 30, 30, 0, 0, false, true);
+	public void initComponent() {
 
 		SharedContext context = AppContext.getContext(ContextConstants.CTX_DETAIL_CASHFLOW);
 		int day = context.getDay();
@@ -60,7 +58,7 @@ public class DailyCashflowPage extends BasePage {
 		int year = context.getYear();
 
 		if (dailyCashflowPanel == null) { 
-			dailyCashflowPanel = buildPanelV2(panelRequest, label("Please wait..."));
+			dailyCashflowPanel = label("Please wait...");
 			
 		}else {
 //			dailyCashflowPanel = null;

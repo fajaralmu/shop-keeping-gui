@@ -47,7 +47,7 @@ public class LauncherPage extends BasePage {
 
 	}
 	
-	private JLabel applicationIcon() { 
+	public static JLabel applicationIcon() { 
 		return ComponentBuilder.imageLabel(getApplicationImageUrl(), 200, 200); 
 	}
 
@@ -70,13 +70,13 @@ public class LauncherPage extends BasePage {
 		labelApplicationIcon.setIcon(ComponentBuilder.imageIcon(getApplicationImageUrl(), 200, 200));
 	}
 	
-	private String getApplicationName() {
+	public static String getApplicationName() {
 		return AppSession.getApplicationProfile().getName();
 	}
-	private String getApplicationAddress() {
+	public static String getApplicationAddress() {
 		return AppSession.getApplicationProfile().getAddress();
 	}
-	private String getApplicationImageUrl() {
+	public static String getApplicationImageUrl() {
 		String imageName = AppSession.getApplicationProfile().getIconUrl();
 		String fullURL = UrlConstants.URL_IMAGE+"/"+imageName;
 		System.out.println("Icon URL:"+fullURL);

@@ -1,6 +1,7 @@
 package com.fajar.shopkeeping.pages;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildVerticallyInlineComponent;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
@@ -48,7 +49,7 @@ public class PeriodicReportPage extends BasePage {
 	private JButton buttonRefresh;
 	
 	private JPanel panelFilterPeriod;
-	private JPanel panelCashflowListTable;
+	private Component panelCashflowListTable;
 
 	private int selectedMonthTo = DateUtil.getCurrentMonth();
 	private int selectedYearTo = DateUtil.getCurrentYear();
@@ -65,15 +66,12 @@ public class PeriodicReportPage extends BasePage {
 	@Override
 	public void initComponent() {
 
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(1, TABLE_WIDTH, 15, Color.white);
-		panelRequest.setCenterAligment(true);
 		panelFilterPeriod = buildPanelPeriodFilter();
 		if(null == panelCashflowListTable) {
-			panelCashflowListTable = buildPanelV2(panelRequest, label("Please Select The Period"));
+			panelCashflowListTable = label("Please Select The Period");
 		}
 		
-		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
-
+		mainPanel = buildVerticallyInlineComponent(TABLE_WIDTH,
 				title("PERIODIC REPORT", 30),
 				panelFilterPeriod,
 				null,
@@ -106,10 +104,11 @@ public class PeriodicReportPage extends BasePage {
 
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(3, 70, 5, Color.WHITE);
 
-		JPanel panel = buildPanelV2(panelRequest, 
-					BLANK_LABEL,	label("From"),		label("To") , 
-					label("Month"), comboBoxMonthFrom, 	comboBoxMonthTo,
-					label("Year"), 	comboBoxYearFrom, 	comboBoxYearTo, buttonSearch, buttonRefresh);
+		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest, 
+					label("From"),	  BLANK_LABEL,      label("To") , 
+					comboBoxMonthFrom, label("Month"), 	comboBoxMonthTo,
+					comboBoxYearFrom,  label("Year"),    comboBoxYearTo, 
+					buttonSearch, 		null, buttonRefresh);
 
 		return panel;
 	}
@@ -159,14 +158,14 @@ public class PeriodicReportPage extends BasePage {
 	}
 	
 	private void callbackPeriodicCashflow(final WebResponse response) {
-		
+		periodicCashflowResponse = response;
 		ThreadUtil.run(()-> {
 			if(null == panelCashflowListTable) {
 				log("panelCashflowListTable IS NULL");
 				return;
 			}
 			
-			periodicCashflowResponse = response;
+			 
 			
 			try {
 				panelCashflowListTable = buildPeriodicCashflowTable();
@@ -207,7 +206,7 @@ public class PeriodicReportPage extends BasePage {
 			int year = cashflow.getYear();
 			
 			String periodLabel = (DateUtil.dateString(month, year));
-			JButton buttonGenerateReport = ComponentBuilder.button("Report", 150, generateDailyReportListener(month, year));
+			JButton buttonGenerateReport = ComponentBuilder.button("downlod report", 150, generateDailyReportListener(month, year));
 			
 			JPanel rowPanel = rowPanel(COLUMN, COLUMN_WIDTH, Color.white, 
 					

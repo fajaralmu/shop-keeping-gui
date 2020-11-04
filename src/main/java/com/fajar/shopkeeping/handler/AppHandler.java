@@ -52,6 +52,7 @@ public class AppHandler {
 		handlers.put(PAGE_MANAGEMENT, new ManagementHandler());
 		handlers.put(PAGE_TRAN_SUPPLY, new TransactionHandler(new PurchasingTransactionPage()));
 		handlers.put(PAGE_TRAN_SELLING, new TransactionHandler(new SellingTransactionPage()));
+		handlers.put(PageConstants.PAGE_ABOUT_APPLICATION, new AboutApplicationHander());
 		
 		activeHandler = handlers.get(PAGE_LAUNCHER);
 	}

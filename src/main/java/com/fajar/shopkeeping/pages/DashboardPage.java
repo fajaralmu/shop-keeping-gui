@@ -103,6 +103,7 @@ public class DashboardPage extends BasePage {
 	
 	private JMenuItem menuItemTransactionSupply;
 	private JMenuItem menuItemTransactionSelling;
+	private JMenuItem menuItemAboutPage;
 	
 	private WebResponse responseTodayCashflow;
 
@@ -180,7 +181,7 @@ public class DashboardPage extends BasePage {
 		setMenuItemCapital(menuItem("Capital Type", Capital.class));
 		setMenuItemCapitalFLow(menuItem("Capital Journal", CapitalFlow.class));
 		setMenuItemCashBalance(menuItemNotEditable("Balance Journal", CashBalance.class));
-
+		setMenuItemAboutPage(menuItem("About Application"));
 		
         JMenu managementMenu = new JMenu("Management"); 
         managementMenu.add(menuItemProduct); 
@@ -192,6 +193,7 @@ public class DashboardPage extends BasePage {
         settingMenu.add(menuItemUnit);
         settingMenu.add(menuItemCategory);
         settingMenu.add(menuItemCapital);
+        settingMenu.add(menuItemAboutPage);
         
         JMenu accountMenu = new JMenu("Account"); 
 		accountMenu.add(menuItemLogout);
@@ -210,7 +212,7 @@ public class DashboardPage extends BasePage {
 		voucherMenu.add(menuItemCustomerVoucher);
 		
 		ComponentModifier.
-			addMenuForMenuBar(menuBar, accountMenu, settingMenu, managementMenu, voucherMenu, transactionMenu);
+			addMenuForMenuBar(menuBar, accountMenu, managementMenu, voucherMenu, transactionMenu, settingMenu);
  
 	}
 
@@ -403,12 +405,12 @@ public class DashboardPage extends BasePage {
 		setComboBoxYear(_comboBoxYear);
 		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
-		setButtonGenerateMontlyReport(button("Monthly Report"));
+		setButtonGenerateMontlyReport(button("Download Monthly Report"));
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 3, Color.WHITE  );
 		panelRequest.setCenterAligment(true);
 		
-		JPanel panel = buildPanelV2(panelRequest ,
+		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest ,
 					ComponentBuilder.buildInlineComponent(60, label("Month"), comboBoxMonth),
 					ComponentBuilder.buildInlineComponent(60, label("Year"), comboBoxYear),
 				 
@@ -458,6 +460,7 @@ public class DashboardPage extends BasePage {
 		
 		addActionListener(menuItemTransactionSupply, getHandler().navigationListener(PageConstants.PAGE_TRAN_SUPPLY)); 
 		addActionListener(menuItemTransactionSelling, getHandler().navigationListener(PageConstants.PAGE_TRAN_SELLING));
+		addActionListener(menuItemAboutPage, getHandler().navigationListener(PageConstants.PAGE_ABOUT_APPLICATION));
 		
 		addActionListener(buttonLoadMonthlyCashflow, getHandler().getMonthlyCashflow(this::callbackMonthlyCashflow));
 		addActionListener(buttonGotoPeriodicReport, getHandler().gotoPeriodicReportPage());
