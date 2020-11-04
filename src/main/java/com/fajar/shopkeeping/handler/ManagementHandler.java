@@ -15,7 +15,7 @@ import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.Loadings;
 import com.fajar.shopkeeping.constant.ReportType;
 import com.fajar.shopkeeping.model.ReportResponse;
-import com.fajar.shopkeeping.pages.ManagementPage;
+import com.fajar.shopkeeping.pages.management.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;

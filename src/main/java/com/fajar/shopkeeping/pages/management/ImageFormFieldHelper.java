@@ -19,7 +19,6 @@ import javax.swing.SwingConstants;
 import com.fajar.shopkeeping.component.MyInfoLabel;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
-import com.fajar.shopkeeping.pages.ManagementPage;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shoppingmart.entity.setting.EntityElement;
 

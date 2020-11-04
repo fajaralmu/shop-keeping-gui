@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.pages;
+package com.fajar.shopkeeping.pages.management;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
@@ -56,8 +56,7 @@ import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.handler.ManagementHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.model.SharedContext;
-import com.fajar.shopkeeping.pages.management.CommonFormFieldHelper;
-import com.fajar.shopkeeping.pages.management.ImageFormFieldHelper;
+import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ObjectUtil;
@@ -147,6 +146,12 @@ public class ManagementPage extends BasePage {
 	public void show() {
 		super.show();
 		loadForm();
+	}
+	
+	@Override
+	public void onShow() {
+		selectedPage = 0;
+		super.onShow();
 	}
 
 	@Override
