@@ -18,14 +18,13 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.service.AppSession;
 
 public class AboutPage extends BasePage<AboutApplicationHander> {
-
-	private JButton navigateLoginButton;
+ 
 	private JLabel labelAppName;
 	private JLabel labelAppAddress;
 	private JLabel labelApplicationIcon;
 	
 	public AboutPage() {
-		super("About Application", BASE_WIDTH, BASE_HEIGHT*3/4);
+		super("About Application", BASE_WIDTH*3/4, BASE_HEIGHT*3/4);
 		doNotCloseOtherPage();
 	}
 
@@ -38,7 +37,7 @@ public class AboutPage extends BasePage<AboutApplicationHander> {
 		ComponentModifier.changeSizeWidth(labelAppAddress, 400);
 		JPanel content = getApplicationInformation();
 		
-		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(BASE_WIDTH,
+		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(WIDTH,
 				labelApplicationIcon,
 				content);   
 

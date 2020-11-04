@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,7 +69,8 @@ public class DashboardPage extends BasePage<DashboardHandler> {
 	};
 
 	private JLabel labelUserInfo;
-	 
+	private JLabel labelTimer; 
+	
 	private JButton buttonGotoPeriodicReport;
 	private JButton buttonLoadMonthlyCashflow; 
 	private JButton buttonGenerateMontlyReport;
@@ -118,6 +120,21 @@ public class DashboardPage extends BasePage<DashboardHandler> {
 			getHandler().getTodayMonthlyCashflow(this::callbackMonthlyCashflow);
 			Loadings.end();
 		}
+		ThreadUtil.run(()->{
+			startClock();
+		});
+	}
+	
+	private void startClock() {
+		long currentTime = System.currentTimeMillis();
+		long delta = 1000;
+		while(frame.isVisible()) {
+			if(System.currentTimeMillis() - currentTime < 1000) {
+				continue;
+			}
+			currentTime = System.currentTimeMillis();
+			labelTimer.setText(String.valueOf(new Date()));
+		}
 	}
 	
 	@Override
@@ -136,10 +153,12 @@ public class DashboardPage extends BasePage<DashboardHandler> {
 		}
 		
 		setPanelPeriodFilter(buildPanelPeriodFilter());  
+		setLabelTimer(label(new Date()));
 		
 		mainPanel = buildPanelV2(mainPanelRequest, 
 				title(AppSession.getApplicationProfile().getName()), labelUserInfo,  
-				label("ALIRAN KAS HARI INI "+DateUtil.todayString()), 
+				label("ALIRAN KAS HARI INI " + DateUtil.todayString()), 
+				labelTimer,
 				panelTodayCashflow, panelPeriodFilter, 
 				panelMonthlySummary);
 
@@ -405,7 +424,7 @@ public class DashboardPage extends BasePage<DashboardHandler> {
 		setComboBoxYear(_comboBoxYear);
 		setButtonLoadMonthlyCashflow(button("Search/Refresh")); 
 		setButtonGotoPeriodicReport(button("Report Page"));
-		setButtonGenerateMontlyReport(button("Download Monthly Report"));
+		setButtonGenerateMontlyReport(button("Download Monthly Report")); 
 		
 		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(2, 200, 3, Color.WHITE  );
 		panelRequest.setCenterAligment(true);
