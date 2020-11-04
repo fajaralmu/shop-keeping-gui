@@ -1,4 +1,4 @@
-package com.fajar.shopkeeping.pages;
+package com.fajar.shopkeeping.pages.transaction;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
@@ -9,8 +9,8 @@ import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clea
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearLabel;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearTextField;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.setText;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.PRODUCT;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.SUPPLIER;
 import static javax.swing.SwingConstants.LEFT;
 
 import java.awt.Component;
@@ -67,7 +67,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	private JButton buttonSearchProductByCode;
 
 	public PurchasingTransactionPage() { 
-		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Supply");
+		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, "Supply");
 		
 	}  
 	
@@ -311,6 +311,11 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	}
 	
 	private void searchProductByCode(ActionEvent e) {
+		MyCallback<WebResponse> callback = (WebResponse)->{
+			if(WebResponse.getEntities().size()>0)
+				setSelectedProduct((Product) WebResponse.getEntities().get(0));
+		};
+		getHandler().getExactEntity(Product.class, "code", productCode, callback);
 	}
 	
 	private void searchSupplierByCode(ActionEvent e) {

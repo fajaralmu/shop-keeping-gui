@@ -1,21 +1,22 @@
-package com.fajar.shopkeeping.pages;
+package com.fajar.shopkeeping.pages.transaction;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addKeyListener;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponent;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.buildInlineComponentv2;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearComboBox;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearLabel;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.clearTextField;
 import static com.fajar.shopkeeping.component.builder.InputComponentBuilder.setText;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.CUSTOMER;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.PRODUCT;
 import static com.fajar.shopkeeping.util.StringUtil.beautifyNominal;
 import static javax.swing.SwingConstants.LEFT;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.fajar.shopkeeping.callbacks.Listeners;
 import com.fajar.shopkeeping.callbacks.MyCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
@@ -59,7 +61,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	private JButton buttonSearchProductByCode;
 	
 	public SellingTransactionPage() { 
-		super("Transaction", BASE_WIDTH, BASE_HEIGHT, "Selling");
+		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, "Selling");
 		
 	}  
 	
@@ -69,7 +71,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		 addActionListener(buttonSubmitTransaction, submitTransactionListener());
 		 addActionListener(buttonSubmitCart, buttonSubmitToCartListener());
 		 addActionListener(buttonSearchCustomerByCode, this::searchCustomerByCode);
-//		 addActionListener(buttonSearchProductByCode, buttonSubmitToCartListener());
+		 addActionListener(buttonSearchProductByCode, getProductByCodeListener());
 		
 		//fields  
 		addKeyListener(inputQtyField, textFieldKeyListener(inputQtyField, "quantity"), false);	
@@ -79,6 +81,12 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		super.initEvent();
 	} 
 	
+	private ActionListener getProductByCodeListener() {
+		return (e) -> {
+			getHandler().getProductDetail(productCode);
+		};
+	}
+
 	private void searchCustomerByCode(ActionEvent e) {
 		MyCallback<WebResponse> callback = (response)->{
 			if(response.getEntities().size()>0) {
@@ -89,13 +97,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	}
 	
 	private KeyListener inputCustomerPaymentKeyListener() { 
-		return new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) { }
-			
-			@Override
-			public void keyReleased(KeyEvent e) { 
+		return Listeners.keyReleasedOnlyListener((e) -> { 
 				JTextField textfield = (JTextField) e.getSource();
 				try {
 					long value = Long.valueOf(textfield.getText());
@@ -107,14 +109,8 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 						setText(labelTotalChange, "( - )" + beautifyNominal(Math.abs(change)));
 					}
 					
-				} catch (Exception e2) {
-					// TODO: handle exception
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) { }
-		};
+				} catch (Exception e2) { }
+			});
 	}
 
 	@Override
@@ -228,6 +224,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		setText(labelRemainingQty, beautifyNominal(product.getCount()));
 		setText(labelProductPrice, beautifyNominal(product.getPrice()));
 		setText(inputProductCode, product.getCode());
+		productComboBox.setSelectedItem(product.getName());
 		Log.log("Selected product: ", product);
 		
 	}
@@ -263,14 +260,14 @@ public class SellingTransactionPage  extends BaseTransactionPage{
  		labelTotalChange = label("",LEFT);
  		labelTotalChange.setSize(300, 20);
 		 		
- 		JPanel panelRemainingStock = ComponentBuilder.buildInlineComponent(140, labelRemainingQty, labelProductUnit);
+ 		JPanel panelRemainingStock = buildInlineComponent(140, labelRemainingQty, labelProductUnit);
  		
  		PanelRequest panelRequest = getFormFieldPanelRequest();
 		JPanel panel = ComponentBuilder.buildPanelV3(panelRequest , 
 				label("Customer Name", LEFT), customerComboBox,
-				label("Or Customer Code", LEFT), ComponentBuilder.buildInlineComponentv2(inputCustomerCode, buttonSearchCustomerByCode),
+				label("Or Customer Code", LEFT), buildInlineComponentv2(inputCustomerCode, buttonSearchCustomerByCode),
 				label("Product Name", LEFT), productComboBox,
-				label("Or Product Code", LEFT), ComponentBuilder.buildInlineComponentv2(inputProductCode, buttonSearchProductByCode),
+				label("Or Product Code", LEFT), buildInlineComponentv2(inputProductCode, buttonSearchProductByCode),
 				label("Unit Price", LEFT), labelProductPrice,
 				label("Stock", LEFT), panelRemainingStock,
 				label("Quantity", LEFT), inputQtyField,

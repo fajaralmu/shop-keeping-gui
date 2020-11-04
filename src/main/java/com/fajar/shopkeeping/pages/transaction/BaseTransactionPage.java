@@ -1,10 +1,10 @@
-package com.fajar.shopkeeping.pages;
+package com.fajar.shopkeeping.pages.transaction;
 
 import static com.fajar.shopkeeping.component.builder.ComponentActionListeners.addActionListener;
 import static com.fajar.shopkeeping.model.PanelRequest.autoPanelScrollWidthHeightSpecified;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.CUSTOMER;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.PRODUCT;
-import static com.fajar.shopkeeping.pages.BaseTransactionPage.DropDownType.SUPPLIER;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.CUSTOMER;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.PRODUCT;
+import static com.fajar.shopkeeping.pages.transaction.BaseTransactionPage.DropDownType.SUPPLIER;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -33,6 +33,8 @@ import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.PageConstants;
 import com.fajar.shopkeeping.handler.TransactionHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.pages.BasePage;
+import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -87,7 +89,6 @@ public abstract class BaseTransactionPage extends BasePage{
 	@Override
 	public void initComponent() { 
 		
-		PanelRequest panelRequest = new PanelRequest(1, 670, 20, 1, Color.WHITE, 30, 30, 0, 0, false, true);   
 		buttonSubmitCart = ComponentBuilder.editButton("Submit To Cart");
  		buttonClearCart =  ComponentBuilder.button("Clear");
  		buttonSubmitTransaction = InputComponentBuilder.submitButton("SUBMIT TRANSACTION");
@@ -102,11 +103,12 @@ public abstract class BaseTransactionPage extends BasePage{
 		
 		productListPanel = buildProductListPanel(); 
 		
-		mainPanel = ComponentBuilder.buildPanelV2(panelRequest,
+		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
 
 				titleLabel,
 				formPanel,
-				productListPanel 
+				productListPanel,
+				ComponentBuilder.label(AppSession.getApplicationProfile().getName())
 				); 
 
 		parentPanel.add(mainPanel);
@@ -166,7 +168,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	}
 	
 	protected PanelRequest getProductListPanelRequest(int columnWidth, int colSize) {
-		return autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 250);
+		return autoPanelScrollWidthHeightSpecified(1, columnWidth * colSize, 5, Color.LIGHT_GRAY, 600, 200);
 	}
 	
 	@Override
@@ -325,7 +327,7 @@ public abstract class BaseTransactionPage extends BasePage{
 		}
 		
 		getHandler().getEntitiesFromDynamicDropdown(entityClass, "name", componentText,  
-		(WebResponse response) -> { 
+		(response) -> { 
 			
 			Log.log("entities: ", response.getEntities()); 
 			

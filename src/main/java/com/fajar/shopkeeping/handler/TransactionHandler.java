@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fajar.shopkeeping.callbacks.MyCallback;
-import com.fajar.shopkeeping.pages.BaseTransactionPage;
-import com.fajar.shopkeeping.pages.PurchasingTransactionPage;
-import com.fajar.shopkeeping.pages.SellingTransactionPage;
+import com.fajar.shopkeeping.pages.transaction.BaseTransactionPage;
+import com.fajar.shopkeeping.pages.transaction.PurchasingTransactionPage;
+import com.fajar.shopkeeping.pages.transaction.SellingTransactionPage;
 import com.fajar.shopkeeping.util.MapUtil;
 import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
@@ -45,7 +45,7 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 	public void getExactEntity(Class<? extends BaseEntity> entityClass, final String key, final Object value,
 			MyCallback<WebResponse> callback) {
 		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
-		Filter filter = Filter.builder().exacts(true).page(0).limit(1).fieldsFilter(fieldsFilter).build();
+		Filter filter = Filter.builder().exacts(true).contains(false).page(0).limit(1).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityListJsonResponse(filter, entityClass, callback);
 	}
 	
