@@ -1,10 +1,15 @@
 package com.fajar.shopkeeping.component.builder;
 
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
+import static com.fajar.shopkeeping.component.builder.ComponentBuilder.labelLeftAligment;
+
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -77,10 +82,11 @@ public class PanelBuilderv2 extends BasePanelBuilder<Object>{
 
 			Component currentComponent; 
 			try {
-				currentComponent = (Component) components[i] != null ? (Component) components[i] : new JLabel();
+				currentComponent = (Component) components[i] != null ? (Component) components[i] : labelLeftAligment("");
 			} catch (Exception e) {
-				currentComponent = components[i] != null ? new JLabel(String.valueOf(components[i])) : new JLabel();
+				currentComponent = components[i] != null ? labelLeftAligment(String.valueOf(components[i])) : labelLeftAligment("");
 			}
+			
 			currentColumn++;
 			
 			addToTemporaryComponent(currentComponent); 

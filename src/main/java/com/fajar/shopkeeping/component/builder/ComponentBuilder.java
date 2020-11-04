@@ -240,8 +240,21 @@ public class ComponentBuilder {
 		return label;
 	}
 
+	/**
+	 * automatically center aligment
+	 * @param title
+	 * @return
+	 */
 	public static JLabel label(Object title) {
 		return label(title, SwingConstants.CENTER);
+	}
+	/**
+	 * left aligment
+	 * @param title
+	 * @return
+	 */
+	public static JLabel labelLeftAligment(Object title) {
+		return label(title, SwingConstants.LEFT);
 	}
 
 	/**
