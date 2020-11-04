@@ -51,6 +51,11 @@ public class ComponentModifier {
 		component.setBounds(component.getX(), component.getY(), component.getWidth(), height);
 	}
 	
+	public static void changeSizeWidth(Component component, int width) {
+		
+		component.setBounds(component.getX(), component.getY(), width, component.getHeight());
+	}
+	
 	public static void synchronizeComponentWidth(Component... components) {
 		int maxWidth = getMaxWidth(components);
 

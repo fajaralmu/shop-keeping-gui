@@ -36,7 +36,7 @@ public class AboutPage extends BasePage {
 		labelAppName = labelLeftAligment(getApplicationName());
 		labelAppAddress = labelLeftAligment(getApplicationAddress());//, true, Color.white); 
 		labelApplicationIcon = applicationIcon();
-		
+		ComponentModifier.changeSizeWidth(labelAppAddress, 400);
 		JPanel content = getApplicationInformation();
 		
 		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(BASE_WIDTH,
@@ -48,7 +48,7 @@ public class AboutPage extends BasePage {
 	
 	private JPanel getApplicationInformation() {
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(new int[]{100, 300}, 5, Color.white);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(new int[]{100, 400}, 5, Color.white);
 		labelAppAddress.setBackground(Color.green);
 		return ComponentBuilder.buildPanelV2(panelRequest,
 				("Name"),labelAppName,
