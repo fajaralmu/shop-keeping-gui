@@ -371,11 +371,6 @@ public class PurchasingTransactionPage extends BaseTransactionPage<Supplier> {
 		clearForm(true);
 		refresh();
 	}
- 
-	@Override
-	public void show() {
-		titleLabel.setText("Pembelian");
-		super.show();
-	}
+
 
 }

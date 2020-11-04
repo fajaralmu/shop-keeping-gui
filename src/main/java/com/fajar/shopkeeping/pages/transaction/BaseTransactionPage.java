@@ -300,6 +300,12 @@ public abstract class BaseTransactionPage<T> extends BasePage{
 		}
 	} 
 	
+	@Override
+	public void show() {
+		titleLabel.setText(type.toString());
+		super.show();
+	}
+	
 	/**
 	 * button submit to cart listener
 	 * @return

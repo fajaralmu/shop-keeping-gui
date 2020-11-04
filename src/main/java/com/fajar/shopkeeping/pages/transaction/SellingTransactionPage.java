@@ -385,10 +385,5 @@ public class SellingTransactionPage  extends BaseTransactionPage<Customer>{
 		clearForm(true);
 		refresh();
 	}
-
-	@Override
-	public void show() {
-		titleLabel.setText("Penjualan");
-		super.show();
-	}
+ 
 }

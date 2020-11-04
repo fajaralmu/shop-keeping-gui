@@ -44,6 +44,9 @@ public class TransactionHandler extends MainHandler<BaseTransactionPage> {
 	
 	public void getExactEntity(Class<? extends BaseEntity> entityClass, final String key, final Object value,
 			MyCallback<WebResponse> callback) {
+		if(null == value || String.valueOf(value).equals("")) {
+			return;
+		}
 		Map<String, Object> fieldsFilter = MapUtil.singleMap(key, value);
 		Filter filter = Filter.builder().exacts(true).contains(false).page(0).limit(1).fieldsFilter(fieldsFilter).build();
 		entityService.getEntityListJsonResponse(filter, entityClass, callback);
