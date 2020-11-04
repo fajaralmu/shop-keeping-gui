@@ -12,10 +12,13 @@ import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -31,11 +34,13 @@ import com.fajar.shopkeeping.component.MyCustomPanel;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.constant.PageConstants;
+import com.fajar.shopkeeping.constant.UrlConstants;
 import com.fajar.shopkeeping.handler.MainHandler;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.MapUtil;
+import com.fajar.shopkeeping.util.ThreadUtil;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
 import com.fajar.shoppingmart.util.EntityUtil;
 import com.toedter.calendar.JDateChooser;
@@ -165,6 +170,7 @@ public abstract class BasePage<H extends MainHandler> {
 	public void show() {
 		System.out.println("Show: " + title);
 		updateTitle();
+		updateFrameIcon();
 		this.frame.setVisible(true);
 		
 	}
@@ -201,7 +207,25 @@ public abstract class BasePage<H extends MainHandler> {
 		Log.log("Refresh on super class does not affect anything");
 	}
 
-	public void onShow() {}
+	public void onShow() {
+		updateFrameIcon();
+	}
+
+	private void updateFrameIcon() {
+		final String location = getApplicationImageUrl();
+		
+		ThreadUtil.run(()->{
+			ImageIcon icon;
+			try {
+				icon = new ImageIcon(new URL(location));
+				frame.setIconImage(icon.getImage());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		});
+	}
 
 	protected ActionListener buttonRefreshListener() {
 		return  (ActionEvent e) -> { refresh(); };
@@ -484,4 +508,28 @@ public abstract class BasePage<H extends MainHandler> {
 		return components;
 	}
 	
+	/////////////////////////////// APPLICATION PROFILES /////////////////////////////////
+	
+	public static String getApplicationName() {
+		return AppSession.getApplicationProfile().getName();
+	}
+	public static String getApplicationAddress() {
+		return AppSession.getApplicationProfile().getAddress();
+	}
+	public static String getApplicationImageUrl() {
+		String imageName = AppSession.getApplicationProfile().getIconUrl();
+		String fullURL = UrlConstants.URL_IMAGE+imageName;
+		System.out.println("getApplicationImageUrl:"+fullURL);
+		return fullURL;
+	}
+	public static String getApplicationIconUrl() {
+		if(null == AppSession.getApplicationProfile().getPageIcon()) {
+			System.out.println("ICON IS NULL");
+			return null;
+		}
+		String imageName = AppSession.getApplicationProfile().getPageIcon();
+		String fullURL = UrlConstants.URL_IMAGE+"ICON/"+imageName;
+		System.out.println("getApplicationIconUrl:"+fullURL);
+		return fullURL;
+	}
 }

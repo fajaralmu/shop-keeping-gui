@@ -123,6 +123,7 @@ public class DashboardPage extends BasePage<DashboardHandler> {
 		ThreadUtil.run(()->{
 			startClock();
 		});
+		super.onShow();
 	}
 	
 	private void startClock() {

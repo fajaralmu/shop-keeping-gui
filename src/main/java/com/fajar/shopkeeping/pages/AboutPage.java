@@ -68,6 +68,7 @@ public class AboutPage extends BasePage<AboutApplicationHander> {
 		labelApplicationIcon.setText("");
 		labelApplicationIcon.setBorder(null);
 		labelApplicationIcon.setIcon(ComponentBuilder.imageIcon(LauncherPage.getApplicationImageUrl(), 200, 200));
+		super.onShow();
 	}
 
 }

@@ -4,18 +4,16 @@ import static com.fajar.shopkeeping.component.builder.ComponentBuilder.button;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 
-import java.awt.Color;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.constant.UrlConstants;
-import com.fajar.shopkeeping.handler.LauncherHandler; 
+import com.fajar.shopkeeping.handler.LauncherHandler;
 import com.fajar.shopkeeping.service.AppSession;
 
-public class LauncherPage extends BasePage {
+public class LauncherPage extends BasePage<LauncherHandler> {
 
 	private JButton navigateLoginButton;
 	private JLabel labelAppName;
@@ -29,11 +27,7 @@ public class LauncherPage extends BasePage {
 
 	@Override
 	public void initComponent() {
-		navigateLoginButton = button("Login"); 
-		labelAppName = title(getApplicationName(), 50);
-		labelAppAddress = label(getApplicationAddress()); 
-		labelApplicationIcon = applicationIcon();
-		ComponentModifier.changeSize(navigateLoginButton, 100, 50);
+		createComponents();
 		
 		mainPanel = ComponentBuilder.buildVerticallyInlineComponent(670,
 				labelApplicationIcon,
@@ -45,6 +39,14 @@ public class LauncherPage extends BasePage {
 		parentPanel.add(mainPanel);
 		exitOnClose();
 
+	}
+	
+	private void createComponents() {
+		navigateLoginButton = button("Login"); 
+		labelAppName = title(getApplicationName(), 50);
+		labelAppAddress = label(getApplicationAddress()); 
+		labelApplicationIcon = applicationIcon();
+		ComponentModifier.changeSize(navigateLoginButton, 100, 50);
 	}
 	
 	public static JLabel applicationIcon() { 
@@ -68,19 +70,9 @@ public class LauncherPage extends BasePage {
 		labelApplicationIcon.setText("");
 		labelApplicationIcon.setBorder(null);
 		labelApplicationIcon.setIcon(ComponentBuilder.imageIcon(getApplicationImageUrl(), 200, 200));
+		super.onShow();
 	}
 	
-	public static String getApplicationName() {
-		return AppSession.getApplicationProfile().getName();
-	}
-	public static String getApplicationAddress() {
-		return AppSession.getApplicationProfile().getAddress();
-	}
-	public static String getApplicationImageUrl() {
-		String imageName = AppSession.getApplicationProfile().getIconUrl();
-		String fullURL = UrlConstants.URL_IMAGE+"/"+imageName;
-		System.out.println("Icon URL:"+fullURL);
-		return fullURL;
-	}
+	
 
 }
