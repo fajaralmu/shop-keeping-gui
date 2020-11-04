@@ -54,4 +54,9 @@ public class AppSession {
 		return loginKey;
 	}
 
+	//TODO: parameterize
+	public static String getDeveloperContact() { 
+		return "somabangsa@gmail.com";
+	}
+
 }

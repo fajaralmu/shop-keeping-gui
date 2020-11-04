@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
 import com.fajar.shopkeeping.model.PanelRequest;
+import com.fajar.shopkeeping.service.AppSession;
 
 public class AboutPage extends BasePage {
 
@@ -48,12 +49,13 @@ public class AboutPage extends BasePage {
 	
 	private JPanel getApplicationInformation() {
 		
-		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(new int[]{100, 400}, 5, Color.white);
+		PanelRequest panelRequest = PanelRequest.autoPanelNonScroll(new int[]{150, 400}, 5, Color.white);
 		labelAppAddress.setBackground(Color.green);
 		return ComponentBuilder.buildPanelV2(panelRequest,
 				("Name"),labelAppName,
 				("Address"),labelAppAddress,
-				("Java version"), labelLeftAligment(getJavaVersion()) );
+				("Java version"), labelLeftAligment(getJavaVersion()),
+				("Contact Developer"), AppSession.getDeveloperContact());
 	}
 
 	private String getJavaVersion() {
