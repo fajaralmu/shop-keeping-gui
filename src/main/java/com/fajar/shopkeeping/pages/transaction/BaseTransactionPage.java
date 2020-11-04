@@ -51,7 +51,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 @Data
-public abstract class BaseTransactionPage<T> extends BasePage{ 
+public abstract class BaseTransactionPage<T> extends BasePage<TransactionHandler>{ 
 	
 	protected JButton buttonSubmitCart;
 	protected JButton buttonClearCart;
@@ -209,10 +209,6 @@ public abstract class BaseTransactionPage<T> extends BasePage{
 
 		addActionListener(menuBack, getHandler().navigationListener(PageConstants.PAGE_DASHBOARD));
 		super.initEvent();
-	}
-	
-	protected TransactionHandler getHandler() {
-		return (TransactionHandler) appHandler;
 	}
 	
 	/**

@@ -34,7 +34,7 @@ import com.fajar.shoppingmart.dto.Filter;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.custom.CashFlow;
-public class PeriodicReportPage extends BasePage {
+public class PeriodicReportPage extends BasePage<PeriodicReportHandler> {
 	
 	private static final int COLUMN_WIDTH = 160; 
 	private static final int COLUMN = 5;
@@ -262,10 +262,6 @@ public class PeriodicReportPage extends BasePage {
 		super.show();
 		preInitComponent();
 		initEvent();
-	}
-	
-	private PeriodicReportHandler getHandler() {
-		return (PeriodicReportHandler) appHandler;
-	}
+	} 
 
 }

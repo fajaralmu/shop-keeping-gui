@@ -45,7 +45,7 @@ import lombok.Data;
 import lombok.Setter;
 
 @Data
-public abstract class BasePage {
+public abstract class BasePage<H extends MainHandler> {
 
 	public static final int BASE_HEIGHT = 700;
 	public static final int BASE_WIDTH = 800;
@@ -72,7 +72,7 @@ public abstract class BasePage {
 	protected boolean closeOtherPage = true;
 
 	@Setter(value = AccessLevel.NONE)
-	protected MainHandler<? extends BasePage> appHandler;
+	protected H handler;
 
 	public BasePage(String title, int w, int h) {
 		this.frame = new MyCustomFrame(title, w, h);
@@ -117,9 +117,9 @@ public abstract class BasePage {
 	 * 
 	 * @param mainHandler
 	 */
-	public void setAppHandler(MainHandler<? extends BasePage> mainHandler) {
+	public void setAppHandler(H mainHandler) {
 		System.out.println("mainHandler: " + mainHandler);
-		this.appHandler = mainHandler;
+		this.handler = mainHandler;
 		initEvent();
 		setDefaultValues();
 	}
@@ -142,7 +142,7 @@ public abstract class BasePage {
 	}
 
 	protected ActionListener pageNavigation(PageConstants pageCode) {
-		return appHandler.navigationListener(pageCode);
+		return handler.navigationListener(pageCode);
 	}
 
 	private KeyListener frameKeyListener() {

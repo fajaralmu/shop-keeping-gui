@@ -55,7 +55,7 @@ public class LauncherPage extends BasePage {
 	protected void initEvent() {
 		super.initEvent();
 		
-		navigateLoginButton.addActionListener(((LauncherHandler) appHandler).showLoginPage()); 
+		navigateLoginButton.addActionListener(((LauncherHandler) handler).showLoginPage()); 
 		 
 	}
 	

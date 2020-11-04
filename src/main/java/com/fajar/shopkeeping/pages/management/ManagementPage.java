@@ -751,7 +751,7 @@ public class ManagementPage extends BasePage {
 	} 
 
 	public ManagementHandler getHandler() {
-		return (ManagementHandler) appHandler;
+		return (ManagementHandler) handler;
 	}
 
 	/**

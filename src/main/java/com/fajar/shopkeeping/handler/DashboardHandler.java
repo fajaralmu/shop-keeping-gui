@@ -34,15 +34,14 @@ public class DashboardHandler extends MainHandler<DashboardPage> {
 		page = new DashboardPage();
 	}
 
-	public ActionListener logout() {
-		return  (ActionEvent e)->{
+	public void logout(ActionEvent e) { 
 
-			accountService.logout((Boolean success) -> { 
-				if (success) {
-					APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
-				} 
-			}); 
-		};
+		accountService.logout((Boolean success) -> { 
+			if (success) {
+				APP_HANDLER.navigate(PageConstants.PAGE_LOGIN);
+			} 
+		}); 
+		 
 	}
 
 	public void getTodayMonthlyCashflow(MyCallback<WebResponse> callback) {

@@ -60,7 +60,7 @@ import com.fajar.shoppingmart.util.EntityUtil;
 import lombok.Data;
 
 @Data
-public class DashboardPage extends BasePage {
+public class DashboardPage extends BasePage<DashboardHandler> {
 
 	
 	private static final int[] COLUMN_SIZES = new int[] {
@@ -454,7 +454,7 @@ public class DashboardPage extends BasePage {
 		 * menus
 		 */
 		//account
-		addActionListener(menuItemLogout, getHandler().logout());
+		addActionListener(menuItemLogout, getHandler()::logout);
 		//management
 		initManagementMenuEvents();
 		
@@ -474,11 +474,7 @@ public class DashboardPage extends BasePage {
 	
 	private ActionListener managementListener(Class<? extends BaseEntity> _class, boolean editable) {
 		return getHandler().managementNavigationListener(_class, editable);
-	}
-
-	private DashboardHandler getHandler() {
-		return ((DashboardHandler) appHandler);
-	}
+	} 
 
 	@Override
 	public void show() {

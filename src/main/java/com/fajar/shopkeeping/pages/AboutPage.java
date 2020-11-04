@@ -1,8 +1,6 @@
 package com.fajar.shopkeeping.pages;
 
-import static com.fajar.shopkeeping.component.builder.ComponentBuilder.label;
 import static com.fajar.shopkeeping.component.builder.ComponentBuilder.labelLeftAligment;
-import static com.fajar.shopkeeping.component.builder.ComponentBuilder.title;
 import static com.fajar.shopkeeping.pages.LauncherPage.applicationIcon;
 import static com.fajar.shopkeeping.pages.LauncherPage.getApplicationAddress;
 import static com.fajar.shopkeeping.pages.LauncherPage.getApplicationName;
@@ -12,14 +10,14 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.ComponentModifier;
+import com.fajar.shopkeeping.handler.AboutApplicationHander;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.service.AppSession;
 
-public class AboutPage extends BasePage {
+public class AboutPage extends BasePage<AboutApplicationHander> {
 
 	private JButton navigateLoginButton;
 	private JLabel labelAppName;
@@ -27,7 +25,7 @@ public class AboutPage extends BasePage {
 	private JLabel labelApplicationIcon;
 	
 	public AboutPage() {
-		super("About Application", BASE_WIDTH, BASE_HEIGHT);
+		super("About Application", BASE_WIDTH, BASE_HEIGHT*3/4);
 		doNotCloseOtherPage();
 	}
 
