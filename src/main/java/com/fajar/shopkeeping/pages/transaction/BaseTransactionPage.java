@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import com.fajar.shopkeeping.callbacks.ApplicationException;
+import com.fajar.shopkeeping.callbacks.Listeners;
 import com.fajar.shopkeeping.callbacks.WebResponseCallback;
 import com.fajar.shopkeeping.component.Dialogs;
 import com.fajar.shopkeeping.component.builder.ComponentBuilder;
@@ -37,6 +38,7 @@ import com.fajar.shopkeeping.pages.BasePage;
 import com.fajar.shopkeeping.service.AppSession;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.ThreadUtil;
+import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Customer;
@@ -49,12 +51,14 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
 @Data
-public abstract class BaseTransactionPage extends BasePage{ 
+public abstract class BaseTransactionPage<T> extends BasePage{ 
 	
 	protected JButton buttonSubmitCart;
 	protected JButton buttonClearCart;
 	protected JButton buttonSubmitTransaction;
 	
+	@Setter(value = AccessLevel.NONE )
+	protected T transactionStakeHolder; 
 	
 	protected JComboBox<String> productComboBox; 
 	protected JTextField inputQtyField; 
@@ -76,10 +80,10 @@ public abstract class BaseTransactionPage extends BasePage{
 	
 	protected ProductFlow managedProductFlow;
 	protected List<ProductFlow> productFlows = new ArrayList<ProductFlow>(); 
-	protected boolean editMode = false; 
-	protected String type = "";
+	protected boolean editMode = false;
+	protected final TransactionType type;
 
-	public BaseTransactionPage(String title, int w, int h, String type) {
+	public BaseTransactionPage(String title, int w, int h, TransactionType type) {
 		super(title, w, h); 
 		this.type = type;
 	}
@@ -116,7 +120,21 @@ public abstract class BaseTransactionPage extends BasePage{
 
 	} 
 	
-	protected abstract ActionListener submitTransactionListener();
+	protected ActionListener submitTransactionListener() {
+		 
+		return (ActionEvent e)->{
+			int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
+			if(confirm != 0) { 
+				return;
+			}
+			if(type.equals(TransactionType.SELLING)) {
+				getHandler().transactionSell(getProductFlows(), (Customer) getTransactionStakeHolder());
+			}else if(type.equals(TransactionType.PURCHASING)) {
+				getHandler().transactionPurchasing(getProductFlows(), (Supplier) getTransactionStakeHolder());
+			}
+		};
+		
+	}
 	
 	protected abstract void submitToCart();
 	
@@ -125,6 +143,8 @@ public abstract class BaseTransactionPage extends BasePage{
 	protected abstract JPanel buildProductListPanel();
 	
 	protected abstract void populateForm(ProductFlow productFlow, BaseEntity supplierOrCustomer);
+	
+	protected abstract void setTransactionStakeHolder(T stakeholder);
 	
 	/**
 	 * clear inputs and set edit mode to FALSE
@@ -367,20 +387,11 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected KeyListener dynamicDropdownFieldKeyListener(final DropDownType dropDownType) { 
-		return new KeyListener() { 
-			@Override
-			public void keyTyped(KeyEvent e) { }
-			@Override
-			public void keyPressed(KeyEvent e) { }
-			@Override
-			public void keyReleased(KeyEvent event) { 
-				final JComboBox<?> dynamicComboBox = InputComponentBuilder.getComboBoxFromEvent(event);
-				final String componentText = InputComponentBuilder.getComboBoxText(dynamicComboBox);  
-				handleDropDownKeyReleased(dynamicComboBox, dropDownType, componentText);
-			}
-			 
-			
-		};
+		return Listeners.keyReleasedOnlyListener((e)-> { 
+			final JComboBox<?> dynamicComboBox = InputComponentBuilder.getComboBoxFromEvent(e);
+			final String componentText = InputComponentBuilder.getComboBoxText(dynamicComboBox);  
+			handleDropDownKeyReleased(dynamicComboBox, dropDownType, componentText);
+		});
 	} 
 	
 	/**
@@ -389,7 +400,7 @@ public abstract class BaseTransactionPage extends BasePage{
 	 * @return
 	 */
 	protected ActionListener buttonRemoveListener(final ProductFlow productFlow) {
-		return  (ActionEvent e)-> {
+		return  (e)-> {
 				int confirm = JOptionPane.showConfirmDialog(null, "Remove "+productFlow.getProduct().getName()+"?");
 				
 				if(confirm != 0) {  return; }

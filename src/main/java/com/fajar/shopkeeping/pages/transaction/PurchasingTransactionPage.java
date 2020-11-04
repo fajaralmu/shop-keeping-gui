@@ -35,6 +35,7 @@ import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.DateUtil;
 import com.fajar.shopkeeping.util.Log;
 import com.fajar.shopkeeping.util.StringUtil;
+import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Product;
@@ -46,13 +47,11 @@ import com.toedter.calendar.JDateChooser;
 import lombok.Data;
 
 @Data
-public class PurchasingTransactionPage extends BaseTransactionPage {   
+public class PurchasingTransactionPage extends BaseTransactionPage<Supplier> {   
 	
 	private long unitPrice;
 	private String productCode, supplierCode;
-	private Date expiryDate = new Date();
-	
-	private Supplier selectedSupplier;
+	private Date expiryDate = new Date(); 
 	
 	//fields
 	private JComboBox supplierComboBox;  
@@ -67,7 +66,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	private JButton buttonSearchProductByCode;
 
 	public PurchasingTransactionPage() { 
-		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, "Supply");
+		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, TransactionType.PURCHASING);
 		
 	}  
 	
@@ -196,7 +195,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		clearLabel(labelCurrentPrice);
 		
 		if(clearSupplier) {
-			selectedSupplier = null;
+			transactionStakeHolder = null;
 			clearComboBox(supplierComboBox);
 			clearTextField(inputSupplierCode);
 			labelTotalPrice.setText("0");
@@ -236,7 +235,7 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 		 
 		for (Supplier supplier : supplierDropdownValues) {
 			if(supplier.getName().equals(string)) {
-				setSelectedSupplier(supplier);
+				setTransactionStakeHolder(supplier);
 			}
 		}
 	}
@@ -245,11 +244,12 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 	 * set selected supplier 
 	 * @param supplier
 	 */
-	private void setSelectedSupplier(Supplier supplier) { 
-		selectedSupplier = supplier;
+	@Override
+	protected void setTransactionStakeHolder(Supplier supplier) { 
+		transactionStakeHolder = supplier;
 		setText(inputSupplierCode, supplier.getId());
 		supplierComboBox.setSelectedItem(supplier.getName());
-		Log.log("selectedSupplier: ",selectedSupplier);
+		Log.log("selectedSupplier: ",transactionStakeHolder);
 	}
 
 	/**
@@ -322,20 +322,9 @@ public class PurchasingTransactionPage extends BaseTransactionPage {
 
 		MyCallback<WebResponse> callback = (WebResponse)->{
 			if(WebResponse.getEntities().size()>0)
-				setSelectedSupplier((Supplier) WebResponse.getEntities().get(0));
+				setTransactionStakeHolder((Supplier) WebResponse.getEntities().get(0));
 		};
 		getHandler().getExactEntity(Supplier.class, "id", supplierCode, callback);
-	}
-	
-	@Override
-	protected ActionListener submitTransactionListener() { 
-		return  (ActionEvent e)-> {
-			int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
-			if(confirm != 0) { 
-				return;
-			}
-			getHandler().transactionPurchasing(productFlows, selectedSupplier); 
-		};
 	}
  
 

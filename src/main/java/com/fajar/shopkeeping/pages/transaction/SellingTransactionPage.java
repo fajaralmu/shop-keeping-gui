@@ -33,6 +33,7 @@ import com.fajar.shopkeeping.component.builder.ComponentBuilder;
 import com.fajar.shopkeeping.component.builder.InputComponentBuilder;
 import com.fajar.shopkeeping.model.PanelRequest;
 import com.fajar.shopkeeping.util.Log;
+import com.fajar.shoppingmart.dto.TransactionType;
 import com.fajar.shoppingmart.dto.WebResponse;
 import com.fajar.shoppingmart.entity.BaseEntity;
 import com.fajar.shoppingmart.entity.Customer;
@@ -43,11 +44,9 @@ import com.fajar.shoppingmart.entity.Transaction;
 import lombok.Data;
 
 @Data
-public class SellingTransactionPage  extends BaseTransactionPage{
+public class SellingTransactionPage  extends BaseTransactionPage<Customer>{
 
 	private String customerCode, productCode;
-	
-	private Customer selectedCustomer;
 	private JComboBox customerComboBox;
 	private JLabel labelRemainingQty;
 	private JLabel labelProductPrice;
@@ -61,7 +60,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	private JButton buttonSearchProductByCode;
 	
 	public SellingTransactionPage() { 
-		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, "Selling");
+		super("Transaction", BASE_WIDTH, BASE_HEIGHT+20, TransactionType.SELLING);
 		
 	}  
 	
@@ -90,7 +89,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 	private void searchCustomerByCode(ActionEvent e) {
 		MyCallback<WebResponse> callback = (response)->{
 			if(response.getEntities().size()>0) {
-				setSelectedCustomer((Customer) response.getEntities().get(0));
+				setTransactionStakeHolder((Customer) response.getEntities().get(0));
 			}
 		};
 		getHandler().getExactEntity(Customer.class, "id", customerCode, callback );
@@ -111,17 +110,6 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 					
 				} catch (Exception e2) { }
 			});
-	}
-
-	@Override
-	protected ActionListener submitTransactionListener() { 
-		return (ActionEvent e)->{
-			int confirm = Dialogs.confirm("Continue submit the Transaction?"); 
-			if(confirm != 0) { 
-				return;
-			}
-			getHandler().transactionSell(getProductFlows(), getSelectedCustomer()); 
-		};
 	}
 
 	/**
@@ -199,7 +187,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		clearTextField(inputProductCode);
 		
 		if(clearCustomer) {
-			selectedCustomer = null;
+			transactionStakeHolder = null;
 			clearComboBox(customerComboBox);
 			labelTotalPrice.setText("0");
 			clearTextField(inputCustomerPayment);
@@ -324,8 +312,9 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		return panel;
 	}
 
-	private void setSelectedCustomer(Customer customer) {
-		this.selectedCustomer = customer;
+	@Override
+	protected void setTransactionStakeHolder(Customer customer) {
+		this.transactionStakeHolder = customer;
 		inputCustomerCode.setText(customer.getId().toString());
 		customerComboBox.setSelectedItem(customer.getName());
 	}
@@ -364,7 +353,7 @@ public class SellingTransactionPage  extends BaseTransactionPage{
 		for (Customer customer : customerDopdownValues) {
 			if(customer.getName().equals(selectedValue)) {
 				Log.log("select customer: ",customer);
-				setSelectedCustomer(customer);
+				setTransactionStakeHolder(customer);
 			}
 		}
 		
