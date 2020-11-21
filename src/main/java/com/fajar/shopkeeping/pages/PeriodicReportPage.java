@@ -126,8 +126,8 @@ public class PeriodicReportPage extends BasePage<PeriodicReportHandler> {
 		addActionListener(comboBoxYearFrom, comboBoxListener(comboBoxYearFrom, "selectedYearFrom"));
 		addActionListener(comboBoxMonthTo, comboBoxListener(comboBoxMonthTo, "selectedMonthTo"));
 		addActionListener(comboBoxYearTo, comboBoxListener(comboBoxYearTo, "selectedYearTo"));
-		addActionListener(buttonSearch, buttonSearchListener());
-		addActionListener(buttonRefresh, buttonRefreshListener());
+		addActionListener(buttonSearch, this::buttonSearchListener);
+		addActionListener(buttonRefresh, this::buttonRefreshListener);
 
 	}
 	  
@@ -139,18 +139,17 @@ public class PeriodicReportPage extends BasePage<PeriodicReportHandler> {
 		super.refresh();
 	}
 
-	private ActionListener buttonSearchListener() { 
-		return  (ActionEvent e)-> {
-			log("Button Click");
-			
-			Filter filter = new Filter();
-			filter.setMonth(selectedMonthFrom);
-			filter.setYear(selectedYearFrom);
-			filter.setMonthTo(selectedMonthTo);
-			filter.setYearTo(selectedYearTo);
+	private void buttonSearchListener(ActionEvent e) {
+		log("Button Click");
+		
+		Filter filter = new Filter();
+		filter.setMonth(selectedMonthFrom);
+		filter.setYear(selectedYearFrom);
+		filter.setMonthTo(selectedMonthTo);
+		filter.setYearTo(selectedYearTo);
+	 
+		getHandler().getPeriodicCashflow(filter, callbackGetPeriodicCashflow()); 
 		 
-			getHandler().getPeriodicCashflow(filter, callbackGetPeriodicCashflow()); 
-		};
 	}
 
 	private WebResponseCallback callbackGetPeriodicCashflow() {

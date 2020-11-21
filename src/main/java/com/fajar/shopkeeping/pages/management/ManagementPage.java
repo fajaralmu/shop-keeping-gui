@@ -234,7 +234,7 @@ public class ManagementPage extends BasePage {
 		addKeyListener(inputLimit, textFieldKeyListener(inputLimit, "selectedLimit"), false); 
 		addActionListener(buttonFilterEntity, getHandler().filterEntity());  
 		addActionListener(buttonPrintExcel, getHandler().printExcel()); 
-		addActionListener(buttonRefresh, buttonRefreshListener()); 
+		addActionListener(buttonRefresh, this::buttonRefreshListener); 
 		addActionListener(buttonClear, clearListener());
 		addActionListener(buttonClearDataTableFilter, clearDataTableFilterListener());
 		

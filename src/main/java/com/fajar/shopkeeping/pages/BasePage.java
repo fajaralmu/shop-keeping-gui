@@ -212,23 +212,18 @@ public abstract class BasePage<H extends MainHandler> {
 	}
 
 	private void updateFrameIcon() {
-		final String location = getApplicationImageUrl();
-		
 		ThreadUtil.run(()->{
-			ImageIcon icon;
 			try {
-				icon = new ImageIcon(new URL(location));
+				ImageIcon icon = new ImageIcon(new URL(getApplicationImageUrl()));
 				frame.setIconImage(icon.getImage());
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
+			} catch (MalformedURLException e) { 
 				e.printStackTrace();
 			}
-			
 		});
 	}
 
-	protected ActionListener buttonRefreshListener() {
-		return  (ActionEvent e) -> { refresh(); };
+	protected void buttonRefreshListener(ActionEvent e) {
+		 refresh();
 	}
 
 	/**
